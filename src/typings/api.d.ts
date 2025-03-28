@@ -10,18 +10,19 @@ declare namespace Api {
       /** current page number */
       current: number;
       /** page size */
-      size: number;
+      page_size: number;
+      request_page_size: number;
       /** total count */
       total: number;
     }
 
     /** common params of paginating query list data */
     interface PaginatingQueryRecord<T = any> extends PaginatingCommonParams {
-      records: T[];
+      list: T[];
     }
 
     /** common search params of table */
-    type CommonSearchParams = Pick<Common.PaginatingCommonParams, 'current' | 'size'>;
+    type CommonSearchParams = Pick<Common.PaginatingCommonParams, 'current' | 'page_size'>;
 
     /**
      * enable status
@@ -219,5 +220,179 @@ declare namespace Api {
       pId: number;
       children?: MenuTree[];
     };
+  }
+  /**
+   * namespace CouponManage
+   *
+   * backend api module: "CouponManage"
+   */
+  namespace CouponManage {
+    type CouponLinkStatus = '1' | '2'; // 1 正常 2 停用
+
+    type CouponLinkType = '1' | '2' | '3'; // 1 普通链接 2 小程序 3 APP链接
+
+    /** CouponLnk */
+    type CouponLink = Common.CommonRecord<{
+      /** 创建时间 */
+      create_at: string;
+      /** 领券链接id */
+      id: number;
+      /** 小程序appid */
+      op_cps_link_app_id: string;
+      /** 领券链接分类id */
+      op_cps_link_category_id: number|null;
+      /** 备注 */
+      op_cps_link_desc: string;
+      /** 图标地址 */
+      op_cps_link_icon_url: string;
+      /** 链接名 */
+      op_cps_link_name: string;
+      /** 小程序原始ID */
+      op_cps_link_original_id: string;
+      /** 跳转链接 */
+      op_cps_link_path: string;
+      /** 排序 */
+      op_cps_link_sort: number;
+      /** 状态 0-正常 1-停用 */
+      op_cps_link_status: number;
+      /** 类型 0-普通链接 1-小程序 2-APP链接 */
+      op_cps_link_type: number;
+      /** 修改时间 */
+      update_at: string;
+    }>;
+
+    /** CouponLnk */
+    type EditCouponLink = Common.CommonRecord<{
+      current: number;
+      page_size: number;
+      /** 领券链接id */
+      id: number;
+      type: string;
+      /** 小程序appid */
+      op_cps_link_app_id: string;
+      /** 领券链接分类id */
+      op_cps_link_category_id: number;
+      /** 备注 */
+      op_cps_link_desc: string;
+      /** 图标地址 */
+      op_cps_link_icon_url: string;
+      /** 链接名 */
+      op_cps_link_name: string;
+      /** 小程序原始ID */
+      op_cps_link_original_id: string;
+      /** 跳转链接 */
+      op_cps_link_path: string;
+      /** 排序 */
+      op_cps_link_sort: number;
+      /** 状态 0-正常 1-停用 */
+      op_cps_link_status: number;
+      /** 类型 0-普通链接 1-小程序 2-APP链接 */
+      op_cps_link_type: number;
+    }>;
+
+    /** CouponLink list */
+    type CouponLinkList = Common.PaginatingQueryRecord<CouponLink>;
+
+    /** search params */
+    type CouponLinkSearchParams = Partial<
+      Pick<
+        Api.CouponManage.EditCouponLink,
+        | 'id'
+        | 'type'
+        | 'op_cps_link_category_id'
+        | 'op_cps_link_app_id'
+        | 'op_cps_link_original_id'
+        | 'op_cps_link_name'
+        | 'op_cps_link_status'
+        | 'op_cps_link_path'
+        | 'op_cps_link_sort'
+        | 'op_cps_link_type'
+        | 'op_cps_link_desc'
+      > &
+        Common.CommonSearchParams
+    >;
+
+    /** search params */
+    type CouponLinkEditParams = Partial<
+      Pick<
+        Api.CouponManage.EditCouponLink,
+        | 'id'
+        | 'type'
+        | 'op_cps_link_category_id'
+        | 'op_cps_link_app_id'
+        | 'op_cps_link_original_id'
+        | 'op_cps_link_name'
+        | 'op_cps_link_status'
+        | 'op_cps_link_icon_url'
+        | 'op_cps_link_path'
+        | 'op_cps_link_sort'
+        | 'op_cps_link_type'
+        | 'op_cps_link_desc'
+      > &
+      Common.CommonSearchParams
+    >;
+
+    type CouponLinkCategory = Common.CommonRecord<{
+      /** 创建时间 */
+      create_at: string;
+      /** 修改时间 */
+      update_at: string;
+      /** 领券链接分类id */
+      id: number;
+      /** 分类名 */
+      op_cps_category_name: string;
+      /** 状态 0-正常 1-停用 */
+      op_cps_category_status: CouponLinkCategoryStatus;
+      /** 描述 */
+      op_cps_category_desc: string;
+      /** 图标地址 */
+      op_cps_category_icon_url: string;
+    }>;
+
+    type EditCouponLinkCategory = Common.CommonRecord<{
+      current: number;
+      page_size: number;
+      /** 领券链接分类id */
+      id: number;
+      type: string;
+      /** 分类名 */
+      op_cps_category_name: string;
+      /** 状态 0-正常 1-停用 */
+      op_cps_category_status: number;
+      /** 描述 */
+      op_cps_category_desc: string;
+      /** 图标地址 */
+      op_cps_category_icon_url: string;
+    }>;
+
+    type CouponLinkCategoryList = Common.PaginatingQueryRecord<CouponLinkCategory>;
+
+    type CouponLinkCategorySearchParams = Partial<
+      Pick<
+        Api.CouponManage.EditCouponLinkCategory,
+        | 'id'
+        | 'op_cps_category_name'
+        | 'op_cps_category_status'
+        | 'op_cps_category_desc'
+        | 'type'
+        | 'current'
+        | 'page_size'
+      > &
+        Common.CommonSearchParams
+    >;
+
+    type CouponLinkCategoryEditParams = Partial<
+      Pick<
+        Api.CouponManage.EditCouponLinkCategory,
+        | 'id'
+        | 'op_cps_category_name'
+        | 'op_cps_category_status'
+        | 'op_cps_category_desc'
+        | 'op_cps_category_icon_url'
+        | 'type'
+      > &
+        Common.CommonSearchParams
+    >;
+    type CouponLinkCategoryStatus = '1' | '2'; // 1 正常 2 停用
   }
 }

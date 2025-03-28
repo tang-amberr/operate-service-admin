@@ -35,7 +35,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   });
 
   /** Is login */
-  const isLogin = computed(() => Boolean(token.value));
+  // const isLogin = computed(() => Boolean(token.value));
+  const isLogin = true;
 
   /** Reset auth store */
   async function resetStore() {
@@ -62,20 +63,17 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    */
   async function login(userName: string, password: string, redirect = true) {
     startLoading();
-
+    redirectFromLogin()
     const { data: loginToken, error } = await fetchLogin(userName, password);
 
     if (!error) {
-      const pass = await loginByToken(loginToken);
+      // const pass = await loginByToken(loginToken);
 
-      if (pass) {
-        await redirectFromLogin(redirect);
-
-        window.$notification?.success({
-          message: $t('page.login.common.loginSuccess'),
-          description: $t('page.login.common.welcomeBack', { userName: userInfo.userName })
-        });
-      }
+      await redirectFromLogin(redirect);
+      window.$notification?.success({
+        message: $t('page.login.common.loginSuccess'),
+        description: $t('page.login.common.welcomeBack', {userName: userInfo.userName})
+      });
     } else {
       resetStore();
     }

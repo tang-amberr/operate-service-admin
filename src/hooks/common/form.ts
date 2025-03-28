@@ -44,6 +44,8 @@ export function useFormRules() {
   /** the default required rule */
   const defaultRequiredRule = createRequiredRule($t('form.required'));
 
+  const notZeroRequiredRule = createRequiredRule($t('form.code.required'))
+
   function createRequiredRule(message: string) {
     return {
       required: true,
@@ -74,7 +76,8 @@ export function useFormRules() {
     formRules,
     defaultRequiredRule,
     createRequiredRule,
-    createConfirmPwdRule
+    createConfirmPwdRule,
+    notZeroRequiredRule
   };
 }
 

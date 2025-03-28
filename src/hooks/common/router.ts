@@ -100,7 +100,8 @@ export function useRouterPush(inSetup = true) {
    */
   async function redirectFromLogin(needRedirect = true) {
     const redirect = route.value.query?.redirect as string;
-
+    console.log(11);
+    await toHome()
     if (needRedirect && redirect) {
       await routerPush(redirect);
     } else {

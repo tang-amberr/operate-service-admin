@@ -4,9 +4,9 @@ export function useAuth() {
   const authStore = useAuthStore();
 
   function hasAuth(codes: string | string[]) {
-    if (!authStore.isLogin) {
-      return false;
-    }
+    // if (!authStore.isLogin) {
+    //   return false;
+    // }
 
     if (typeof codes === 'string') {
       return authStore.userInfo.buttons.includes(codes);

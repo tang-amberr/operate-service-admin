@@ -12,7 +12,13 @@ export const userGenderRecord: Record<Api.SystemManage.UserGender, App.I18n.I18n
   '2': 'page.manage.user.gender.female'
 };
 
+export const couponLinkStatusRecord: Record<Api.CouponManage.CouponLinkStatus, App.I18n.I18nKey> = {
+  '1': 'page.manage.user.gender.male',
+  '2': 'page.manage.user.gender.female'
+};
+
 export const userGenderOptions = transformRecordToOption(userGenderRecord);
+export const couponLinkOptions = transformRecordToOption(userGenderRecord);
 
 export const menuTypeRecord: Record<Api.SystemManage.MenuType, App.I18n.I18nKey> = {
   '1': 'page.manage.menu.type.directory',

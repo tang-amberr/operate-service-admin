@@ -1,11 +1,10 @@
 <script setup lang="tsx">
-import { Button, Popconfirm, Tag } from 'ant-design-vue';
-import { fetchGetUserList } from '@/service/api';
+import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
+import {editCategory, editCouponLink, fetchGetAllCategorys, fetchGetCouponLinkList} from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
-import { enableStatusRecord, userGenderRecord } from '@/constants/business';
-import UserOperateDrawer from './modules/user-operate-drawer.vue';
-import UserSearch from './modules/user-search.vue';
+import CategoryOperateDrawer from './modules/category-operate-drawer.vue';
+import CategorySearch from './modules/category-search.vue';
 
 const { tableWrapperRef, scrollConfig } = useTableScroll();
 
@@ -20,96 +19,65 @@ const {
   searchParams,
   resetSearchParams
 } = useTable({
-  apiFn: fetchGetUserList,
+  apiFn: fetchGetAllCategorys,
   apiParams: {
     current: 1,
-    size: 10,
+    page_size: 10,
     // if you want to use the searchParams in Form, you need to define the following properties, and the value is null
     // the value can not be undefined, otherwise the property in Form will not be reactive
-    status: undefined,
-    userName: undefined,
-    userGender: undefined,
-    nickName: undefined,
-    userPhone: undefined,
-    userEmail: undefined
+    type: 'list'
   },
   columns: () => [
     {
-      key: 'index',
-      title: $t('common.index'),
-      dataIndex: 'index',
+      key: 'id',
+      title: 'id',
+      dataIndex: 'id',
       align: 'center',
-      width: 64
+      width: 50
     },
     {
-      key: 'userName',
-      dataIndex: 'userName',
-      title: $t('page.manage.user.userName'),
+      key: 'op_cps_category_name',
+      title: '名称',
       align: 'center',
-      minWidth: 100
+      dataIndex: 'op_cps_category_name',
+      width: 100
     },
     {
-      key: 'userGender',
-      title: $t('page.manage.user.userGender'),
+      key: 'op_cps_category_status',
+      dataIndex: 'op_cps_category_status',
+      title: '分类状态',
       align: 'center',
-      dataIndex: 'userGender',
-      width: 100,
+      minWidth: 60,
       customRender: ({ record }) => {
-        if (record.userGender === null) {
+        if (record.op_cps_category_status === null) {
           return null;
         }
 
-        const tagMap: Record<Api.SystemManage.UserGender, string> = {
-          1: 'processing',
-          2: 'error'
-        };
+        const label = record.op_cps_category_status === 1 ? '启用' : '停用';
 
-        const label = $t(userGenderRecord[record.userGender]);
-
-        return <Tag color={tagMap[record.userGender]}>{label}</Tag>;
+        return <Tag color={record.op_cps_category_status === 1 ? 'blue' : 'default'}>{label}</Tag>;
       }
     },
     {
-      key: 'nickName',
-      dataIndex: 'nickName',
-      title: $t('page.manage.user.nickName'),
+      key: 'op_cps_category_icon_url',
+      dataIndex: 'op_cps_category_icon_url',
+      title: '图标',
       align: 'center',
-      minWidth: 100
-    },
-    {
-      key: 'userPhone',
-      dataIndex: 'userPhone',
-      title: $t('page.manage.user.userPhone'),
-      align: 'center',
-      width: 120
-    },
-    {
-      key: 'userEmail',
-      dataIndex: 'userEmail',
-      title: $t('page.manage.user.userEmail'),
-      align: 'center',
-      minWidth: 200
-    },
-    {
-      key: 'status',
-      dataIndex: 'status',
-      title: $t('page.manage.user.userStatus'),
-      align: 'center',
-      width: 100,
-      customRender: ({ record }) => {
-        if (record.status === null) {
-          return null;
-        }
-
-        const tagMap: Record<Api.Common.EnableStatus, string> = {
-          1: 'success',
-          2: 'warning'
-        };
-
-        const label = $t(enableStatusRecord[record.status]);
-
-        return <Tag color={tagMap[record.status]}>{label}</Tag>;
+      width: 150,
+      customRender: ({ record }) =>{
+        return (
+          <div class="flex-center">
+            <img class="w-100px" src={`https://antutu-1321649940.cos.ap-chongqing.myqcloud.com/coupon/category_icon/${  record.op_cps_category_icon_url}` } alt="icon" class="w-40px h-40px" />
+          </div>
+        );
       }
+    },
+    {
+      key: 'op_cps_category_desc',
+      dataIndex: 'op_cps_category_desc',
+      title: '描述',
+      align: 'center',
+      width: 200
     },
     {
       key: 'operate',
@@ -152,11 +120,20 @@ async function handleBatchDelete() {
   onBatchDeleted();
 }
 
-function handleDelete(id: number) {
+async function handleDelete(id: number) {
   // request
-  console.log(id);
-
-  onDeleted();
+  const res = await editCategory({
+    id,
+    type: 'delete'
+  });
+  if (res.response.data.code === 200) {
+    message.success('删除成功');
+  } else {
+    message.error('删除失败, ',res.response.data.msg);
+  }
+  if (res.response.data.code === 200) {
+    onDeleted();
+  }
 }
 
 function edit(id: number) {
@@ -166,9 +143,9 @@ function edit(id: number) {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <UserSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage" />
+    <CategorySearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage" />
     <ACard
-      :title="$t('page.manage.user.title')"
+      title="领券链接分类列表"
       :bordered="false"
       :body-style="{ flex: 1, overflow: 'hidden' }"
       class="flex-col-stretch sm:flex-1-hidden card-wrapper"
@@ -196,7 +173,7 @@ function edit(id: number) {
         class="h-full"
       />
 
-      <UserOperateDrawer
+      <CategoryOperateDrawer
         v-model:visible="drawerVisible"
         :operate-type="operateType"
         :row-data="editingData"
