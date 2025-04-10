@@ -52,7 +52,7 @@ export const themeSettings: App.Theme.ThemeSetting = {
   },
   watermark: {
     visible: false,
-    text: '惠去团领券后台管理'
+    text: '后台管理'
   },
   tokens: {
     light: {

@@ -3,7 +3,7 @@ import type { AxiosResponse, CreateAxiosDefaults, InternalAxiosRequestConfig } f
 import axiosRetry from 'axios-retry';
 import { nanoid } from '@sa/utils';
 import { createAxiosConfig, createDefaultOptions, createRetryOptions } from './options';
-import { BACKEND_ERROR_CODE, REQUEST_ID_KEY } from './constant';
+import { BACKEND_ERROR_CODE } from './constant';
 import type {
   CustomAxiosRequestConfig,
   FlatRequestInstance,
@@ -33,7 +33,7 @@ function createCommonRequest<ResponseData = any>(
 
     // set request id
     const requestId = nanoid();
-    config.headers.set(REQUEST_ID_KEY, requestId);
+    // config.headers.set(REQUEST_ID_KEY, requestId);
 
     // config abort controller
     if (!config.signal) {
@@ -178,6 +178,6 @@ export function createFlatRequest<ResponseData = any, State = Record<string, unk
   return flatRequest;
 }
 
-export { BACKEND_ERROR_CODE, REQUEST_ID_KEY };
+export { BACKEND_ERROR_CODE };
 export type * from './type';
 export type { CreateAxiosDefaults, AxiosError };

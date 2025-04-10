@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
 import { useAntdForm, useFormRules } from '@/hooks/common/form';
+import { enableStatusOptions, userGenderOptions } from '@/constants/business';
+import { translateOptions } from '@/utils/common';
 
 defineOptions({
-  name: 'CouponLinkCategorySearch'
+  name: 'UserSearch'
 });
 
 interface Emits {
@@ -15,25 +17,13 @@ const emit = defineEmits<Emits>();
 
 const { formRef, validate, resetFields } = useAntdForm();
 
-const model = defineModel<Api.CouponManage.CouponLinkCategorySearchParams>('model', {
+const model = defineModel<Api.SystemManage.UserSearchParams>('model', {
   default: () => ({
-    id: null,
-    op_cps_category_name: '',
-    op_cps_link_status: null,
-    type: 'search' // 初始化 type 字段
+    username: '',
+    status: null
   })
 });
 
-// type RuleKey = Extract<keyof Api.CouponManage.CouponLinkSearchParams, 'userEmail' | 'userPhone'>;
-//
-// const rules = computed<Record<RuleKey, App.Global.FormRule>>(() => {
-//   const { patternRules } = useFormRules(); // inside computed to make locale reactive
-//
-//   return {
-//     userEmail: patternRules.email,
-//     userPhone: patternRules.phone
-//   };
-// });
 
 async function reset() {
   await resetFields();
@@ -41,8 +31,6 @@ async function reset() {
 }
 
 async function search() {
-  model.value.type = 'search';
-  await validate();
   emit('search');
 }
 </script>
@@ -59,20 +47,15 @@ async function search() {
     >
       <ARow :gutter="[16, 16]" wrap>
         <ACol :span="24" :md="12" :lg="6">
-          <AFormItem label="id" name="id" class="m-0">
-            <AInput v-model:value.number="model.id" placeholder="请输入领券链接id" />
+          <AFormItem :label="$t('page.manage.user.userName')" name="userName" class="m-0">
+            <AInput v-model:value="model.username" :placeholder="$t('page.manage.user.form.userName')" />
           </AFormItem>
         </ACol>
         <ACol :span="24" :md="12" :lg="6">
-          <AFormItem label="名称" name="op_cps_category_name" class="m-0">
-            <AInput v-model:value="model.op_cps_category_name" placeholder="请输入分类名称" />
-          </AFormItem>
-        </ACol>
-        <ACol :span="24" :md="12" :lg="6">
-          <AFormItem label="链接状态" name="op_cps_category_status" class="m-0">
+          <AFormItem :label="$t('page.manage.user.userStatus')" name="userStatus" class="m-0">
             <ASelect
-              v-model:value="model.op_cps_category_status"
-              placeholder="选择状态"
+              v-model:value="model.status"
+              :placeholder="$t('page.manage.user.form.userStatus')"
               clearable
             >
               <a-select-option :value="1">启用</a-select-option>

@@ -7,10 +7,8 @@ import { useAppStore } from '@/store/modules/app';
 import { useThemeStore } from '@/store/modules/theme';
 import { loginModuleRecord } from '@/constants/app';
 import PwdLogin from './modules/pwd-login.vue';
-import CodeLogin from './modules/code-login.vue';
-import Register from './modules/register.vue';
-import ResetPwd from './modules/reset-pwd.vue';
-import BindWechat from './modules/bind-wechat.vue';
+import Register from "@/views/_builtin/login/modules/register.vue";
+import register from "@/views/_builtin/login/modules/register.vue";
 
 interface Props {
   /** The login module */
@@ -29,10 +27,7 @@ interface LoginModule {
 
 const moduleMap: Record<UnionKey.LoginModule, LoginModule> = {
   'pwd-login': { label: loginModuleRecord['pwd-login'], component: PwdLogin },
-  'code-login': { label: loginModuleRecord['code-login'], component: CodeLogin },
-  register: { label: loginModuleRecord.register, component: Register },
-  'reset-pwd': { label: loginModuleRecord['reset-pwd'], component: ResetPwd },
-  'bind-wechat': { label: loginModuleRecord['bind-wechat'], component: BindWechat }
+  'register': { label: loginModuleRecord[register], component: Register },
 };
 
 const activeModule = computed(() => moduleMap[props.module || 'pwd-login']);
@@ -74,7 +69,7 @@ const bgColor = computed(() => {
           </div>
         </header>
         <main class="pt-24px">
-          <h3 class="text-18px text-primary font-medium">{{ $t(activeModule.label) }}</h3>
+<!--          <h3 class="text-18px text-primary font-medium">{{ $t(activeModule.label) }}</h3>-->
           <div class="animation-slide-in-left pt-24px">
             <Transition :name="themeStore.page.animateMode" mode="out-in" appear>
               <component :is="activeModule.component" />

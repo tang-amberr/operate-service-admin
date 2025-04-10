@@ -20,7 +20,10 @@ export const views: Record<LastLevelRouteKey, RouteComponent | (() => Promise<Ro
   500: () => import("@/views/_builtin/500/index.vue"),
   "iframe-page": () => import("@/views/_builtin/iframe-page/[url].vue"),
   login: () => import("@/views/_builtin/login/index.vue"),
+  "getcouponmanage_coupon-link-category": () => import("@/views/getcouponmanage/coupon-link-category/index.vue"),
+  "getcouponmanage_coupon-link": () => import("@/views/getcouponmanage/coupon-link/index.vue"),
   home: () => import("@/views/home/index.vue"),
-  "manage_coupon-link-category": () => import("@/views/manage/coupon-link-category/index.vue"),
-  "manage_coupon-link": () => import("@/views/manage/coupon-link/index.vue"),
+  manage_menu: () => import("@/views/manage/menu/index.vue"),
+  manage_role: () => import("@/views/manage/role/index.vue"),
+  manage_user: () => import("@/views/manage/user/index.vue"),
 };

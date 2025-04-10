@@ -15,7 +15,6 @@ const {
   getData,
   getDataByPage,
   loading,
-  mobilePagination,
   searchParams,
   resetSearchParams
 } = useTable({
@@ -25,7 +24,6 @@ const {
     page_size: 10,
     // if you want to use the searchParams in Form, you need to define the following properties, and the value is null
     // the value can not be undefined, otherwise the property in Form will not be reactive
-    type: 'list'
   },
   columns: () => [
     {
@@ -36,45 +34,45 @@ const {
       width: 50
     },
     {
-      key: 'op_cps_category_name',
+      key: 'cps_category_name',
       title: '名称',
       align: 'center',
-      dataIndex: 'op_cps_category_name',
+      dataIndex: 'cps_category_name',
       width: 100
     },
     {
-      key: 'op_cps_category_status',
-      dataIndex: 'op_cps_category_status',
+      key: 'cps_category_status',
+      dataIndex: 'cps_category_status',
       title: '分类状态',
       align: 'center',
-      minWidth: 60,
+      width: 100,
       customRender: ({ record }) => {
-        if (record.op_cps_category_status === null) {
+        if (record.cps_category_status === null) {
           return null;
         }
 
-        const label = record.op_cps_category_status === 1 ? '启用' : '停用';
+        const label = record.cps_category_status === 1 ? '启用' : '停用';
 
-        return <Tag color={record.op_cps_category_status === 1 ? 'blue' : 'default'}>{label}</Tag>;
+        return <Tag color={record.cps_category_status === 1 ? 'blue' : 'default'}>{label}</Tag>;
       }
     },
     {
-      key: 'op_cps_category_icon_url',
-      dataIndex: 'op_cps_category_icon_url',
+      key: 'cps_category_icon_url',
+      dataIndex: 'cps_category_icon_url',
       title: '图标',
       align: 'center',
       width: 150,
       customRender: ({ record }) =>{
         return (
           <div class="flex-center">
-            <img class="w-100px" src={`https://antutu-1321649940.cos.ap-chongqing.myqcloud.com/coupon/category_icon/${  record.op_cps_category_icon_url}` } alt="icon" class="w-40px h-40px" />
+            <img class="w-100px" src={`https://private-domin-1327252780.cos.ap-chengdu.myqcloud.com/hqt/admin/${  record.cps_category_icon_url}` } alt="icon" class="w-40px h-40px" />
           </div>
         );
       }
     },
     {
-      key: 'op_cps_category_desc',
-      dataIndex: 'op_cps_category_desc',
+      key: 'cps_category_desc',
+      dataIndex: 'cps_category_desc',
       title: '描述',
       align: 'center',
       width: 200
@@ -169,7 +167,7 @@ function edit(id: number) {
         :scroll="scrollConfig"
         :loading="loading"
         row-key="id"
-        :pagination="mobilePagination"
+        :pagination="false"
         class="h-full"
       />
 

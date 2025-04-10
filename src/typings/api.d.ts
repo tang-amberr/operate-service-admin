@@ -95,52 +95,40 @@ declare namespace Api {
     /** role */
     type Role = Common.CommonRecord<{
       /** role name */
-      roleName: string;
-      /** role code */
-      roleCode: string;
+      id: number;
+      role_name: string;
+      router_ids: string;
+      button_ids: string;
       /** role description */
-      roleDesc: string;
+      role_desc: string;
     }>;
 
     /** role search params */
     type RoleSearchParams = Partial<
-      Pick<Api.SystemManage.Role, 'roleName' | 'roleCode' | 'status'> & Common.CommonSearchParams
+      Pick<Api.SystemManage.Role, 'role_name'> & Common.CommonSearchParams
     >;
 
     /** role list */
     type RoleList = Common.PaginatingQueryRecord<Role>;
 
     /** all role */
-    type AllRole = Pick<Role, 'id' | 'roleName' | 'roleCode'>;
+    type AllRole = Pick<Role, 'id' | 'role_name'>;
 
-    /**
-     * user gender
-     *
-     * - "1": "male"
-     * - "2": "female"
-     */
-    type UserGender = '1' | '2';
 
     /** user */
     type User = Common.CommonRecord<{
       /** user name */
-      userName: string;
-      /** user gender */
-      userGender: UserGender;
-      /** user nick name */
-      nickName: string;
-      /** user phone */
-      userPhone: string;
-      /** user email */
-      userEmail: string;
+      id: number;
+      username: string;
+      status: number; // 1 正常 2 停用
       /** user role code collection */
       userRoles: string[];
     }>;
 
     /** user search params */
     type UserSearchParams = Partial<
-      Pick<Api.SystemManage.User, 'userName' | 'userGender' | 'nickName' | 'userPhone' | 'userEmail' | 'status'> &
-        Common.CommonSearchParams
+      Pick<Api.SystemManage.User, 'type' | 'username' | 'status'> &
+      Common.CommonSearchParams
     >;
 
     /** user list */
@@ -238,25 +226,25 @@ declare namespace Api {
       /** 领券链接id */
       id: number;
       /** 小程序appid */
-      op_cps_link_app_id: string;
+      cps_link_app_id: string;
       /** 领券链接分类id */
-      op_cps_link_category_id: number|null;
+      cps_link_category_id: number|null;
       /** 备注 */
-      op_cps_link_desc: string;
+      cps_link_desc: string;
       /** 图标地址 */
-      op_cps_link_icon_url: string;
+      cps_link_icon_url: string;
       /** 链接名 */
-      op_cps_link_name: string;
+      cps_link_name: string;
       /** 小程序原始ID */
-      op_cps_link_original_id: string;
+      cps_link_original_id: string;
       /** 跳转链接 */
-      op_cps_link_path: string;
+      cps_link_path: string;
       /** 排序 */
-      op_cps_link_sort: number;
+      cps_link_sort: number;
       /** 状态 0-正常 1-停用 */
-      op_cps_link_status: number;
+      cps_link_status: number;
       /** 类型 0-普通链接 1-小程序 2-APP链接 */
-      op_cps_link_type: number;
+      cps_link_type: number;
       /** 修改时间 */
       update_at: string;
     }>;
@@ -269,25 +257,25 @@ declare namespace Api {
       id: number;
       type: string;
       /** 小程序appid */
-      op_cps_link_app_id: string;
+      cps_link_app_id: string;
       /** 领券链接分类id */
-      op_cps_link_category_id: number;
+      cps_link_category_id: number;
       /** 备注 */
-      op_cps_link_desc: string;
+      cps_link_desc: string;
       /** 图标地址 */
-      op_cps_link_icon_url: string;
+      cps_link_icon_url: string;
       /** 链接名 */
-      op_cps_link_name: string;
+      cps_link_name: string;
       /** 小程序原始ID */
-      op_cps_link_original_id: string;
+      cps_link_original_id: string;
       /** 跳转链接 */
-      op_cps_link_path: string;
+      cps_link_path: string;
       /** 排序 */
-      op_cps_link_sort: number;
+      cps_link_sort: number;
       /** 状态 0-正常 1-停用 */
-      op_cps_link_status: number;
+      cps_link_status: number;
       /** 类型 0-普通链接 1-小程序 2-APP链接 */
-      op_cps_link_type: number;
+      cps_link_type: number;
     }>;
 
     /** CouponLink list */
@@ -297,17 +285,11 @@ declare namespace Api {
     type CouponLinkSearchParams = Partial<
       Pick<
         Api.CouponManage.EditCouponLink,
-        | 'id'
-        | 'type'
-        | 'op_cps_link_category_id'
-        | 'op_cps_link_app_id'
-        | 'op_cps_link_original_id'
-        | 'op_cps_link_name'
-        | 'op_cps_link_status'
-        | 'op_cps_link_path'
-        | 'op_cps_link_sort'
-        | 'op_cps_link_type'
-        | 'op_cps_link_desc'
+        | 'cps_link_category_id'
+        | 'cps_link_app_id'
+        | 'cps_link_name'
+        | 'cps_link_status'
+        | 'cps_link_type'
       > &
         Common.CommonSearchParams
     >;
@@ -318,16 +300,16 @@ declare namespace Api {
         Api.CouponManage.EditCouponLink,
         | 'id'
         | 'type'
-        | 'op_cps_link_category_id'
-        | 'op_cps_link_app_id'
-        | 'op_cps_link_original_id'
-        | 'op_cps_link_name'
-        | 'op_cps_link_status'
-        | 'op_cps_link_icon_url'
-        | 'op_cps_link_path'
-        | 'op_cps_link_sort'
-        | 'op_cps_link_type'
-        | 'op_cps_link_desc'
+        | 'cps_link_category_id'
+        | 'cps_link_app_id'
+        | 'cps_link_original_id'
+        | 'cps_link_name'
+        | 'cps_link_status'
+        | 'cps_link_icon_url'
+        | 'cps_link_path'
+        | 'cps_link_sort'
+        | 'cps_link_type'
+        | 'cps_link_desc'
       > &
       Common.CommonSearchParams
     >;
@@ -340,13 +322,13 @@ declare namespace Api {
       /** 领券链接分类id */
       id: number;
       /** 分类名 */
-      op_cps_category_name: string;
+      cps_category_name: string;
       /** 状态 0-正常 1-停用 */
-      op_cps_category_status: CouponLinkCategoryStatus;
+      cps_category_status: CouponLinkCategoryStatus;
       /** 描述 */
-      op_cps_category_desc: string;
+      cps_category_desc: string;
       /** 图标地址 */
-      op_cps_category_icon_url: string;
+      cps_category_icon_url: string;
     }>;
 
     type EditCouponLinkCategory = Common.CommonRecord<{
@@ -356,13 +338,13 @@ declare namespace Api {
       id: number;
       type: string;
       /** 分类名 */
-      op_cps_category_name: string;
+      cps_category_name: string;
       /** 状态 0-正常 1-停用 */
-      op_cps_category_status: number;
+      cps_category_status: number;
       /** 描述 */
-      op_cps_category_desc: string;
+      cps_category_desc: string;
       /** 图标地址 */
-      op_cps_category_icon_url: string;
+      cps_category_icon_url: string;
     }>;
 
     type CouponLinkCategoryList = Common.PaginatingQueryRecord<CouponLinkCategory>;
@@ -371,10 +353,8 @@ declare namespace Api {
       Pick<
         Api.CouponManage.EditCouponLinkCategory,
         | 'id'
-        | 'op_cps_category_name'
-        | 'op_cps_category_status'
-        | 'op_cps_category_desc'
-        | 'type'
+        | 'cps_category_name'
+        | 'cps_category_status'
         | 'current'
         | 'page_size'
       > &
@@ -385,10 +365,10 @@ declare namespace Api {
       Pick<
         Api.CouponManage.EditCouponLinkCategory,
         | 'id'
-        | 'op_cps_category_name'
-        | 'op_cps_category_status'
-        | 'op_cps_category_desc'
-        | 'op_cps_category_icon_url'
+        | 'cps_category_name'
+        | 'cps_category_status'
+        | 'cps_category_desc'
+        | 'cps_category_icon_url'
         | 'type'
       > &
         Common.CommonSearchParams

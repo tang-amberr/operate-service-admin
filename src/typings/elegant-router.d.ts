@@ -32,12 +32,16 @@ declare module "@elegant-router/types" {
     "403": "/403";
     "404": "/404";
     "500": "/500";
+    "getcouponmanage": "/getcouponmanage";
+    "getcouponmanage_coupon-link": "/getcouponmanage/coupon-link";
+    "getcouponmanage_coupon-link-category": "/getcouponmanage/coupon-link-category";
     "home": "/home";
     "iframe-page": "/iframe-page/:url";
     "login": "/login/:module(pwd-login|code-login|register|reset-pwd|bind-wechat)?";
     "manage": "/manage";
-    "manage_coupon-link": "/manage/coupon-link";
-    "manage_coupon-link-category": "/manage/coupon-link-category";
+    "manage_menu": "/manage/menu";
+    "manage_role": "/manage/role";
+    "manage_user": "/manage/user";
   };
 
   /**
@@ -84,6 +88,7 @@ declare module "@elegant-router/types" {
     | "403"
     | "404"
     | "500"
+    | "getcouponmanage"
     | "home"
     | "iframe-page"
     | "login"
@@ -111,9 +116,12 @@ declare module "@elegant-router/types" {
     | "500"
     | "iframe-page"
     | "login"
+    | "getcouponmanage_coupon-link-category"
+    | "getcouponmanage_coupon-link"
     | "home"
-    | "manage_coupon-link-category"
-    | "manage_coupon-link"
+    | "manage_menu"
+    | "manage_role"
+    | "manage_user"
   >;
 
   /**

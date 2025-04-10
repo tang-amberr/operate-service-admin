@@ -1,4 +1,4 @@
-import { request } from '../request';
+import {demoRequest, request} from '../request';
 
 /**
  * Login
@@ -6,20 +6,50 @@ import { request } from '../request';
  * @param userName User name
  * @param password Password
  */
-export function fetchLogin(userName: string, password: string) {
-  return request<Api.Auth.LoginToken>({
+export function fetchLogin(username: string, password: string, code: string, id:number) {
+  return demoRequest({
     url: '/auth/login',
     method: 'post',
     data: {
-      userName,
-      password
+      username,
+      password,
+      code,
+      id
     }
+  });
+}
+
+/**
+ * Register
+ *
+ */
+export function fetchRegister(username: string, password: string, check_password: string, code: string, id: number) {
+  return demoRequest({
+    url: '/auth/register',
+    method: 'post',
+    data: {
+      username,
+      password,
+      check_password,
+      code,
+      id
+    }
+  });
+}
+
+export function fetchGetCaptcha() {
+  return demoRequest({
+    url: '/auth/captcha',
+    method: 'get'
   });
 }
 
 /** Get user info */
 export function fetchGetUserInfo() {
-  return request<Api.Auth.UserInfo>({ url: '/auth/getUserInfo' });
+  return demoRequest({
+    url: '/auth/user/info',
+    method: 'get'
+  });
 }
 
 /**

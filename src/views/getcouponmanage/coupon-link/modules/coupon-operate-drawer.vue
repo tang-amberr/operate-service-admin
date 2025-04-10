@@ -42,16 +42,16 @@ const title = computed(() => {
 type Model = Pick<
   Api.CouponManage.CouponLinkEditParams,
   |'type'
-  | 'op_cps_link_category_id'
-  | 'op_cps_link_name'
-  | 'op_cps_link_app_id'
-  | 'op_cps_link_original_id'
-  | 'op_cps_link_path'
-  | 'op_cps_link_icon_url'
-  | 'op_cps_link_desc'
-  | 'op_cps_link_sort'
-  | 'op_cps_link_status'
-  | 'op_cps_link_type'
+  | 'cps_link_category_id'
+  | 'cps_link_name'
+  | 'cps_link_app_id'
+  | 'cps_link_original_id'
+  | 'cps_link_path'
+  | 'cps_link_icon_url'
+  | 'cps_link_desc'
+  | 'cps_link_sort'
+  | 'cps_link_status'
+  | 'cps_link_type'
 >;
 
 const model = ref(createDefaultModel());
@@ -59,25 +59,25 @@ const model = ref(createDefaultModel());
 function createDefaultModel(): Model {
   return {
     type: 'add',
-    op_cps_link_category_id: null,
-    op_cps_link_name: '',
-    op_cps_link_app_id: '',
-    op_cps_link_original_id: '',
-    op_cps_link_path: '',
-    op_cps_link_icon_url: '',
-    op_cps_link_desc: '',
-    op_cps_link_sort: 10,
-    op_cps_link_status: 1,
-    op_cps_link_type: 1
+    cps_link_category_id: null,
+    cps_link_name: '',
+    cps_link_app_id: '',
+    cps_link_original_id: '',
+    cps_link_path: '',
+    cps_link_icon_url: '',
+    cps_link_desc: '',
+    cps_link_sort: 10,
+    cps_link_status: 1,
+    cps_link_type: 1
   };
 }
 
-type RuleKey = Extract<keyof Model, 'op_cps_link_category_id' | 'op_cps_link_path' | 'op_cps_link_icon_url' | 'op_cps_link_name'>;
+type RuleKey = Extract<keyof Model, 'cps_link_category_id' | 'cps_link_path' | 'cps_link_icon_url' | 'cps_link_name'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
-  op_cps_link_category_id: notZeroRequiredRule,
-  op_cps_link_path: defaultRequiredRule,
-  op_cps_link_name: defaultRequiredRule
+  cps_link_category_id: notZeroRequiredRule,
+  cps_link_path: defaultRequiredRule,
+  cps_link_name: defaultRequiredRule
 };
 
 /** the enabled role options */
@@ -88,13 +88,12 @@ async function getCategoryOptions() {
     {
       current: 1,
       page_size: 10,
-      type: 'list'
     }
   );
 
   if (!error) {
     const options = data?.list.map(item => ({
-      label: item.op_cps_category_name,
+      label: item.cps_category_name,
       value: item.id
     }));
 
@@ -119,7 +118,6 @@ async function handleSubmit() {
   await validate();
   // request
   const res = await editCouponLink(model.value)
-  console.log('res: ', res)
   if (res.response.data.code !== 200) {
     window.$message?.error(res.response.data.msg);
     return;
@@ -174,13 +172,13 @@ const customUpload= (e) => {
   console.log(e);
   const formdata = new FormData();
   formdata.append('file', e.file);
-  formdata.append('type','2');
+  formdata.append('type','1');
 
   uploadFile(formdata)
     .then((res) => {
       console.log('上传成功', res.data);
       // 调用实例的成功方法通知组件该文件上传成功
-      model.value.op_cps_link_icon_url = res.data?.url;
+      model.value.cps_link_icon_url = res.data?.url;
       e.onSuccess(res.data, e);
     })
     .catch((err) => {
@@ -207,47 +205,47 @@ watch(visible, () => {
 <template>
   <ADrawer v-model:open="visible" :title="title" :width="360">
     <AForm ref="formRef" layout="vertical" :model="model" :rules="rules">
-      <AFormItem label="排序值" name="op_cps_link_sort">
-        <a-input-number id="inputNumber" v-model:value="model.op_cps_link_sort" :min="1" :max="1000" placeholder="排序值-越小越靠前"/>
+      <AFormItem label="排序值 (越小越靠前)"  name="cps_link_sort">
+        <a-input-number class="w-full" id="inputNumber" v-model:value="model.cps_link_sort" :min="1" :max="1000" placeholder="排序值-越小越靠前"/>
 
       </AFormItem>
-      <AFormItem label="名称" name="op_cps_link_name">
-        <AInput v-model:value="model.op_cps_link_name" placeholder="请输入领券链接名称" />
+      <AFormItem label="名称" name="cps_link_name">
+        <AInput v-model:value="model.cps_link_name" placeholder="请输入领券链接名称" />
       </AFormItem>
-      <AFormItem label="分类id" name="op_cps_link_category_id">
+      <AFormItem label="分类id" name="cps_link_category_id">
         <ASelect
-          v-model:value="model.op_cps_link_category_id"
+          v-model:value="model.cps_link_category_id"
           multiple
           @click="getCategoryOptions"
           :options="categoryOptions"
           placeholder="请选择分类id"
         />
       </AFormItem>
-      <AFormItem label="" name="op_cps_link_status">
-        <ARadioGroup v-model:value="model.op_cps_link_status">
+      <AFormItem label="" name="cps_link_status">
+        <ARadioGroup v-model:value="model.cps_link_status">
           <a-radio  :value="1">启用</a-radio>
           <a-radio  :value="2">禁用</a-radio>
         </ARadioGroup>
       </AFormItem>
-      <AFormItem label="链接类型" name="op_cps_link_type">
-        <ARadioGroup v-model:value="model.op_cps_link_type">
-          <ARadioGroup v-model:value="model.op_cps_link_type">
+      <AFormItem label="链接类型" name="cps_link_type">
+        <ARadioGroup v-model:value="model.cps_link_type">
+          <ARadioGroup v-model:value="model.cps_link_type">
             <a-radio  :value="1">普通链接</a-radio>
             <a-radio  :value="2">小程序</a-radio>
             <a-radio  :value="3">APP链接</a-radio>
           </ARadioGroup>
         </ARadioGroup>
       </AFormItem>
-      <AFormItem label="APPID" name="op_cps_link_app_id">
-        <AInput v-model:value="model.op_cps_link_app_id" placeholder="请输入小程序APPID" />
+      <AFormItem label="APPID" name="cps_link_app_id">
+        <AInput v-model:value="model.cps_link_app_id" placeholder="请输入小程序APPID" />
       </AFormItem>
-      <AFormItem label="小程序原始id" name="op_cps_link_original_id">
-        <AInput v-model:value="model.op_cps_link_original_id" placeholder="请输入小程序原始id" />
+      <AFormItem label="小程序原始id" name="cps_link_original_id">
+        <AInput v-model:value="model.cps_link_original_id" placeholder="请输入小程序原始id" />
       </AFormItem>
-      <AFormItem label="跳转链接" name="op_cps_link_path">
-        <AInput v-model:value="model.op_cps_link_path" placeholder="请输入跳转链接" />
+      <AFormItem label="跳转链接" name="cps_link_path">
+        <AInput v-model:value="model.cps_link_path" placeholder="请输入跳转链接" />
       </AFormItem>
-      <AFormItem label="图标地址" name="op_cps_link_icon_url">
+      <AFormItem label="图标地址" name="cps_link_icon_url">
         <a-upload
           v-model:file="file"
           name="file"
@@ -261,12 +259,12 @@ watch(visible, () => {
           <div v-else>
             <loading-outlllined v-if="loading"></loading-outlllined>
             <plus-outlined v-else></plus-outlined>
-            <AButton class="bg-gray-300">上传图标</AButton>
+            <AButton class="bg-gray-300 w-full">上传图标</AButton>
           </div>
         </a-upload>
       </AFormItem>
-      <AFormItem label="描述" name="op_cps_link_desc">
-        <ATextarea v-model:value="model.op_cps_link_desc" placeholder="输入描述" />
+      <AFormItem label="描述" name="cps_link_desc">
+        <ATextarea v-model:value="model.cps_link_desc" placeholder="输入描述" />
       </AFormItem>
     </AForm>
     <template #footer>

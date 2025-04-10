@@ -1,12 +1,18 @@
 import { ref, toValue } from 'vue';
 import type { ComputedRef, Ref } from 'vue';
 import type { FormInstance } from 'ant-design-vue';
-import { REG_CODE_SIX, REG_EMAIL, REG_PHONE, REG_PWD, REG_USER_NAME } from '@/constants/reg';
+import {
+  REG_CODE_ALPHANUMERIC,
+  REG_EMAIL,
+  REG_PHONE,
+  REG_PWD,
+  REG_USER_NAME
+} from '@/constants/reg';
 import { $t } from '@/locales';
 
 export function useFormRules() {
   const patternRules = {
-    userName: {
+    username: {
       pattern: REG_USER_NAME,
       message: $t('form.userName.invalid'),
       trigger: 'change'
@@ -16,13 +22,13 @@ export function useFormRules() {
       message: $t('form.phone.invalid'),
       trigger: 'change'
     },
-    pwd: {
+    password: {
       pattern: REG_PWD,
       message: $t('form.pwd.invalid'),
       trigger: 'change'
     },
     code: {
-      pattern: REG_CODE_SIX,
+      pattern: REG_CODE_ALPHANUMERIC,
       message: $t('form.code.invalid'),
       trigger: 'change'
     },
@@ -34,9 +40,9 @@ export function useFormRules() {
   } satisfies Record<string, App.Global.FormRule>;
 
   const formRules = {
-    userName: [createRequiredRule($t('form.userName.required')), patternRules.userName],
+    username: [createRequiredRule($t('form.userName.required')), patternRules.username],
     phone: [createRequiredRule($t('form.phone.required')), patternRules.phone],
-    pwd: [createRequiredRule($t('form.pwd.required')), patternRules.pwd],
+    password: [createRequiredRule($t('form.pwd.required')), patternRules.password],
     code: [createRequiredRule($t('form.code.required')), patternRules.code],
     email: [createRequiredRule($t('form.email.required')), patternRules.email]
   } satisfies Record<string, App.Global.FormRule[]>;

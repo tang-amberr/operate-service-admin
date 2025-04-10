@@ -7,7 +7,7 @@ defineOptions({
 <template>
   <DarkModeContainer class="h-full flex-center">
     <a href="" target="_blank" rel="noopener noreferrer">
-      Copyright MIT © 2025 惠去团
+      Copyright MIT © 2025
     </a>
   </DarkModeContainer>
 </template>

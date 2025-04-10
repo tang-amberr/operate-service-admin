@@ -1,11 +1,32 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
 import { useAntdForm, useFormRules } from '@/hooks/common/form';
+import {onMounted, ref} from "vue";
+import {fetchGetAllCategorys} from "@/service/api";
 
 defineOptions({
   name: 'CategorySearch'
 });
 
+const categoryOptions = ref<CommonType.Option<number>[]>([]);
+
+async function getCategoryOptions() {
+  const { error, data } = await fetchGetAllCategorys(
+    {
+      current: 1,
+      page_size: 10,
+    }
+  );
+
+  if (!error) {
+    const options = data?.list.map(item => ({
+      label: item.cps_category_name,
+      value: item.id
+    }));
+
+    categoryOptions.value = [...options];
+  }
+}
 interface Emits {
   (e: 'reset'): void;
   (e: 'search'): void;
@@ -17,13 +38,10 @@ const { formRef, validate, resetFields } = useAntdForm();
 
 const model = defineModel<Api.CouponManage.CouponLinkSearchParams>('model', {
   default: () => ({
-    id: null,
-    op_cps_link_category_id: '',
-    op_cps_link_name: '',
-    op_cps_link_status: null,
-    op_cps_link_type: null,
-    op_cps_link_desc: '',
-    type: 'search' // 初始化 type 字段
+    cps_link_category_id: '',
+    cps_link_name: '',
+    cps_link_status: null,
+    cps_link_type: null,
   })
 });
 
@@ -44,10 +62,13 @@ async function reset() {
 }
 
 async function search() {
-  model.value.type = 'search';
   await validate();
   emit('search');
 }
+
+onMounted(async () => {
+  await getCategoryOptions();
+})
 </script>
 
 <template>
@@ -67,19 +88,25 @@ async function search() {
 <!--          </AFormItem>-->
 <!--        </ACol>-->
         <ACol :span="24" :md="12" :lg="5">
-          <AFormItem label="分类id" name="op_cps_link_category_id" class="m-0">
-            <AInput v-model:value="model.op_cps_link_category_id" placeholder="请输入领券链接分类id" />
+          <AFormItem label="分类id" name="cps_link_category_id" class="m-0">
+            <ASelect
+              v-model:value="model.cps_link_category_id"
+              placeholder="选择分类"
+              clearable
+              :options="categoryOptions"
+            >
+            </ASelect>
           </AFormItem>
         </ACol>
         <ACol :span="24" :md="12" :lg="5">
-          <AFormItem label="名称" name="op_cps_link_name" class="m-0">
-            <AInput v-model:value="model.op_cps_link_name" placeholder="请输入领券链接名称" />
+          <AFormItem label="名称" name="cps_link_name" class="m-0">
+            <AInput v-model:value="model.cps_link_name" placeholder="请输入领券链接名称" />
           </AFormItem>
         </ACol>
         <ACol :span="12" :md="12" :lg="5">
-          <AFormItem label="链接状态" name="op_cps_link_status" class="m-0">
+          <AFormItem label="链接状态" name="cps_link_status" class="m-0">
             <ASelect
-              v-model:value="model.op_cps_link_status"
+              v-model:value="model.cps_link_status"
               placeholder="选择状态"
               clearable
             >
@@ -89,9 +116,9 @@ async function search() {
           </AFormItem>
         </ACol>
         <ACol :span="12" :md="12" :lg="5">
-          <AFormItem label="链接类型" name="op_cps_link_type" class="m-0">
+          <AFormItem label="链接类型" name="cps_link_type" class="m-0">
             <ASelect
-              v-model:value="model.op_cps_link_type"
+              v-model:value="model.cps_link_type"
               placeholder="选择类型"
               clearable
             >
@@ -102,8 +129,8 @@ async function search() {
           </AFormItem>
         </ACol>
 <!--        <ACol :span="24" :md="12" :lg="6">-->
-<!--          <AFormItem label="描述" name="op_cps_link_desc" class="m-0">-->
-<!--            <AInput v-model:value="model.op_cps_link_desc" placeholder="请输入描述" />-->
+<!--          <AFormItem label="描述" name="cps_link_desc" class="m-0">-->
+<!--            <AInput v-model:value="model.cps_link_desc" placeholder="请输入描述" />-->
 <!--          </AFormItem>-->
 <!--        </ACol>-->
         <div class="flex-1">

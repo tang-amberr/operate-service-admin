@@ -11,7 +11,7 @@ import { $t } from '@/locales';
 type TableData = AntDesign.TableData;
 type GetTableData<A extends AntDesign.TableApiFn> = AntDesign.GetTableData<A>;
 type TableColumn<T> = AntDesign.TableColumn<T>;
-
+const dataList = ref();
 export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDesignTableConfig<A>) {
   const scope = effectScope();
   const appStore = useAppStore();
@@ -35,10 +35,9 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
     columns: config.columns,
     transformer: res => {
       const { list = [], current = 1, page_size = 10, total = 0 } = res.data || {};
-
       // Ensure that the size is greater than 0, If it is less than 0, it will cause paging calculation errors.
       const pageSize = page_size <= 0 ? 10 : page_size;
-
+      dataList.value = list;
       const recordsWithIndex = list.map((item, index) => {
         return {
           ...item,
@@ -48,8 +47,8 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
 
       return {
         data: recordsWithIndex,
-        pageNum: current,
-        pageSize,
+        current,
+        page_size: pageSize,
         total
       };
     },
@@ -88,7 +87,7 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
 
       updatePagination({
         current: pageNum,
-        pageSize,
+        page_size: pageSize,
         total
       });
     },
@@ -98,11 +97,13 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
   const pagination: TablePaginationConfig = reactive({
     current: 1,
     pageSize: 10,
+    page_size: 10,
     showSizeChanger: true,
     pageSizeOptions: ['10', '15', '20', '25', '30'],
     total: 0,
     onChange: async (current: number, page_size: number) => {
       pagination.current = current;
+      pagination.pageSize = page_size;
 
       updateSearchParams({
         current,

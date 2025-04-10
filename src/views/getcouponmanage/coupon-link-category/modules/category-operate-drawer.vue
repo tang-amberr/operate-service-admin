@@ -42,10 +42,10 @@ const title = computed(() => {
 type Model = Pick<
   Api.CouponManage.CouponLinkCategoryEditParams,
   |'type'
- | 'op_cps_category_name'
-  | 'op_cps_category_status'
-  | 'op_cps_category_icon_url'
-  | 'op_cps_category_desc'
+ | 'cps_category_name'
+  | 'cps_category_status'
+  | 'cps_category_icon_url'
+  | 'cps_category_desc'
 >;
 
 const model = ref(createDefaultModel());
@@ -53,18 +53,18 @@ const model = ref(createDefaultModel());
 function createDefaultModel(): Model {
   return {
     type: 'add',
-    op_cps_category_name: '',
-    op_cps_category_icon_url: '',
-    op_cps_category_desc: '',
-    op_cps_category_status: 1,
+    cps_category_name: '',
+    cps_category_icon_url: '',
+    cps_category_desc: '',
+    cps_category_status: 1,
   };
 }
 
-type RuleKey = Extract<keyof Model, 'op_cps_category_name' | 'op_cps_category_status'>;
+type RuleKey = Extract<keyof Model, 'cps_category_name' | 'cps_category_status'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
-  op_cps_category_name: defaultRequiredRule,
-  op_cps_category_status: defaultRequiredRule
+  cps_category_name: defaultRequiredRule,
+  cps_category_status: defaultRequiredRule
 };
 
 function handleInitModel() {
@@ -92,12 +92,23 @@ async function handleSubmit() {
   closeDrawer();
   emit('submitted');
 }
+const loading = ref<boolean>(false);
+const imageUrl = ref<string>('');
+function getBase64(img: Blob, callback: (base64Url: string) => void) {
+  const reader = new FileReader();
+  reader.addEventListener('load', () => callback(reader.result as string));
+  reader.readAsDataURL(img);
+}
 
 const handleChange = async (info: UploadChangeParam) => {
   if (info.file.status !== 'uploading') {
     console.log(info.file, info.fileList);
   }
   if (info.file.status === 'done') {
+    getBase64(info.file.originFileObj, (base64Url: string) => {
+      imageUrl.value = base64Url;
+      loading.value = false;
+    });
     message.success(`${info.file.name} 上传成功`);
   } else if (info.file.status === 'error') {
     message.error(`${info.file.name} 上传失败`);
@@ -130,7 +141,7 @@ const customUpload= (e) => {
     .then((res) => {
       console.log('上传成功', res.data);
       // 调用实例的成功方法通知组件该文件上传成功
-      model.value.op_cps_category_icon_url = res.data?.url;
+      model.value.cps_category_icon_url = res.data?.url;
       e.onSuccess(res.data, e);
     })
     .catch((err) => {
@@ -155,31 +166,33 @@ watch(visible, () => {
 <template>
   <ADrawer v-model:open="visible" :title="title" :width="360">
     <AForm ref="formRef" layout="vertical" :model="model" :rules="rules">
-      <AFormItem label="名称" name="op_cps_category_name">
-        <AInput v-model:value="model.op_cps_category_name" placeholder="请输入分类名称" />
+      <AFormItem label="名称" name="cps_category_name">
+        <AInput v-model:value="model.cps_category_name" placeholder="请输入分类名称" />
       </AFormItem>
-      <AFormItem label="" name="op_cps_category_status">
-        <ARadioGroup v-model:value="model.op_cps_category_status">
+      <AFormItem label="" name="cps_category_status">
+        <ARadioGroup v-model:value="model.cps_category_status">
           <a-radio  :value="1">启用</a-radio>
           <a-radio  :value="2">禁用</a-radio>
         </ARadioGroup>
       </AFormItem>
-      <AFormItem label="图标地址" name="op_cps_category_icon_url">
+      <AFormItem label="图标地址" name="cps_category_icon_url">
         <a-upload
           v-model:file="file"
           name="file"
           :before-upload="beforeUpload"
           :customRequest="customUpload"
+          :show-upload-list="false"
           @change="handleChange"
         >
+          <img v-if="imageUrl" :src="imageUrl" alt="icon" />
           <a-button>
             <upload-outlined></upload-outlined>
             上传图标
           </a-button>
         </a-upload>
       </AFormItem>
-      <AFormItem label="描述" name="op_cps_category_desc">
-        <ATextarea v-model:value="model.op_cps_category_desc" placeholder="输入描述" />
+      <AFormItem label="描述" name="cps_category_desc">
+        <ATextarea v-model:value="model.cps_category_desc" placeholder="输入描述" />
       </AFormItem>
     </AForm>
     <template #footer>

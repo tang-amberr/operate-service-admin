@@ -40,6 +40,41 @@ export const generatedRoutes: GeneratedRoute[] = [
     }
   },
   {
+    name: 'getcouponmanage',
+    path: '/getcouponmanage',
+    component: 'layout.base',
+    meta: {
+      title: '领券管理',
+      i18nKey: '领券管理',
+      icon: 'hugeicons:coupon-percent',
+      order: 2
+    },
+    children: [
+      {
+        name: 'getcouponmanage_coupon-link',
+        path: '/getcouponmanage/coupon-link',
+        component: 'view.getcouponmanage_coupon-link',
+        meta: {
+          title: '链接列表',
+          i18nKey: '链接列表',
+          icon: 'ri:coupon-3-fill',
+          order: 3
+        }
+      },
+      {
+        name: 'getcouponmanage_coupon-link-category',
+        path: '/getcouponmanage/coupon-link-category',
+        component: 'view.getcouponmanage_coupon-link-category',
+        meta: {
+          title: '分类列表',
+          i18nKey: '分类列表',
+          order: 2,
+          icon: 'material-symbols:category'
+        }
+      }
+    ]
+  },
+  {
     name: 'home',
     path: '/home',
     component: 'layout.base$view.home',
@@ -58,6 +93,7 @@ export const generatedRoutes: GeneratedRoute[] = [
     meta: {
       title: 'iframe-page',
       i18nKey: 'route.iframe-page',
+      hideInMenu: true,
       roles: ['R_SUPER']
     }
   },
@@ -81,25 +117,37 @@ export const generatedRoutes: GeneratedRoute[] = [
       title: 'manage',
       i18nKey: 'route.manage',
       icon: 'carbon:cloud-service-management',
-      order: 9
+      order: 3
     },
     children: [
       {
-        name: 'manage_coupon-link',
-        path: '/manage/coupon-link',
-        component: 'view.manage_coupon-link',
+        name: 'manage_menu',
+        path: '/manage/menu',
+        component: 'view.manage_menu',
         meta: {
-          title: '领券链接管理',
-          i18nKey: '领券链接管理'
+          title: 'manage_menu',
+          i18nKey: 'route.manage_menu',
+          icon: 'material-symbols:route'
         }
       },
       {
-        name: 'manage_coupon-link-category',
-        path: '/manage/coupon-link-category',
-        component: 'view.manage_coupon-link-category',
+        name: 'manage_role',
+        path: '/manage/role',
+        component: 'view.manage_role',
         meta: {
-          title: '领券链接分类管理',
-          i18nKey: '领券链接分类管理'
+          title: 'manage_role',
+          i18nKey: 'route.manage_role',
+          icon: 'carbon:user-role'
+        }
+      },
+      {
+        name: 'manage_user',
+        path: '/manage/user',
+        component: 'view.manage_user',
+        meta: {
+          title: 'manage_user',
+          i18nKey: 'route.manage_user',
+          icon: 'ic:round-manage-accounts'
         }
       }
     ]

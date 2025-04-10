@@ -35,8 +35,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   });
 
   /** Is login */
-  // const isLogin = computed(() => Boolean(token.value));
-  const isLogin = true;
+  const isLogin = computed(() => Boolean(token.value));
+  // const isLogin = true;
 
   /** Reset auth store */
   async function resetStore() {
@@ -61,24 +61,31 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    * @param password Password
    * @param [redirect=true] Whether to redirect after login. Default is `true`
    */
-  async function login(userName: string, password: string, redirect = true) {
-    startLoading();
+  async function login(userName: string, password: string, code: string,id: number, redirect = true) {
+    // startLoading();
     redirectFromLogin()
-    const { data: loginToken, error } = await fetchLogin(userName, password);
-
+    const { data: loginToken, error } = await fetchLogin(userName, password,code, id);
+    console.log('login', loginToken)
     if (!error) {
-      // const pass = await loginByToken(loginToken);
+      const pass = await loginByToken(loginToken);
 
-      await redirectFromLogin(redirect);
-      window.$notification?.success({
-        message: $t('page.login.common.loginSuccess'),
-        description: $t('page.login.common.welcomeBack', {userName: userInfo.userName})
-      });
+      if (pass) {
+        await routeStore.initAuthRoute();
+
+        if (redirect) {
+          await redirectFromLogin();
+        }
+
+        if (routeStore.isInitAuthRoute) {
+          window.$notification?.success({
+            message: $t('page.login.common.loginSuccess'),
+            description: $t('page.login.common.welcomeBack', '管理员')
+          });
+        }
+      }
     } else {
-      resetStore();
+      await resetStore();
     }
-
-    endLoading();
   }
 
   async function loginByToken(loginToken: Api.Auth.LoginToken) {
