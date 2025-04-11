@@ -219,6 +219,7 @@ declare namespace Api {
       menuType: MenuType;
       /** menu name */
       menuName: string;
+      hideInMenu: number;
       /** route name */
       routeName: string;
       /** route path */
@@ -230,9 +231,19 @@ declare namespace Api {
       /** icon type */
       iconType: IconType;
       /** buttons */
-      buttons?: MenuButton[] | null;
+      buttons?: AdminButton[] | null;
       /** children menu */
       children?: Menu[];
+      status: number;
+      order: number;
+      multiTab: number;
+      keepAlive: number;
+      i18nKey: string;
+      href: string;
+      fixedIndexInTab: string;
+      constant: number;
+      activeMenu: string;
+      type: string;
     }> &
       MenuPropsOfRoute;
 

@@ -6,7 +6,7 @@ import { $t } from '@/locales';
 import { enableStatusOptions, menuIconTypeOptions, menuTypeOptions } from '@/constants/business';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import { getLocalIcons } from '@/utils/icon';
-import { fetchGetAllRoles } from '@/service/api';
+import {editRouter, fetchGetRoleList} from '@/service/api';
 import {
   getLayoutAndPage,
   getPathParamFromRoutePath,
@@ -74,6 +74,7 @@ type Model = Pick<
   | 'activeMenu'
   | 'multiTab'
   | 'fixedIndexInTab'
+  | 'type'
 > & {
   query: NonNullable<Api.SystemManage.Menu['query']>;
   buttons: NonNullable<Api.SystemManage.Menu['buttons']>;
@@ -86,7 +87,7 @@ const model = ref(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
-    menuType: '1',
+    menuType: null,
     menuName: '',
     routeName: '',
     routePath: '',
@@ -96,19 +97,20 @@ function createDefaultModel(): Model {
     page: '',
     i18nKey: null,
     icon: '',
-    iconType: '1',
+    iconType: null,
     parentId: 0,
-    status: '1',
-    keepAlive: false,
-    constant: false,
+    status: null,
+    keepAlive: null,
+    constant: null,
     order: 0,
     href: null,
-    hideInMenu: false,
+    hideInMenu: null,
     activeMenu: null,
-    multiTab: false,
+    multiTab: null,
     fixedIndexInTab: null,
     query: [],
-    buttons: []
+    buttons: [],
+    type: 'add'
   };
 }
 
@@ -168,16 +170,17 @@ const layoutOptions: CommonType.Option[] = [
 const roleOptions = ref<CommonType.Option<string>[]>([]);
 
 async function getRoleOptions() {
-  const { error, data } = await fetchGetAllRoles();
+  const {  data } = await fetchGetRoleList({
+    current: 1,
+    page_size: 1000
+  });
 
-  if (!error) {
-    const options = data.map(item => ({
-      label: item.roleName,
-      value: item.roleCode
+    const options = data?.map(item => ({
+      label: item.role_name,
+      value: item.id
     }));
 
     roleOptions.value = [...options];
-  }
 }
 
 /** - add a query input */
@@ -196,8 +199,8 @@ function removeQuery(index: number) {
 /** - add a button input */
 function addButton(index: number) {
   model.value.buttons.splice(index + 1, 0, {
-    code: '',
-    desc: ''
+    key: '',
+    title: ''
   });
 }
 
@@ -275,6 +278,12 @@ async function handleSubmit() {
 
   console.log('params: ', params);
 
+  if(props.operateType === 'edit') {
+    params.type = 'edit';
+  } else {
+    params.type = 'add';
+  }
+  await editRouter(params)
   // request
   window.$message?.success($t('common.updateSuccess'));
   closeDrawer();
@@ -405,18 +414,18 @@ watch(
             <ACol :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.keepAlive')" name="keepAlive">
                 <ARadioGroup v-model:value="model.keepAlive">
-                  <ARadio :value="true">{{ $t('common.yesOrNo.yes') }}</ARadio>
-                  <ARadio :value="false">{{ $t('common.yesOrNo.no') }}</ARadio>
+                  <ARadio :value="2">{{ $t('common.yesOrNo.yes') }}</ARadio>
+                  <ARadio :value="1">{{ $t('common.yesOrNo.no') }}</ARadio>
                 </ARadioGroup>
               </AFormItem>
             </ACol>
             <ACol :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.constant')" name="constant">
                 <ARadioGroup v-model:value="model.constant">
-                  <ARadio value>
+                  <ARadio :value="2">
                     {{ $t('common.yesOrNo.yes') }}
                   </ARadio>
-                  <ARadio :value="false">
+                  <ARadio :value="1">
                     {{ $t('common.yesOrNo.no') }}
                   </ARadio>
                 </ARadioGroup>
@@ -430,8 +439,8 @@ watch(
             <ACol :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.hideInMenu')" name="hideInMenu">
                 <ARadioGroup v-model:value="model.hideInMenu">
-                  <ARadio :value="true">{{ $t('common.yesOrNo.yes') }}</ARadio>
-                  <ARadio :value="false">{{ $t('common.yesOrNo.no') }}</ARadio>
+                  <ARadio :value="2">是</ARadio>
+                  <ARadio :value="1">否</ARadio>
                 </ARadioGroup>
               </AFormItem>
             </ACol>
@@ -448,8 +457,8 @@ watch(
             <ACol :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.multiTab')" name="multiTab">
                 <ARadioGroup v-model:value="model.multiTab">
-                  <ARadio value :label="$t('common.yesOrNo.yes')" />
-                  <ARadio :value="false" :label="$t('common.yesOrNo.no')" />
+                  <ARadio :value="2" label="是" >是</ARadio>
+                  <ARadio :value="1" label="否" >否</ARadio>
                 </ARadioGroup>
               </AFormItem>
             </ACol>
@@ -522,7 +531,7 @@ watch(
                     <ACol :span="9">
                       <AFormItem :name="['buttons', index, 'code']">
                         <AInput
-                          v-model:value="item.code"
+                          v-model:value="item.key"
                           :placeholder="$t('page.manage.menu.form.buttonCode')"
                           class="flex-1"
                         ></AInput>
@@ -531,8 +540,8 @@ watch(
                     <ACol :span="9">
                       <AFormItem :name="['buttons', index, 'desc']">
                         <AInput
-                          v-model:value="item.desc"
-                          :placeholder="$t('page.manage.menu.form.buttonDesc')"
+                          v-model:value="item.title"
+                          placeholder="输入按钮标题"
                           class="flex-1"
                         ></AInput>
                       </AFormItem>

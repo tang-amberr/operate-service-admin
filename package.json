@@ -21,8 +21,6 @@
     "vue-admin-template",
     "Vite5",
     "TypeScript",
-    "naive-ui",
-    "naive-ui-admin",
     "ant-design-vue v4",
     "UnoCSS"
   ],
