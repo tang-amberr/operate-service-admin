@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
 import { useAntdForm, useFormRules } from '@/hooks/common/form';
+import { enableStatusOptions, userGenderOptions } from '@/constants/business';
+import { translateOptions } from '@/utils/common';
 
 defineOptions({
   name: 'ButtonSearch'
@@ -15,9 +17,10 @@ const emit = defineEmits<Emits>();
 
 const { formRef, validate, resetFields } = useAntdForm();
 
-const model = defineModel<Api.SystemManage.UserSearchParams>('model', {
+const model = defineModel<Api.SystemManage.ButtonSearchParams>('model', {
   default: () => ({
-    username: '',
+    key: '',
+    title: '',
     status: null
   })
 });
@@ -45,8 +48,13 @@ async function search() {
     >
       <ARow :gutter="[16, 16]" wrap>
         <ACol :span="24" :md="12" :lg="6">
-          <AFormItem :label="$t('page.manage.user.userName')" name="userName" class="m-0">
-            <AInput v-model:value="model.username" :placeholder="$t('page.manage.user.form.userName')" />
+          <AFormItem label="按钮键" name="key" class="m-0">
+            <AInput v-model:value="model.key" placeholder="请输入按钮的键" />
+          </AFormItem>
+        </ACol>
+        <ACol :span="24" :md="12" :lg="6">
+          <AFormItem label="标题" name="title" class="m-0">
+            <AInput v-model:value="model.title" placeholder="请输入按钮标题" />
           </AFormItem>
         </ACol>
         <ACol :span="24" :md="12" :lg="6">

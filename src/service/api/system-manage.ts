@@ -35,3 +35,20 @@ export function fetchGetRoleList(data?: Api.SystemManage.RoleSearchParams) {
     data
   });
 }
+
+/** get button list */
+export function fetchGetButtonList(data?: Api.SystemManage.ButtonSearchParams) {
+  return request<Api.SystemManage.AdminButtonList>({
+    url: '/button/list',
+    method: 'post',
+    data
+  });
+}
+/** edit button*/
+export function editButton(data?: Api.SystemManage.EditAdminButton) {
+  return request({
+    url: '/button/edit',
+    method: 'post',
+    data
+  });
+}

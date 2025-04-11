@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, shallowRef } from 'vue';
+import {computed, ref, shallowRef, watch} from 'vue';
 import type { DataNode } from 'ant-design-vue/es/tree';
 import { $t } from '@/locales';
+import {fetchGetButtonList} from "@/service/api";
 
 defineOptions({
   name: 'ButtonAuthModal'
@@ -28,18 +29,19 @@ const tree = shallowRef<DataNode[]>([]);
 
 async function getAllButtons() {
   // request
-  tree.value = [
-    { key: 1, title: 'button1', code: 'code1' },
-    { key: 2, title: 'button2', code: 'code2' },
-    { key: 3, title: 'button3', code: 'code3' },
-    { key: 4, title: 'button4', code: 'code4' },
-    { key: 5, title: 'button5', code: 'code5' },
-    { key: 6, title: 'button6', code: 'code6' },
-    { key: 7, title: 'button7', code: 'code7' },
-    { key: 8, title: 'button8', code: 'code8' },
-    { key: 9, title: 'button9', code: 'code9' },
-    { key: 10, title: 'button10', code: 'code10' }
-  ];
+  const {data} = await fetchGetButtonList({
+    current: 1,
+    page_size: 10
+  });
+  console.log('data',data)
+  tree.value = data.list.map(item => ({
+    key: item.id,
+    title: item.title,
+  }));
+  // tree.value = [
+  //   { key: 1, title: 'button1', code: 'code1' },
+  //   { key: 2, title: 'button2', code: 'code2' },
+  // ];
 }
 
 const checks = shallowRef<number[]>([]);
@@ -47,7 +49,6 @@ const checks = shallowRef<number[]>([]);
 async function getChecks() {
   console.log(props.roleId);
   // request
-  checks.value = [1, 2, 3, 4, 5];
 }
 
 function handleSubmit() {

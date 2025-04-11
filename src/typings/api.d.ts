@@ -114,6 +114,31 @@ declare namespace Api {
     /** all role */
     type AllRole = Pick<Role, 'id' | 'role_name'>;
 
+    /** admin button */
+    type AdminButton = Common.CommonRecord<{
+      id: number;
+      key: string;
+      title: string;
+      status: number;
+    }>;
+
+    type AdminButtonList = Common.PaginatingQueryRecord<AdminButton>;
+
+    /** button search params */
+    type ButtonSearchParams = Partial<
+      Pick<Api.SystemManage.AdminButton, 'key' | 'title' | 'status'> & Common.CommonSearchParams
+    >;
+
+    /** edit admin button */
+    type EditAdminButton = Common.CommonRecord<{
+      id: number;
+      key: string;
+      type: string;
+      title: string;
+      status: number;
+    }>;
+
+
 
     /** user */
     type User = Common.CommonRecord<{
@@ -122,7 +147,19 @@ declare namespace Api {
       username: string;
       status: number; // 1 正常 2 停用
       /** user role code collection */
-      userRoles: string[];
+      user_roles: Role[];
+    }>;
+
+    /** edit user */
+    type EditUser = Common.CommonRecord<{
+      /** user name */
+      id: number;
+      type: string;
+      username: string;
+      status: number; // 1 正常 2 停用
+      /** user role code collection */
+      user_roles: Role[];
+      role_ids: number[];
     }>;
 
     /** user search params */
