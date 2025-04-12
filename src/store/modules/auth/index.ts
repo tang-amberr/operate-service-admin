@@ -16,7 +16,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const routeStore = useRouteStore();
   const tabStore = useTabStore();
   const { toLogin, redirectFromLogin } = useRouterPush(false);
-  const { loading: loginLoading, startLoading, endLoading } = useLoading();
+  const { loading: loginLoading } = useLoading();
 
   const token = ref(getToken());
 
