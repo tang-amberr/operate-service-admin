@@ -1,9 +1,10 @@
 <script setup lang="tsx">
-import { ref } from 'vue';
+import {computed, ref} from 'vue';
 import { Button, Popconfirm, Tag } from 'ant-design-vue';
 import type { Ref } from 'vue';
 import { useBoolean } from '@sa/hooks';
-import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
+// import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
+import {  fetchGetMenuList } from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import { yesOrNoRecord } from '@/constants/common';
@@ -205,19 +206,19 @@ function handleAddChildMenu(item: Api.SystemManage.Menu) {
   openModal();
 }
 
-const allPages = ref<string[]>([]);
+const allPages = computed(()=> {
+  const nameList : string[] = []
+  function mapFunc(item: Api.SystemManage.Menu) {
+    nameList.push(item.routeName);
+    if(item.children) {
+      item.children.forEach(mapFunc)
+    }
+  }
+  data.value.forEach(mapFunc)
+  console.log('nameList', nameList)
+  return nameList
+})
 
-async function getAllPages() {
-  const { data: pages } = await fetchGetAllPages();
-  allPages.value = pages || [];
-}
-
-function init() {
-  getAllPages();
-}
-
-// init
-init();
 </script>
 
 <template>

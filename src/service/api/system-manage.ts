@@ -83,3 +83,20 @@ export function editMenu(data?: Api.SystemManage.EditMenuRequest) {
     data
   });
 }
+
+/** get button list */
+export function fetchGetMenuList(data?: Api.Common.CommonSearchParams) {
+  return request<Api.SystemManage.MenuList>({
+    url: '/router/list',
+    method: 'post',
+    data
+  });
+}
+/** edit button*/
+export function editRouter(data?: Api.SystemManage.Menu) {
+  return request({
+    url: '/router/edit',
+    method: 'post',
+    data
+  });
+}
