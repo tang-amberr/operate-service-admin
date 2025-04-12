@@ -177,7 +177,7 @@ declare namespace Api {
      * - "1": directory
      * - "2": menu
      */
-    type MenuType = '1' | '2';
+    type MenuType = 1 | 2;
 
     type MenuButton = {
       /**
@@ -185,9 +185,9 @@ declare namespace Api {
        *
        * it can be used to control the button permission
        */
-      code: string;
+      key: string;
       /** button description */
-      desc: string;
+      title: string;
     };
 
     /**
@@ -196,39 +196,39 @@ declare namespace Api {
      * - "1": iconify icon
      * - "2": local icon
      */
-    type IconType = '1' | '2';
+    type IconType = 1 | 2;
 
     type MenuPropsOfRoute = Pick<
       import('vue-router').RouteMeta,
-      | 'i18nKey'
-      | 'keepAlive'
+      | 'i18n_key'
+      | 'keep_alive'
       | 'constant'
       | 'order'
       | 'href'
-      | 'hideInMenu'
-      | 'activeMenu'
-      | 'multiTab'
-      | 'fixedIndexInTab'
+      | 'hide_in_menu'
+      | 'active_menu'
+      | 'multi_tab'
+      | 'fixed_index_in_tab'
       | 'query'
     >;
 
     type Menu = Common.CommonRecord<{
       /** parent menu id */
-      parentId: number;
+      pid: number;
       /** menu type */
-      menuType: MenuType;
+      menu_type: MenuType;
       /** menu name */
-      menuName: string;
+      menu_name: string;
       /** route name */
-      routeName: string;
+      route_name: string;
       /** route path */
-      routePath: string;
+      route_path: string;
       /** component */
       component?: string;
       /** iconify icon name or local icon name */
       icon: string;
       /** icon type */
-      iconType: IconType;
+      icon_type: IconType;
       /** buttons */
       buttons?: MenuButton[] | null;
       /** children menu */
@@ -244,6 +244,30 @@ declare namespace Api {
       label: string;
       pId: number;
       children?: MenuTree[];
+    };
+
+    type EditMenuRequest = {
+      id?: number;
+      menuType: MenuType;
+      menuName: string;
+      routeName: string;
+      routePath: string;
+      component?: string;
+      i18nKey?: App.I18n.I18nKey | null;
+      icon: string;
+      iconType: IconType;
+      parentId: number;
+      status: number;
+      keepAlive?: number | null;
+      constant?: number;
+      order?: number | null;
+      href?: string | null;
+      hideInMenu?: number | null;
+      activeMenu?: import('@elegant-router/types').RouteKey | null;
+      multiTab?: number | null;
+      fixedIndexInTab?: number | null;
+      query?: { key: string; value: string }[] | null;
+      buttons?: MenuButton[] | null;
     };
   }
   /**

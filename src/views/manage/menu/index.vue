@@ -16,6 +16,10 @@ const { tableWrapperRef, scrollConfig } = useTableScroll();
 
 const { columns, columnChecks, data, loading, pagination, getData, getDataByPage } = useTable({
   apiFn: fetchGetMenuList,
+  apiParams: {
+    current: 1,
+    page_size: 10
+  },
   columns: () => [
     {
       key: 'id',
@@ -24,7 +28,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       dataIndex: 'id'
     },
     {
-      key: 'menuType',
+      key: 'menu_type',
       title: $t('page.manage.menu.menuType'),
       align: 'center',
       width: 80,
@@ -34,20 +38,20 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
           2: 'processing'
         };
 
-        const label = $t(menuTypeRecord[record.menuType]);
+        const label = $t(menuTypeRecord[record.menu_type]);
 
-        return <Tag color={tagMap[record.menuType]}>{label}</Tag>;
+        return <Tag color={tagMap[record.menu_type]}>{label}</Tag>;
       }
     },
     {
-      key: 'menuName',
+      key: 'menu_name',
       title: $t('page.manage.menu.menuName'),
       align: 'center',
       minWidth: 120,
       customRender: ({ record }) => {
-        const { i18nKey, menuName } = record;
+        const { i18n_key, menu_name } = record;
 
-        const label = i18nKey ? $t(i18nKey) : menuName;
+        const label = i18n_key ? $t(i18n_key) : menu_name;
 
         return <span>{label}</span>;
       }
@@ -58,9 +62,9 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       align: 'center',
       width: 60,
       customRender: ({ record }) => {
-        const icon = record.iconType === '1' ? record.icon : undefined;
+        const icon = record.icon_type === 2 ? record.icon : undefined;
 
-        const localIcon = record.iconType === '2' ? record.icon : undefined;
+        const localIcon = record.icon_type === 1 ? record.icon : undefined;
 
         return (
           <div class="flex-center">
@@ -70,17 +74,17 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       }
     },
     {
-      key: 'routeName',
+      key: 'route_name',
       title: $t('page.manage.menu.routeName'),
       align: 'center',
-      dataIndex: 'routeName',
+      dataIndex: 'route_name',
       minWidth: 120
     },
     {
-      key: 'routePath',
+      key: 'route_path',
       title: $t('page.manage.menu.routePath'),
       align: 'center',
-      dataIndex: 'routePath',
+      dataIndex: 'route_path',
       minWidth: 120
     },
     {
@@ -104,13 +108,13 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       }
     },
     {
-      key: 'hideInMenu',
+      key: 'hide_in_menu',
       title: $t('page.manage.menu.hideInMenu'),
-      dataIndex: 'hideInMenu',
+      dataIndex: 'hide_in_menu',
       align: 'center',
       width: 80,
       customRender: ({ record }) => {
-        const hide: CommonType.YesOrNo = record.hideInMenu ? 'Y' : 'N';
+        const hide: CommonType.YesOrNo = record.hide_in_menu === 1 ? 'Y' : 'N';
 
         const tagMap: Record<CommonType.YesOrNo, string> = {
           Y: 'error',
@@ -123,8 +127,8 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       }
     },
     {
-      key: 'parentId',
-      dataIndex: 'parentId',
+      key: 'pid',
+      dataIndex: 'pid',
       title: $t('page.manage.menu.parentId'),
       width: 90,
       align: 'center'
@@ -143,7 +147,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       width: 230,
       customRender: ({ record }) => (
         <div class="flex-center justify-end gap-8px">
-          {record.menuType === '1' && (
+          {record.menu_type === 1 && (
             <Button type="primary" ghost size="small" onClick={() => handleAddChildMenu(record)}>
               {$t('page.manage.menu.addChildMenu')}
             </Button>

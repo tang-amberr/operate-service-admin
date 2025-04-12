@@ -3,7 +3,7 @@ import { computed, shallowRef, watch } from 'vue';
 import type { SelectProps } from 'ant-design-vue';
 import type { DataNode } from 'ant-design-vue/es/tree';
 import { $t } from '@/locales';
-// import { fetchGetAllPages, fetchGetMenuTree } from '@/service/api';
+import { fetchGetAllPages, GetMenuTree } from '@/service/api';
 
 defineOptions({
   name: 'MenuAuthModal'
@@ -62,7 +62,7 @@ const pageSelectOptions = computed(() => {
 const tree = shallowRef<DataNode[]>([]);
 
 async function getTree() {
-  const { error, data } = await fetchGetMenuTree();
+  const { error, data } = await GetMenuTree();
 
   if (!error) {
     tree.value = recursiveTransform(data);
