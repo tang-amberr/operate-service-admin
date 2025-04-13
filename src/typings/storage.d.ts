@@ -27,6 +27,7 @@ declare namespace StorageType {
      *
      * The value is the build time of the project
      */
+    userInfo: Api.Auth.UserInfo;
     overrideThemeFlag: string;
     /** The global tabs */
     globalTabs: App.Global.Tab[];

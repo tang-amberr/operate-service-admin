@@ -103,6 +103,18 @@ declare namespace Api {
       role_desc: string;
     }>;
 
+    /** edit role */
+    type EditAdminRole = Common.CommonRecord<{
+      /** role name */
+      id: number;
+      role_name?: string;
+      router_ids?: string;
+      button_ids?: string;
+      /** role description */
+      role_desc?: string;
+      type: string
+    }>;
+
     /** role search params */
     type RoleSearchParams = Partial<
       Pick<Api.SystemManage.Role, 'role_name'> & Common.CommonSearchParams

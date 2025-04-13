@@ -6,7 +6,7 @@ import {demoRequest, request} from '../request';
  * @param userName User name
  * @param password Password
  */
-export function fetchLogin(username: string, password: string, code: string, id:number) {
+export function fetchLogin(username: string, password: string, code: string, id:string) {
   return demoRequest({
     url: '/auth/login',
     method: 'post',
@@ -23,7 +23,7 @@ export function fetchLogin(username: string, password: string, code: string, id:
  * Register
  *
  */
-export function fetchRegister(username: string, password: string, check_password: string, code: string, id: number) {
+export function fetchRegister(username: string, password: string, check_password: string, code: string, id: string) {
   return demoRequest({
     url: '/auth/register',
     method: 'post',

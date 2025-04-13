@@ -20,7 +20,7 @@ interface FormModel {
   username: string;
   password: string;
   code: string;
-  id: number;
+  id: string;
 }
 
 // 新增验证码相关状态
@@ -84,6 +84,9 @@ getCaptcha();
 
 async function handleSubmit() {
   await validate();
+  setTimeout(async () => {
+    debounceGetCaptcha()
+  }, 600);
   await authStore.login(model.username, model.password, model.code, model.id);
 }
 </script>

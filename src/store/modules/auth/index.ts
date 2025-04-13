@@ -9,7 +9,7 @@ import { localStg } from '@/utils/storage';
 import { $t } from '@/locales';
 import { useRouteStore } from '../route';
 import { useTabStore } from '../tab';
-import { clearAuthStorage, getToken } from './shared';
+import { clearAuthStorage, getToken, getUserInfo } from './shared';
 
 export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   const route = useRoute();
@@ -20,12 +20,9 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
 
   const token = ref(getToken());
 
-  const userInfo: Api.Auth.UserInfo = reactive({
-    userId: '',
-    userName: '',
-    roles: [],
-    buttons: []
-  });
+  const userInfo: Api.Auth.UserInfo = reactive(
+    getUserInfo()
+  );
 
   /** is super role in static route */
   const isStaticSuper = computed(() => {
@@ -61,7 +58,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    * @param password Password
    * @param [redirect=true] Whether to redirect after login. Default is `true`
    */
-  async function login(userName: string, password: string, code: string,id: number, redirect = true) {
+  async function login(userName: string, password: string, code: string,id: string, redirect = true) {
     // startLoading();
     redirectFromLogin()
     const { data: loginToken, error } = await fetchLogin(userName, password,code, id);
@@ -94,7 +91,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     localStg.set('refreshToken', loginToken.refreshToken);
 
     // 2. get user info
-    const pass = await getUserInfo();
+    const pass = await getUserInfo1();
 
     if (pass) {
       token.value = loginToken.token;
@@ -105,10 +102,11 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     return false;
   }
 
-  async function getUserInfo() {
+  async function getUserInfo1() {
     const { data: info, error } = await fetchGetUserInfo();
 
     if (!error) {
+      localStorage.setItem('userInfo', JSON.stringify(info));
       // update store
       Object.assign(userInfo, info);
 

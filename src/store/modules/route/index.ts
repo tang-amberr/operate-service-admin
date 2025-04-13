@@ -61,6 +61,7 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
     });
 
     constantRoutes.value = Array.from(constantRoutesMap.values());
+    console.log('constantRoutes', constantRoutes);
   }
 
   /** auth routes */

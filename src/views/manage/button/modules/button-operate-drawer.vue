@@ -54,11 +54,12 @@ function createDefaultModel(): Model {
   };
 }
 
-type RuleKey = Extract<keyof Model, 'key' | 'status'>;
+type RuleKey = Extract<keyof Model, 'key' | 'status' | 'title'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
   key: defaultRequiredRule,
   status: defaultRequiredRule,
+  title: defaultRequiredRule,
 };
 
 function handleInitModel() {

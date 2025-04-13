@@ -3,7 +3,7 @@ import { computed, shallowRef, watch } from 'vue';
 import type { SelectProps } from 'ant-design-vue';
 import type { DataNode } from 'ant-design-vue/es/tree';
 import { $t } from '@/locales';
-import { fetchGetAllPages, GetMenuTree } from '@/service/api';
+import {editRole, fetchGetAllPages, fetchGetMenuList, GetMenuTree} from '@/service/api';
 
 defineOptions({
   name: 'MenuAuthModal'
@@ -93,12 +93,24 @@ const checks = shallowRef<number[]>([]);
 async function getChecks() {
   console.log(props.roleId);
   // request
-  checks.value = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21];
+  const res = await fetchGetMenuList({
+    current: 1,
+    page_size: 1000,
+    role_id: props.roleId,
+  })
+
+  console.log('res', res)
+  checks.value = res.data.list;
 }
 
 function handleSubmit() {
   console.log(checks.value, props.roleId);
   // request
+  editRole({
+    id: props.roleId,
+    router_ids: String(checks.value),
+    type: 'edit',
+  })
 
   window.$message?.success?.($t('common.modifySuccess'));
 
