@@ -2,7 +2,7 @@
 import {computed, ref, shallowRef, watch} from 'vue';
 import type { DataNode } from 'ant-design-vue/es/tree';
 import { $t } from '@/locales';
-import {fetchGetButtonList} from "@/service/api";
+import {editRole, fetchGetButtonList, fetchGetMenuList} from "@/service/api";
 
 defineOptions({
   name: 'ButtonAuthModal'
@@ -11,6 +11,7 @@ defineOptions({
 interface Props {
   /** the roleId */
   roleId: number;
+  rowData?: Api.SystemManage.Role | null;
 }
 
 const props = defineProps<Props>();
@@ -49,12 +50,26 @@ const checks = shallowRef<number[]>([]);
 async function getChecks() {
   console.log(props.roleId);
   // request
+  const res = await fetchGetButtonList({
+    current: 1,
+    page_size: 1000,
+    role_id: props.roleId,
+  })
+
+  checks.value = res.data.list.map(item => item.id);
 }
 
 function handleSubmit() {
   console.log(checks.value, props.roleId);
   // request
-
+  const requestData = {
+    ...props.rowData,
+    button_ids: checks.value,
+    type: 'edit'
+  }
+  editRole({
+    ...requestData
+  })
   window.$message?.success?.($t('common.modifySuccess'));
 
   closeModal();

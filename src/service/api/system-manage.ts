@@ -53,7 +53,7 @@ export function editButton(data?: Api.SystemManage.EditAdminButton) {
   });
 }
 
-/** get menu list */
+/** get menu list tree*/
 export function fetchGetMenuList(data?: Api.Common.CommonSearchParams) {
   return request<Api.SystemManage.MenuList>({
     url: '/manage/router/list',
@@ -79,6 +79,14 @@ export function GetMenuTree() {
 export function editMenu(data?: Api.SystemManage.EditMenuRequest) {
   return request({
     url: '/manage/router/edit',
+    method: 'post',
+    data
+  });
+}
+
+export function fetchGetMenuByRoleId(data?: { role_id: number }) {
+  return request(<number[]>{
+    url: '/manage/router/role',
     method: 'post',
     data
   });

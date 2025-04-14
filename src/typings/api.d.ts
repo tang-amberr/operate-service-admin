@@ -97,8 +97,8 @@ declare namespace Api {
       /** role name */
       id: number;
       role_name: string;
-      router_ids: string;
-      button_ids: string;
+      router_ids: number[];
+      button_ids: number[];
       /** role description */
       role_desc: string;
     }>;
@@ -108,8 +108,8 @@ declare namespace Api {
       /** role name */
       id: number;
       role_name?: string;
-      router_ids?: string;
-      button_ids?: string;
+      router_ids?:number[];
+      button_ids?: number[];
       /** role description */
       role_desc?: string;
       type: string

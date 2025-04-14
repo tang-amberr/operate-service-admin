@@ -53,8 +53,8 @@ function createDefaultModel(): Model {
     type: 'add',
     role_name: '',
     role_desc: '',
-    router_ids: '',
-    button_ids: ''
+    router_ids: [],
+    button_ids: []
   };
 }
 
@@ -83,6 +83,7 @@ function closeDrawer() {
 async function handleSubmit() {
   await validate();
   // request
+  console.log('model: ', model.value)
   await editRole(model.value)
   window.$message?.success($t('common.updateSuccess'));
   closeDrawer();
@@ -109,9 +110,9 @@ watch(visible, () => {
     </AForm>
     <ASpace v-if="isEdit">
       <AButton @click="openMenuAuthModal">{{ $t('page.manage.role.menuAuth') }}</AButton>
-      <MenuAuthModal v-model:visible="menuAuthVisible" :role-id="roleId" />
+      <MenuAuthModal v-model:visible="menuAuthVisible" :role-id="roleId" :row-data="props.rowData" />
       <AButton @click="openButtonAuthModal">{{ $t('page.manage.role.buttonAuth') }}</AButton>
-      <ButtonAuthModal v-model:visible="buttonAuthVisible" :role-id="roleId" />
+      <ButtonAuthModal v-model:visible="buttonAuthVisible" :role-id="roleId" :row-data="props.rowData" />
     </ASpace>
     <template #footer>
       <div class="flex-y-center justify-end gap-12px">

@@ -1,10 +1,9 @@
 <script setup lang="tsx">
 import {computed, ref} from 'vue';
-import { Button, Popconfirm, Tag } from 'ant-design-vue';
+import {Button, message, Popconfirm, Tag} from 'ant-design-vue';
 import type { Ref } from 'vue';
 import { useBoolean } from '@sa/hooks';
-// import { fetchGetAllPages, fetchGetMenuList } from '@/service/api';
-import {  fetchGetMenuList } from '@/service/api';
+import {editMenu, fetchGetMenuList} from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import { yesOrNoRecord } from '@/constants/common';
@@ -115,7 +114,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       align: 'center',
       width: 80,
       customRender: ({ record }) => {
-        const hide: CommonType.YesOrNo = record.hide_in_menu === 1 ? 'Y' : 'N';
+        const hide: CommonType.YesOrNo = record.hide_in_menu === 2 ? 'Y' : 'N';
 
         const tagMap: Record<CommonType.YesOrNo, string> = {
           Y: 'error',
@@ -182,10 +181,16 @@ async function handleBatchDelete() {
   onBatchDeleted();
 }
 
-function handleDelete(id: number) {
+async function handleDelete(id: number) {
   // request
   console.log(id);
-
+  const res = await editMenu({
+    id,
+    type: 'delete'
+  });
+  if(res.response.data.code !== 200) {
+    return
+  }
   onDeleted();
 }
 /** the edit menu data or the parent menu data when adding a child menu */

@@ -3,7 +3,7 @@ import { computed, shallowRef, watch } from 'vue';
 import type { SelectProps } from 'ant-design-vue';
 import type { DataNode } from 'ant-design-vue/es/tree';
 import { $t } from '@/locales';
-import {editRole, fetchGetAllPages, fetchGetMenuList, GetMenuTree} from '@/service/api';
+import { GetMenuTree, editRole, fetchGetAllPages, fetchGetMenuByRoleId, fetchGetMenuList } from '@/service/api';
 
 defineOptions({
   name: 'MenuAuthModal'
@@ -12,6 +12,7 @@ defineOptions({
 interface Props {
   /** the roleId */
   roleId: number;
+  rowData?: Api.SystemManage.Role | null;
 }
 
 const props = defineProps<Props>();
@@ -87,41 +88,63 @@ function recursiveTransform(data: Api.SystemManage.MenuTree[]): DataNode[] {
     };
   });
 }
+const isChange = shallowRef(false);
+const allSelectedNodes = shallowRef([]);
+const halfSelectedNodes = shallowRef([]);
+
+const onBusinessSelectChange = (selectedKeys, info) => {
+  isChange.value = true;
+  // 已勾选子节点以及半勾选状态的父节点
+  allSelectedNodes.value = selectedKeys.concat(info.halfCheckedKeys);
+  halfSelectedNodes.value = info.halfCheckedKeys;
+};
+
+const loadTreeNode = (selectedKeys, info) => {
+  console.log('load selectedKeys', selectedKeys)
+  console.log('load info', info)
+}
 
 const checks = shallowRef<number[]>([]);
 
 async function getChecks() {
   console.log(props.roleId);
   // request
-  const res = await fetchGetMenuList({
-    current: 1,
-    page_size: 1000,
-    role_id: props.roleId,
-  })
+  const res = await fetchGetMenuByRoleId({
+    role_id: props.roleId
+  });
 
-  console.log('res', res)
-  checks.value = res.data.list;
+  checks.value = res.data.ids.filter(id => !halfSelectedNodes.value.includes(id));
 }
 
 function handleSubmit() {
   console.log(checks.value, props.roleId);
   // request
-  editRole({
-    id: props.roleId,
-    router_ids: String(checks.value),
-    type: 'edit',
-  })
-
+  if(isChange.value === true) {
+    const requestData = {
+      ...props.rowData,
+      router_ids: allSelectedNodes.value,
+      type: 'edit'
+    };
+    editRole({
+      ...requestData
+    });
+  }
   window.$message?.success?.($t('common.modifySuccess'));
-
   closeModal();
 }
 
+watch(checks, () => {
+  console.log('checks', checks);
+});
+
 async function init() {
+  console.log('check before', checks.value)
   getHome();
   getPages();
   await getTree();
   await getChecks();
+  console.log('check after', checks.value)
+
 }
 
 watch(visible, val => {
@@ -137,7 +160,15 @@ watch(visible, val => {
       <div>{{ $t('page.manage.menu.home') }}</div>
       <ASelect :value="home" :options="pageSelectOptions" class="w-240px" @update:value="updateHome" />
     </div>
-    <ATree v-model:checked-keys="checks" :tree-data="tree" checkable :height="280" class="h-280px" />
+    <ATree
+      v-model:checked-keys="checks"
+      :tree-data="tree"
+      checkable
+      :height="280"
+      class="h-280px"
+      @load="loadTreeNode"
+      @check="onBusinessSelectChange"
+    />
     <template #footer>
       <AButton size="small" class="mt-16px" @click="closeModal">
         {{ $t('common.cancel') }}
