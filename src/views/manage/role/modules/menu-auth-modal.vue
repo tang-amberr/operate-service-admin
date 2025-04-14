@@ -3,7 +3,7 @@ import { computed, shallowRef, watch } from 'vue';
 import type { SelectProps } from 'ant-design-vue';
 import type { DataNode } from 'ant-design-vue/es/tree';
 import { $t } from '@/locales';
-import { GetMenuTree, editRole, fetchGetAllPages, fetchGetMenuByRoleId, fetchGetMenuList } from '@/service/api';
+import { GetMenuTree, editRole, fetchGetAllPages, fetchGetMenuByRoleId } from '@/service/api';
 
 defineOptions({
   name: 'MenuAuthModal'

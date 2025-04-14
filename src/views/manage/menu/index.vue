@@ -35,7 +35,8 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       customRender: ({ record }) => {
         const tagMap: Record<Api.SystemManage.MenuType, string> = {
           1: 'default',
-          2: 'processing'
+          2: 'processing',
+          3: 'warning'
         };
 
         const label = $t(menuTypeRecord[record.menu_type]);
@@ -51,6 +52,9 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       customRender: ({ record }) => {
         const { i18n_key, menu_name } = record;
 
+        if(record.menu_type === 3) {
+          return <span>{menu_name}</span>;
+        }
         const label = i18n_key ? $t(i18n_key) : menu_name;
 
         return <span>{label}</span>;
@@ -62,6 +66,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       align: 'center',
       width: 60,
       customRender: ({ record }) => {
+        if(record.menu_type === 3) return;
         const icon = record.icon_type === 2 ? record.icon : undefined;
 
         const localIcon = record.icon_type === 1 ? record.icon : undefined;
@@ -85,7 +90,11 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       title: $t('page.manage.menu.routePath'),
       align: 'center',
       dataIndex: 'route_path',
-      minWidth: 120
+      minWidth: 120,
+      customRender: ({ record }) => {
+        if(record.menu_type === 3) return;
+        return  <span>{record.route_path}</span>;
+      }
     },
     {
       key: 'status',
@@ -114,6 +123,8 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       align: 'center',
       width: 80,
       customRender: ({ record }) => {
+        if(record.menu_type === 3) return;
+
         const hide: CommonType.YesOrNo = record.hide_in_menu === 2 ? 'Y' : 'N';
 
         const tagMap: Record<CommonType.YesOrNo, string> = {
@@ -138,7 +149,11 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       dataIndex: 'order',
       title: $t('page.manage.menu.order'),
       align: 'center',
-      width: 60
+      width: 60,
+      customRender: ({ record }) => {
+        if(record.menu_type === 3) return;
+        return  <span>{record.order}</span>;
+      }
     },
     {
       key: 'operate',
@@ -147,7 +162,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       width: 230,
       customRender: ({ record }) => (
         <div class="flex-center justify-end gap-8px">
-          {record.menu_type === 1 && (
+          {record.menu_type !== 3 && (
             <Button type="primary" ghost size="small" onClick={() => handleAddChildMenu(record)}>
               {$t('page.manage.menu.addChildMenu')}
             </Button>

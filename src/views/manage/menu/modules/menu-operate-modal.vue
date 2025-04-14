@@ -140,6 +140,8 @@ const showLayout = computed(() => model.value.pid === 0);
 
 const showPage = computed(() => model.value.menu_type === 2);
 
+const showButtonInput = computed(() => model.value.menu_type === 3);
+
 const pageOptions = computed(() => {
   const allPages = [...props.allPages];
 
@@ -337,17 +339,17 @@ watch(
                 <AInput v-model:value="model.route_name" :placeholder="$t('page.manage.menu.form.routeName')" />
               </AFormItem>
             </ACol>
-            <ACol :lg="12" :xs="24">
+            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.routePath')" name="route_path">
                 <AInput v-model:value="model.route_path" disabled :placeholder="$t('page.manage.menu.form.routePath')" />
               </AFormItem>
             </ACol>
-            <ACol :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.pathParam')" name="pathParam">
-                <AInput v-model:value="model.pathParam" :placeholder="$t('page.manage.menu.form.pathParam')" />
-              </AFormItem>
-            </ACol>
-            <ACol :lg="12" :xs="24">
+<!--            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">-->
+<!--              <AFormItem :label="$t('page.manage.menu.pathParam')" name="pathParam">-->
+<!--                <AInput v-model:value="model.pathParam" :placeholder="$t('page.manage.menu.form.pathParam')" />-->
+<!--              </AFormItem>-->
+<!--            </ACol>-->
+            <ACol  v-if="!showButtonInput" :lg="24" :xs="24">
               <AFormItem v-if="showLayout" :label="$t('page.manage.menu.layout')" name="layout">
                 <ASelect
                   v-model:value="model.layout"
@@ -365,12 +367,12 @@ watch(
                 />
               </AFormItem>
             </ACol>
-            <ACol :lg="12" :xs="24">
+            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.i18nKey')" name="i18n_key">
                 <AInput v-model:value="model.i18n_key as string" :placeholder="$t('page.manage.menu.form.i18nKey')" />
               </AFormItem>
             </ACol>
-            <ACol :lg="12" :xs="24">
+            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.order')" name="order">
                 <AInputNumber
                   v-model:value="model.order as number"
@@ -379,7 +381,7 @@ watch(
                 />
               </AFormItem>
             </ACol>
-            <ACol :lg="12" :xs="24">
+            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.iconTypeTitle')" name="icon_type">
                 <ARadioGroup v-model:value="model.icon_type">
                   <ARadio v-for="item in menuIconTypeOptions" :key="Number(item.value)" :value="Number(item.value)">
@@ -389,7 +391,7 @@ watch(
               </AFormItem>
             </ACol>
 
-            <ACol :lg="12" :xs="24">
+            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.icon')" name="icon">
                 <template v-if="model.icon_type === 2">
                   <AInput v-model:value="model.icon" :placeholder="$t('page.manage.menu.form.icon')" class="flex-1">
@@ -416,7 +418,7 @@ watch(
                 </ARadioGroup>
               </AFormItem>
             </ACol>
-            <ACol :lg="12" :xs="24">
+            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.keepAlive')" name="keep_alive">
                 <ARadioGroup v-model:value="model.keep_alive">
                   <ARadio :value="2">{{ $t('common.yesOrNo.yes') }}</ARadio>
@@ -424,7 +426,7 @@ watch(
                 </ARadioGroup>
               </AFormItem>
             </ACol>
-            <ACol :lg="12" :xs="24">
+            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.constant')" name="constant">
                 <ARadioGroup v-model:value="model.constant">
                   <ARadio :value="2">
@@ -436,12 +438,12 @@ watch(
                 </ARadioGroup>
               </AFormItem>
             </ACol>
-            <ACol :lg="12" :xs="24">
+            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.href')" name="href">
                 <AInput v-model:value="model.href as string" :placeholder="$t('page.manage.menu.form.href')" />
               </AFormItem>
             </ACol>
-            <ACol :lg="12" :xs="24">
+            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.hideInMenu')" name="hide_in_menu">
                 <ARadioGroup v-model:value="model.hide_in_menu">
                   <ARadio :value="2">{{ $t('common.yesOrNo.yes') }}</ARadio>
@@ -449,34 +451,34 @@ watch(
                 </ARadioGroup>
               </AFormItem>
             </ACol>
-            <ACol v-if="model.hide_in_menu" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.activeMenu')" name="active_menu">
-                <ASelect
-                  v-model:value="model.active_menu as string"
-                  :options="pageOptions"
-                  clearable
-                  :placeholder="$t('page.manage.menu.form.activeMenu')"
-                />
-              </AFormItem>
-            </ACol>
-            <ACol :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.multiTab')" name="multi_tab">
-                <ARadioGroup v-model:value="model.multi_tab">
-                  <ARadio :value="2" label="是" >是</ARadio>
-                  <ARadio :value="1" label="否" >否</ARadio>
-                </ARadioGroup>
-              </AFormItem>
-            </ACol>
-            <ACol :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.fixedIndexInTab')" name="fixed_index_in_tab">
-                <AInputNumber
-                  v-model:value="model.fixed_index_in_tab as number"
-                  class="w-full"
-                  clearable
-                  :placeholder="$t('page.manage.menu.form.fixedIndexInTab')"
-                />
-              </AFormItem>
-            </ACol>
+<!--            <ACol v-if="model.hide_in_menu && !showButtonInput" :lg="12" :xs="24">-->
+<!--              <AFormItem :label="$t('page.manage.menu.activeMenu')" name="active_menu">-->
+<!--                <ASelect-->
+<!--                  v-model:value="model.active_menu as string"-->
+<!--                  :options="pageOptions"-->
+<!--                  clearable-->
+<!--                  :placeholder="$t('page.manage.menu.form.activeMenu')"-->
+<!--                />-->
+<!--              </AFormItem>-->
+<!--            </ACol>-->
+<!--            <ACol showButtonInput :lg="12" :xs="24">-->
+<!--              <AFormItem :label="$t('page.manage.menu.multiTab')" name="multi_tab">-->
+<!--                <ARadioGroup v-model:value="model.multi_tab">-->
+<!--                  <ARadio :value="2" label="是" >是</ARadio>-->
+<!--                  <ARadio :value="1" label="否" >否</ARadio>-->
+<!--                </ARadioGroup>-->
+<!--              </AFormItem>-->
+<!--            </ACol>-->
+<!--            <ACol showButtonInput :lg="12" :xs="24">-->
+<!--              <AFormItem :label="$t('page.manage.menu.fixedIndexInTab')" name="fixed_index_in_tab">-->
+<!--                <AInputNumber-->
+<!--                  v-model:value="model.fixed_index_in_tab as number"-->
+<!--                  class="w-full"-->
+<!--                  clearable-->
+<!--                  :placeholder="$t('page.manage.menu.form.fixedIndexInTab')"-->
+<!--                />-->
+<!--              </AFormItem>-->
+<!--            </ACol>-->
 <!--            <ACol :span="24">-->
 <!--              <AFormItem :label-col="{ span: 4 }" :label="$t('page.manage.menu.query')" name="query">-->
 <!--                <AButton v-if="model.query.length === 0" type="dashed" block @click="addQuery(-1)">-->
