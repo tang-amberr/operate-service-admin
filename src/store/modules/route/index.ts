@@ -22,6 +22,7 @@ import {
   transformMenuToSearchMenus,
   updateLocaleOfGlobalMenus
 } from './shared';
+import {clearAuthStorage} from "@/store/modules/auth/shared";
 
 export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   const authStore = useAuthStore();
@@ -134,11 +135,12 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
   /** Reset store */
   async function resetStore() {
     const routeStore = useRouteStore();
-
+    console.log('resetStore', routeStore)
     routeStore.$reset();
 
-    resetVueRoutes();
+    clearAuthStorage();
 
+    resetVueRoutes();
     // after reset store, need to re-init constant route
     await initConstantRoute();
   }
@@ -214,7 +216,6 @@ export const useRouteStore = defineStore(SetupStoreId.Route, () => {
 
     if (!error) {
       const { routes, home } = data;
-
       addAuthRoutes(routes);
 
       handleConstantAndAuthRoutes();

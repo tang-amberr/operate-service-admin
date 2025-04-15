@@ -1,18 +1,61 @@
 <script setup lang="tsx">
-import {computed, ref} from 'vue';
-import {Button, message, Popconfirm, Tag} from 'ant-design-vue';
+import { computed, ref } from 'vue';
+import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
 import type { Ref } from 'vue';
 import { useBoolean } from '@sa/hooks';
-import {editMenu, fetchGetMenuList} from '@/service/api';
+import { editMenu, fetchGetMenuList } from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import { yesOrNoRecord } from '@/constants/common';
 import { enableStatusRecord, menuTypeRecord } from '@/constants/business';
 import SvgIcon from '@/components/custom/svg-icon.vue';
+import { useAuth } from '@/hooks/business/auth';
 import MenuOperateModal, { type OperateType } from './modules/menu-operate-modal.vue';
 
 const { bool: visible, setTrue: openModal } = useBoolean();
 const { tableWrapperRef, scrollConfig } = useTableScroll();
+
+const generateActionButtons = (record, codeMap) => {
+  const originAuth = useAuth();
+  const hasEdit = originAuth.hasAuth(codeMap.edit);
+  const hasDelete = originAuth.hasAuth(codeMap.delete);
+  const hasAddChild = originAuth.hasAuth(codeMap.addChild);
+  const hasAddButton = originAuth.hasAuth(codeMap.addButton);
+
+  const actions = [];
+  if (hasAddChild && record.menu_type === 1) {
+    actions.push(
+      <Button type="primary" ghost size="small" onClick={() => handleAddChildMenu(record)}>
+        {$t('page.manage.menu.addChildMenu')}
+      </Button>
+    );
+  }
+  if (hasAddButton && record.menu_type === 2) {
+    actions.push(
+      <Button type="primary" ghost size="small" onClick={() => handleAddChildMenu(record)}>
+        新增按钮
+      </Button>
+    );
+  }
+  if (hasEdit) {
+    actions.push(
+      <Button type="primary" ghost size="small" onClick={() => handleEdit(record.id)}>
+        {$t('common.edit')}
+      </Button>
+    );
+  }
+  if (hasDelete) {
+    actions.push(
+      <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
+        <Button danger size="small">
+          {$t('common.delete')}
+        </Button>
+      </Popconfirm>
+    );
+  }
+
+  return actions.length ? <div class="flex-center gap-8px">{...actions}</div> : null;
+};
 
 const { columns, columnChecks, data, loading, pagination, getData, getDataByPage } = useTable({
   apiFn: fetchGetMenuList,
@@ -25,6 +68,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       key: 'id',
       title: $t('page.manage.menu.id'),
       align: 'center',
+      width: 140,
       dataIndex: 'id'
     },
     {
@@ -48,11 +92,11 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       key: 'menu_name',
       title: $t('page.manage.menu.menuName'),
       align: 'center',
-      minWidth: 120,
+      width: 110,
       customRender: ({ record }) => {
         const { i18n_key, menu_name } = record;
 
-        if(record.menu_type === 3) {
+        if (record.menu_type === 3) {
           return <span>{menu_name}</span>;
         }
         const label = i18n_key ? $t(i18n_key) : menu_name;
@@ -66,7 +110,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       align: 'center',
       width: 60,
       customRender: ({ record }) => {
-        if(record.menu_type === 3) return;
+        if (record.menu_type === 3) return;
         const icon = record.icon_type === 2 ? record.icon : undefined;
 
         const localIcon = record.icon_type === 1 ? record.icon : undefined;
@@ -83,17 +127,17 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       title: $t('page.manage.menu.routeName'),
       align: 'center',
       dataIndex: 'route_name',
-      minWidth: 120
+      width: 150
     },
     {
       key: 'route_path',
       title: $t('page.manage.menu.routePath'),
       align: 'center',
       dataIndex: 'route_path',
-      minWidth: 120,
+      width: 150,
       customRender: ({ record }) => {
-        if(record.menu_type === 3) return;
-        return  <span>{record.route_path}</span>;
+        if (record.menu_type === 3) return;
+        return <span>{record.route_path}</span>;
       }
     },
     {
@@ -123,7 +167,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       align: 'center',
       width: 80,
       customRender: ({ record }) => {
-        if(record.menu_type === 3) return;
+        if (record.menu_type === 3) return;
 
         const hide: CommonType.YesOrNo = record.hide_in_menu === 2 ? 'Y' : 'N';
 
@@ -151,8 +195,8 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       align: 'center',
       width: 60,
       customRender: ({ record }) => {
-        if(record.menu_type === 3) return;
-        return  <span>{record.order}</span>;
+        if (record.menu_type === 3) return;
+        return <span>{record.order}</span>;
       }
     },
     {
@@ -160,23 +204,16 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
       title: $t('common.operate'),
       align: 'center',
       width: 230,
-      customRender: ({ record }) => (
-        <div class="flex-center justify-end gap-8px">
-          {record.menu_type !== 3 && (
-            <Button type="primary" ghost size="small" onClick={() => handleAddChildMenu(record)}>
-              {$t('page.manage.menu.addChildMenu')}
-            </Button>
-          )}
-          <Button type="primary" ghost size="small" onClick={() => handleEdit(record)}>
-            {$t('common.edit')}
-          </Button>
-          <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
-            <Button danger ghost size="small">
-              {$t('common.delete')}
-            </Button>
-          </Popconfirm>
-        </div>
-      )
+      customRender: ({ record }) => {
+        const codeMap = {
+          add: 'sys:menu:add',
+          edit: 'sys:menu:edit',
+          delete: 'sys:menu:delete',
+          addChild: 'sys:menu:addChild',
+          addButton: 'sys:menu:addButton'
+        };
+        return generateActionButtons(record, codeMap);
+      }
     }
   ]
 });
@@ -203,8 +240,8 @@ async function handleDelete(id: number) {
     id,
     type: 'delete'
   });
-  if(res.response.data.code !== 200) {
-    return
+  if (res.response.data.code !== 200) {
+    return;
   }
   onDeleted();
 }
@@ -226,19 +263,18 @@ function handleAddChildMenu(item: Api.SystemManage.Menu) {
   openModal();
 }
 
-const allPages = computed(()=> {
-  const nameList : string[] = []
+const allPages = computed(() => {
+  const nameList: string[] = [];
   function mapFunc(item: Api.SystemManage.Menu) {
     nameList.push(item.routeName);
-    if(item.children) {
-      item.children.forEach(mapFunc)
+    if (item.children) {
+      item.children.forEach(mapFunc);
     }
   }
-  data.value.forEach(mapFunc)
-  console.log('nameList', nameList)
-  return nameList
-})
-
+  data.value.forEach(mapFunc);
+  console.log('nameList', nameList);
+  return nameList;
+});
 </script>
 
 <template>
@@ -252,6 +288,7 @@ const allPages = computed(()=> {
       <template #extra>
         <TableHeaderOperation
           v-model:columns="columnChecks"
+          button-perfix="sys:menu"
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
           @add="handleAdd"

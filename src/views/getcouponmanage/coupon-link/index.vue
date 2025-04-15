@@ -6,8 +6,34 @@ import { $t } from '@/locales';
 import CouponOperateDrawer from './modules/coupon-operate-drawer.vue';
 import CouponLinkSearch from './modules/coupon-search.vue';
 import {onMounted, ref} from "vue";
+import {useAuth} from "@/hooks/business/auth";
 
 const { tableWrapperRef, scrollConfig } = useTableScroll();
+
+const generateActionButtons = (record, editButtonCode, deleteButtonCode) => {
+  const originAuth = useAuth();
+  const hasEdit = originAuth.hasAuth(editButtonCode);
+  const hasDelete = originAuth.hasAuth(deleteButtonCode);
+  const actions = [];
+  if (hasEdit) {
+    actions.push(
+      <Button type="primary" ghost size="small" onClick={() => edit(record.id)}>
+        {$t('common.edit')}
+      </Button>
+    );
+  }
+  if (hasDelete) {
+    actions.push(
+      <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
+        <Button danger size="small">
+          {$t('common.delete')}
+        </Button>
+      </Popconfirm>
+    );
+  }
+
+  return actions.length ? <div class="flex-center gap-8px">{...actions}</div> : null;
+};
 
 const {
   columns,
@@ -167,18 +193,9 @@ const {
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      customRender: ({ record }) => (
-        <div class="flex-center gap-8px">
-          <Button type="primary" ghost size="small" onClick={() => edit(record.id)}>
-            {$t('common.edit')}
-          </Button>
-          <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
-            <Button danger size="small">
-              {$t('common.delete')}
-            </Button>
-          </Popconfirm>
-        </div>
-      )
+      customRender: ({ record }) => {
+        return generateActionButtons(record, 'coupon:link:edit', 'coupon:link:delete');
+      }
     }
   ]
 });
@@ -254,6 +271,7 @@ onMounted(async () => {
       <template #extra>
         <TableHeaderOperation
           v-model:columns="columnChecks"
+          button-perfix="coupon:link"
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
           @add="handleAdd"

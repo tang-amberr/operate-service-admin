@@ -23,7 +23,6 @@ export const views: Record<LastLevelRouteKey, RouteComponent | (() => Promise<Ro
   "getcouponmanage_coupon-link-category": () => import("@/views/getcouponmanage/coupon-link-category/index.vue"),
   "getcouponmanage_coupon-link": () => import("@/views/getcouponmanage/coupon-link/index.vue"),
   home: () => import("@/views/home/index.vue"),
-  manage_button: () => import("@/views/manage/button/index.vue"),
   manage_menu: () => import("@/views/manage/menu/index.vue"),
   manage_role: () => import("@/views/manage/role/index.vue"),
   manage_user: () => import("@/views/manage/user/index.vue"),

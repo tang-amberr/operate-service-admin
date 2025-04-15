@@ -1,13 +1,39 @@
 <script setup lang="tsx">
-import {Button, message, Popconfirm, Tag} from 'ant-design-vue';
-import {editUser, fetchGetUserList} from '@/service/api';
+import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
+import { editUser, fetchGetUserList } from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
-import { enableStatusRecord, userGenderRecord } from '@/constants/business';
+import { enableStatusRecord } from '@/constants/business';
+import { useAuth } from '@/hooks/business/auth';
 import UserOperateDrawer from './modules/user-operate-drawer.vue';
 import UserSearch from './modules/user-search.vue';
 
 const { tableWrapperRef, scrollConfig } = useTableScroll();
+
+const generateActionButtons = (record, editButtonCode, deleteButtonCode) => {
+  const originAuth = useAuth();
+  const hasEdit = originAuth.hasAuth(editButtonCode);
+  const hasDelete = originAuth.hasAuth(deleteButtonCode);
+  const actions = [];
+  if (hasEdit) {
+    actions.push(
+      <Button type="primary" ghost size="small" onClick={() => edit(record.id)}>
+        {$t('common.edit')}
+      </Button>
+    );
+  }
+  if (hasDelete) {
+    actions.push(
+      <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
+        <Button danger size="small">
+          {$t('common.delete')}
+        </Button>
+      </Popconfirm>
+    );
+  }
+
+  return actions.length ? <div class="flex-center gap-8px">{...actions}</div> : null;
+};
 
 const {
   columns,
@@ -27,7 +53,7 @@ const {
     // if you want to use the searchParams in Form, you need to define the following properties, and the value is null
     // the value can not be undefined, otherwise the property in Form will not be reactive
     status: null,
-    username: '',
+    username: ''
   },
   columns: () => [
     {
@@ -73,22 +99,29 @@ const {
       }
     },
     {
+      // create_at
+      key: 'create_at',
+      dataIndex: 'create_at',
+      title: "创建时间",
+      align: 'center',
+      minWidth: 120
+    },
+    {
+      // update_at
+      key: 'update_at',
+      dataIndex: 'update_at',
+      title: '更新时间',
+      align: 'center',
+      minWidth: 120
+    },
+    {
       key: 'operate',
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      customRender: ({ record }) => (
-        <div class="flex-center gap-8px">
-          <Button type="primary" ghost size="small" onClick={() => edit(record.id)}>
-            {$t('common.edit')}
-          </Button>
-          <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
-            <Button danger size="small">
-              {$t('common.delete')}
-            </Button>
-          </Popconfirm>
-        </div>
-      )
+      customRender: ({ record }) => {
+        return generateActionButtons(record, 'sys:user:edit', 'sys:user:delete');
+      }
     }
   ]
 });
@@ -101,11 +134,9 @@ const {
   handleEdit,
   checkedRowKeys,
   rowSelection,
-  onBatchDeleted,
   onDeleted
   // closeDrawer
 } = useTableOperate(data, getData);
-
 
 async function handleDelete(id: number) {
   // request
@@ -139,6 +170,7 @@ function edit(id: number) {
       <template #extra>
         <TableHeaderOperation
           v-model:columns="columnChecks"
+          button-perfix="sys:user"
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
           @add="handleAdd"

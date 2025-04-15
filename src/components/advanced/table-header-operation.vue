@@ -1,22 +1,26 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
+import {useAuth} from "@/hooks/business/auth";
 
 defineOptions({
   name: 'TableHeaderOperation'
 });
 
 interface Props {
+  buttonPerfix: string;
   disabledDelete?: boolean;
   loading?: boolean;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 interface Emits {
   (e: 'add'): void;
   (e: 'delete'): void;
   (e: 'refresh'): void;
 }
+
+const originAuth = useAuth();
 
 const emit = defineEmits<Emits>();
 
@@ -41,13 +45,18 @@ function refresh() {
   <div class="flex flex-wrap justify-end gap-x-12px gap-y-8px lt-sm:(w-200px py-12px)">
     <slot name="prefix"></slot>
     <slot name="default">
-      <AButton size="small" ghost type="primary" @click="add">
+      <AButton v-if="originAuth.hasAuth(props.buttonPerfix + ':add')" size="small" ghost type="primary" @click="add">
         <template #icon>
           <icon-ic-round-plus class="align-sub text-icon" />
         </template>
         <span class="ml-8px">{{ $t('common.add') }}</span>
       </AButton>
-      <APopconfirm :title="$t('common.confirmDelete')" :disabled="disabledDelete" @confirm="batchDelete">
+      <APopconfirm
+        v-if="originAuth.hasAuth(props.buttonPerfix + ':delete')"
+        :title="$t('common.confirmDelete')"
+        :disabled="disabledDelete"
+        @confirm="batchDelete"
+      >
         <AButton size="small" danger :disabled="disabledDelete">
           <template #icon>
             <icon-ic-round-delete class="align-sub text-icon" />

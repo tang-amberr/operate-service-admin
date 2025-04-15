@@ -3,6 +3,7 @@ import { Modal } from 'ant-design-vue';
 import { useAuthStore } from '@/store/modules/auth';
 import { useRouterPush } from '@/hooks/common/router';
 import { $t } from '@/locales';
+import {useRouteStore} from "@/store/modules/route";
 
 defineOptions({
   name: 'UserAvatar'
@@ -22,6 +23,7 @@ function logout() {
     okText: $t('common.confirm'),
     cancelText: $t('common.cancel'),
     onOk: () => {
+      toLogin();
       authStore.resetStore();
     }
   });

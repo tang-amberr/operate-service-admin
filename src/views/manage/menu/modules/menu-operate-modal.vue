@@ -6,7 +6,7 @@ import { $t } from '@/locales';
 import { enableStatusOptions, menuIconTypeOptions, menuTypeOptions } from '@/constants/business';
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import { getLocalIcons } from '@/utils/icon';
-import {editMenu, fetchGetRoleList} from '@/service/api';
+import { editMenu, fetchGetRoleList } from '@/service/api';
 import {
   getLayoutAndPage,
   getPathParamFromRoutePath,
@@ -206,8 +206,8 @@ function addButton(index: number) {
     key: '',
     title: '',
     id: 0,
-    create_at:'',
-    update_at:''
+    create_at: '',
+    update_at: ''
   });
 }
 
@@ -231,7 +231,7 @@ async function handleInitModel() {
 
   if (props.operateType === 'edit') {
     const { component, ...rest } = props.rowData;
-    console.log('rowdata', props.rowData)
+    console.log('rowdata', props.rowData);
     const { layout, page } = getLayoutAndPage(component);
     const { path, param } = getPathParamFromRoutePath(rest.route_path);
 
@@ -284,7 +284,7 @@ async function handleSubmit() {
   const params = getSubmitParams();
 
   console.log('params: ', params);
-  if(props.operateType === 'edit') {
+  if (props.operateType === 'edit') {
     params.type = 'edit';
   } else {
     params.type = 'add';
@@ -330,26 +330,36 @@ watch(
               </AFormItem>
             </ACol>
             <ACol :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.menuName')" name="menu_name">
+              <AFormItem v-if="!showButtonInput" :label="$t('page.manage.menu.menuName')" name="menu_name">
                 <AInput v-model:value="model.menu_name" :placeholder="$t('page.manage.menu.form.menuName')" />
+              </AFormItem>
+              <AFormItem v-else label="按钮名称" name="menu_name">
+                <AInput v-model:value="model.menu_name" placeholder="请输入按钮名称" />
               </AFormItem>
             </ACol>
             <ACol :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.routeName')" name="route_name">
+              <AFormItem v-if="!showButtonInput" :label="$t('page.manage.menu.routeName')" name="route_name">
                 <AInput v-model:value="model.route_name" :placeholder="$t('page.manage.menu.form.routeName')" />
               </AFormItem>
-            </ACol>
-            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.routePath')" name="route_path">
-                <AInput v-model:value="model.route_path" disabled :placeholder="$t('page.manage.menu.form.routePath')" />
+              <AFormItem v-else label="按钮码" name="route_name">
+                <AInput v-model:value="model.route_name" placeholder="请输入按钮编码" />
               </AFormItem>
             </ACol>
-<!--            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">-->
-<!--              <AFormItem :label="$t('page.manage.menu.pathParam')" name="pathParam">-->
-<!--                <AInput v-model:value="model.pathParam" :placeholder="$t('page.manage.menu.form.pathParam')" />-->
-<!--              </AFormItem>-->
-<!--            </ACol>-->
-            <ACol  v-if="!showButtonInput" :lg="24" :xs="24">
+            <ACol v-if="!showButtonInput" :lg="12" :xs="24">
+              <AFormItem :label="$t('page.manage.menu.routePath')" name="route_path">
+                <AInput
+                  v-model:value="model.route_path"
+                  disabled
+                  :placeholder="$t('page.manage.menu.form.routePath')"
+                />
+              </AFormItem>
+            </ACol>
+            <!--            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">-->
+            <!--              <AFormItem :label="$t('page.manage.menu.pathParam')" name="pathParam">-->
+            <!--                <AInput v-model:value="model.pathParam" :placeholder="$t('page.manage.menu.form.pathParam')" />-->
+            <!--              </AFormItem>-->
+            <!--            </ACol>-->
+            <ACol v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem v-if="showLayout" :label="$t('page.manage.menu.layout')" name="layout">
                 <ASelect
                   v-model:value="model.layout"
@@ -367,12 +377,12 @@ watch(
                 />
               </AFormItem>
             </ACol>
-            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
+            <ACol v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.i18nKey')" name="i18n_key">
                 <AInput v-model:value="model.i18n_key as string" :placeholder="$t('page.manage.menu.form.i18nKey')" />
               </AFormItem>
             </ACol>
-            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
+            <ACol v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.order')" name="order">
                 <AInputNumber
                   v-model:value="model.order as number"
@@ -381,7 +391,7 @@ watch(
                 />
               </AFormItem>
             </ACol>
-            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
+            <ACol v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.iconTypeTitle')" name="icon_type">
                 <ARadioGroup v-model:value="model.icon_type">
                   <ARadio v-for="item in menuIconTypeOptions" :key="Number(item.value)" :value="Number(item.value)">
@@ -391,7 +401,7 @@ watch(
               </AFormItem>
             </ACol>
 
-            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
+            <ACol v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.icon')" name="icon">
                 <template v-if="model.icon_type === 2">
                   <AInput v-model:value="model.icon" :placeholder="$t('page.manage.menu.form.icon')" class="flex-1">
@@ -410,7 +420,7 @@ watch(
               </AFormItem>
             </ACol>
             <ACol :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.menuStatus')" name="status">
+              <AFormItem label="状态" name="status">
                 <ARadioGroup v-model:value="model.status">
                   <ARadio v-for="item in enableStatusOptions" :key="Number(item.value)" :value="Number(item.value)">
                     {{ $t(item.label) }}
@@ -418,7 +428,7 @@ watch(
                 </ARadioGroup>
               </AFormItem>
             </ACol>
-            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
+            <ACol v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.keepAlive')" name="keep_alive">
                 <ARadioGroup v-model:value="model.keep_alive">
                   <ARadio :value="2">{{ $t('common.yesOrNo.yes') }}</ARadio>
@@ -426,7 +436,7 @@ watch(
                 </ARadioGroup>
               </AFormItem>
             </ACol>
-            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
+            <ACol v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.constant')" name="constant">
                 <ARadioGroup v-model:value="model.constant">
                   <ARadio :value="2">
@@ -438,12 +448,12 @@ watch(
                 </ARadioGroup>
               </AFormItem>
             </ACol>
-            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
+            <ACol v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.href')" name="href">
                 <AInput v-model:value="model.href as string" :placeholder="$t('page.manage.menu.form.href')" />
               </AFormItem>
             </ACol>
-            <ACol  v-if="!showButtonInput" :lg="12" :xs="24">
+            <ACol v-if="!showButtonInput" :lg="12" :xs="24">
               <AFormItem :label="$t('page.manage.menu.hideInMenu')" name="hide_in_menu">
                 <ARadioGroup v-model:value="model.hide_in_menu">
                   <ARadio :value="2">{{ $t('common.yesOrNo.yes') }}</ARadio>
@@ -451,126 +461,126 @@ watch(
                 </ARadioGroup>
               </AFormItem>
             </ACol>
-<!--            <ACol v-if="model.hide_in_menu && !showButtonInput" :lg="12" :xs="24">-->
-<!--              <AFormItem :label="$t('page.manage.menu.activeMenu')" name="active_menu">-->
-<!--                <ASelect-->
-<!--                  v-model:value="model.active_menu as string"-->
-<!--                  :options="pageOptions"-->
-<!--                  clearable-->
-<!--                  :placeholder="$t('page.manage.menu.form.activeMenu')"-->
-<!--                />-->
-<!--              </AFormItem>-->
-<!--            </ACol>-->
-<!--            <ACol showButtonInput :lg="12" :xs="24">-->
-<!--              <AFormItem :label="$t('page.manage.menu.multiTab')" name="multi_tab">-->
-<!--                <ARadioGroup v-model:value="model.multi_tab">-->
-<!--                  <ARadio :value="2" label="是" >是</ARadio>-->
-<!--                  <ARadio :value="1" label="否" >否</ARadio>-->
-<!--                </ARadioGroup>-->
-<!--              </AFormItem>-->
-<!--            </ACol>-->
-<!--            <ACol showButtonInput :lg="12" :xs="24">-->
-<!--              <AFormItem :label="$t('page.manage.menu.fixedIndexInTab')" name="fixed_index_in_tab">-->
-<!--                <AInputNumber-->
-<!--                  v-model:value="model.fixed_index_in_tab as number"-->
-<!--                  class="w-full"-->
-<!--                  clearable-->
-<!--                  :placeholder="$t('page.manage.menu.form.fixedIndexInTab')"-->
-<!--                />-->
-<!--              </AFormItem>-->
-<!--            </ACol>-->
-<!--            <ACol :span="24">-->
-<!--              <AFormItem :label-col="{ span: 4 }" :label="$t('page.manage.menu.query')" name="query">-->
-<!--                <AButton v-if="model.query.length === 0" type="dashed" block @click="addQuery(-1)">-->
-<!--                  <template #icon>-->
-<!--                    <icon-carbon-add class="align-sub text-icon" />-->
-<!--                  </template>-->
-<!--                  <span class="ml-8px">{{ $t('common.add') }}</span>-->
-<!--                </AButton>-->
-<!--                <template v-else>-->
-<!--                  <div v-for="(item, index) in model.query" :key="index" class="flex gap-3">-->
-<!--                    <ACol :span="9">-->
-<!--                      <AFormItem :name="['query', index, 'key']">-->
-<!--                        <AInput-->
-<!--                          v-model:value="item.key"-->
-<!--                          :placeholder="$t('page.manage.menu.form.queryKey')"-->
-<!--                          class="flex-1"-->
-<!--                        />-->
-<!--                      </AFormItem>-->
-<!--                    </ACol>-->
-<!--                    <ACol :span="9">-->
-<!--                      <AFormItem :name="['query', index, 'value']">-->
-<!--                        <AInput-->
-<!--                          v-model:value="item.value"-->
-<!--                          :placeholder="$t('page.manage.menu.form.queryValue')"-->
-<!--                          class="flex-1"-->
-<!--                        />-->
-<!--                      </AFormItem>-->
-<!--                    </ACol>-->
-<!--                    <ACol :span="5">-->
-<!--                      <ASpace class="ml-12px">-->
-<!--                        <AButton size="middle" @click="addQuery(index)">-->
-<!--                          <template #icon>-->
-<!--                            <icon-ic:round-plus class="align-sub text-icon" />-->
-<!--                          </template>-->
-<!--                        </AButton>-->
-<!--                        <AButton size="middle" @click="removeQuery(index)">-->
-<!--                          <template #icon>-->
-<!--                            <icon-ic-round-remove class="align-sub text-icon" />-->
-<!--                          </template>-->
-<!--                        </AButton>-->
-<!--                      </ASpace>-->
-<!--                    </ACol>-->
-<!--                  </div>-->
-<!--                </template>-->
-<!--              </AFormItem>-->
-<!--            </ACol>-->
-<!--            <ACol :span="24">-->
-<!--              <AFormItem :label-col="{ span: 4 }" :label="$t('page.manage.menu.button')" name="buttons">-->
-<!--                <AButton v-if="model.buttons.length === 0" type="dashed" block @click="addButton(-1)">-->
-<!--                  <template #icon>-->
-<!--                    <icon-carbon-add class="align-sub text-icon" />-->
-<!--                  </template>-->
-<!--                  <span class="ml-8px">{{ $t('common.add') }}</span>-->
-<!--                </AButton>-->
-<!--                <template v-else>-->
-<!--                  <div v-for="(item, index) in model.buttons" :key="index" class="flex gap-3">-->
-<!--                    <ACol :span="9">-->
-<!--                      <AFormItem :name="['buttons', index, 'code']">-->
-<!--                        <AInput-->
-<!--                          v-model:value="item.key"-->
-<!--                          :placeholder="$t('page.manage.menu.form.buttonCode')"-->
-<!--                          class="flex-1"-->
-<!--                        ></AInput>-->
-<!--                      </AFormItem>-->
-<!--                    </ACol>-->
-<!--                    <ACol :span="9">-->
-<!--                      <AFormItem :name="['buttons', index, 'desc']">-->
-<!--                        <AInput-->
-<!--                          v-model:value="item.title"-->
-<!--                          :placeholder="$t('page.manage.menu.form.buttonDesc')"-->
-<!--                          class="flex-1"-->
-<!--                        ></AInput>-->
-<!--                      </AFormItem>-->
-<!--                    </ACol>-->
-<!--                    <ACol :span="5">-->
-<!--                      <ASpace class="ml-12px">-->
-<!--                        <AButton size="middle" @click="addButton(index)">-->
-<!--                          <template #icon>-->
-<!--                            <icon-ic:round-plus class="align-sub text-icon" />-->
-<!--                          </template>-->
-<!--                        </AButton>-->
-<!--                        <AButton size="middle" @click="removeButton(index)">-->
-<!--                          <template #icon>-->
-<!--                            <icon-ic-round-remove class="align-sub text-icon" />-->
-<!--                          </template>-->
-<!--                        </AButton>-->
-<!--                      </ASpace>-->
-<!--                    </ACol>-->
-<!--                  </div>-->
-<!--                </template>-->
-<!--              </AFormItem>-->
-<!--            </ACol>-->
+            <!--            <ACol v-if="model.hide_in_menu && !showButtonInput" :lg="12" :xs="24">-->
+            <!--              <AFormItem :label="$t('page.manage.menu.activeMenu')" name="active_menu">-->
+            <!--                <ASelect-->
+            <!--                  v-model:value="model.active_menu as string"-->
+            <!--                  :options="pageOptions"-->
+            <!--                  clearable-->
+            <!--                  :placeholder="$t('page.manage.menu.form.activeMenu')"-->
+            <!--                />-->
+            <!--              </AFormItem>-->
+            <!--            </ACol>-->
+            <!--            <ACol showButtonInput :lg="12" :xs="24">-->
+            <!--              <AFormItem :label="$t('page.manage.menu.multiTab')" name="multi_tab">-->
+            <!--                <ARadioGroup v-model:value="model.multi_tab">-->
+            <!--                  <ARadio :value="2" label="是" >是</ARadio>-->
+            <!--                  <ARadio :value="1" label="否" >否</ARadio>-->
+            <!--                </ARadioGroup>-->
+            <!--              </AFormItem>-->
+            <!--            </ACol>-->
+            <!--            <ACol showButtonInput :lg="12" :xs="24">-->
+            <!--              <AFormItem :label="$t('page.manage.menu.fixedIndexInTab')" name="fixed_index_in_tab">-->
+            <!--                <AInputNumber-->
+            <!--                  v-model:value="model.fixed_index_in_tab as number"-->
+            <!--                  class="w-full"-->
+            <!--                  clearable-->
+            <!--                  :placeholder="$t('page.manage.menu.form.fixedIndexInTab')"-->
+            <!--                />-->
+            <!--              </AFormItem>-->
+            <!--            </ACol>-->
+            <!--            <ACol :span="24">-->
+            <!--              <AFormItem :label-col="{ span: 4 }" :label="$t('page.manage.menu.query')" name="query">-->
+            <!--                <AButton v-if="model.query.length === 0" type="dashed" block @click="addQuery(-1)">-->
+            <!--                  <template #icon>-->
+            <!--                    <icon-carbon-add class="align-sub text-icon" />-->
+            <!--                  </template>-->
+            <!--                  <span class="ml-8px">{{ $t('common.add') }}</span>-->
+            <!--                </AButton>-->
+            <!--                <template v-else>-->
+            <!--                  <div v-for="(item, index) in model.query" :key="index" class="flex gap-3">-->
+            <!--                    <ACol :span="9">-->
+            <!--                      <AFormItem :name="['query', index, 'key']">-->
+            <!--                        <AInput-->
+            <!--                          v-model:value="item.key"-->
+            <!--                          :placeholder="$t('page.manage.menu.form.queryKey')"-->
+            <!--                          class="flex-1"-->
+            <!--                        />-->
+            <!--                      </AFormItem>-->
+            <!--                    </ACol>-->
+            <!--                    <ACol :span="9">-->
+            <!--                      <AFormItem :name="['query', index, 'value']">-->
+            <!--                        <AInput-->
+            <!--                          v-model:value="item.value"-->
+            <!--                          :placeholder="$t('page.manage.menu.form.queryValue')"-->
+            <!--                          class="flex-1"-->
+            <!--                        />-->
+            <!--                      </AFormItem>-->
+            <!--                    </ACol>-->
+            <!--                    <ACol :span="5">-->
+            <!--                      <ASpace class="ml-12px">-->
+            <!--                        <AButton size="middle" @click="addQuery(index)">-->
+            <!--                          <template #icon>-->
+            <!--                            <icon-ic:round-plus class="align-sub text-icon" />-->
+            <!--                          </template>-->
+            <!--                        </AButton>-->
+            <!--                        <AButton size="middle" @click="removeQuery(index)">-->
+            <!--                          <template #icon>-->
+            <!--                            <icon-ic-round-remove class="align-sub text-icon" />-->
+            <!--                          </template>-->
+            <!--                        </AButton>-->
+            <!--                      </ASpace>-->
+            <!--                    </ACol>-->
+            <!--                  </div>-->
+            <!--                </template>-->
+            <!--              </AFormItem>-->
+            <!--            </ACol>-->
+            <!--            <ACol :span="24">-->
+            <!--              <AFormItem :label-col="{ span: 4 }" :label="$t('page.manage.menu.button')" name="buttons">-->
+            <!--                <AButton v-if="model.buttons.length === 0" type="dashed" block @click="addButton(-1)">-->
+            <!--                  <template #icon>-->
+            <!--                    <icon-carbon-add class="align-sub text-icon" />-->
+            <!--                  </template>-->
+            <!--                  <span class="ml-8px">{{ $t('common.add') }}</span>-->
+            <!--                </AButton>-->
+            <!--                <template v-else>-->
+            <!--                  <div v-for="(item, index) in model.buttons" :key="index" class="flex gap-3">-->
+            <!--                    <ACol :span="9">-->
+            <!--                      <AFormItem :name="['buttons', index, 'code']">-->
+            <!--                        <AInput-->
+            <!--                          v-model:value="item.key"-->
+            <!--                          :placeholder="$t('page.manage.menu.form.buttonCode')"-->
+            <!--                          class="flex-1"-->
+            <!--                        ></AInput>-->
+            <!--                      </AFormItem>-->
+            <!--                    </ACol>-->
+            <!--                    <ACol :span="9">-->
+            <!--                      <AFormItem :name="['buttons', index, 'desc']">-->
+            <!--                        <AInput-->
+            <!--                          v-model:value="item.title"-->
+            <!--                          :placeholder="$t('page.manage.menu.form.buttonDesc')"-->
+            <!--                          class="flex-1"-->
+            <!--                        ></AInput>-->
+            <!--                      </AFormItem>-->
+            <!--                    </ACol>-->
+            <!--                    <ACol :span="5">-->
+            <!--                      <ASpace class="ml-12px">-->
+            <!--                        <AButton size="middle" @click="addButton(index)">-->
+            <!--                          <template #icon>-->
+            <!--                            <icon-ic:round-plus class="align-sub text-icon" />-->
+            <!--                          </template>-->
+            <!--                        </AButton>-->
+            <!--                        <AButton size="middle" @click="removeButton(index)">-->
+            <!--                          <template #icon>-->
+            <!--                            <icon-ic-round-remove class="align-sub text-icon" />-->
+            <!--                          </template>-->
+            <!--                        </AButton>-->
+            <!--                      </ASpace>-->
+            <!--                    </ACol>-->
+            <!--                  </div>-->
+            <!--                </template>-->
+            <!--              </AFormItem>-->
+            <!--            </ACol>-->
           </ARow>
         </AForm>
       </SimpleScrollbar>

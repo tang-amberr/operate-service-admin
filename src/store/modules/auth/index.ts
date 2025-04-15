@@ -48,7 +48,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     }
 
     tabStore.cacheTabs();
-    routeStore.resetStore();
+    await routeStore.resetStore();
   }
 
   /**
@@ -61,9 +61,8 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   async function login(userName: string, password: string, code: string,id: string, redirect = true) {
     // startLoading();
     redirectFromLogin()
-    const { data: loginToken, error } = await fetchLogin(userName, password,code, id);
-    console.log('login', loginToken)
-    if (!error) {
+    const { data: loginToken, code: error } = await fetchLogin(userName, password,code, id);
+    if (error === 200) {
       const pass = await loginByToken(loginToken);
 
       if (pass) {
@@ -103,9 +102,9 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
   }
 
   async function getUserInfo1() {
-    const { data: info, error } = await fetchGetUserInfo();
+    const { data: info, code: error } = await fetchGetUserInfo();
 
-    if (!error) {
+    if (error === 200) {
       localStorage.setItem('userInfo', JSON.stringify(info));
       // update store
       Object.assign(userInfo, info);
@@ -120,7 +119,7 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
     const hasToken = getToken();
 
     if (hasToken) {
-      const pass = await getUserInfo();
+      const pass = await getUserInfo1();
 
       if (!pass) {
         resetStore();

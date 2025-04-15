@@ -67,6 +67,7 @@ export function useRouterPush(inSetup = true) {
   async function toLogin(loginModule?: UnionKey.LoginModule, redirectUrl?: string) {
     const module = loginModule || 'pwd-login';
 
+    console.log('login module', module)
     const options: RouterPushOptions = {
       params: {
         module

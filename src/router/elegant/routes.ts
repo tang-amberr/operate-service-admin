@@ -121,16 +121,6 @@ export const generatedRoutes: GeneratedRoute[] = [
     },
     children: [
       {
-        name: 'manage_button',
-        path: '/manage/button',
-        component: 'view.manage_button',
-        meta: {
-          title: '按钮管理',
-          i18nKey: '按钮管理',
-          icon: 'material-symbols-light:radio-button-checked-outline'
-        }
-      },
-      {
         name: 'manage_menu',
         path: '/manage/menu',
         component: 'view.manage_menu',

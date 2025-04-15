@@ -1,13 +1,39 @@
 <script setup lang="tsx">
 import {Button, message, Popconfirm, Tag} from 'ant-design-vue';
-import {editRole, editUser, fetchGetRoleList} from '@/service/api';
+import {editRole,  fetchGetRoleList} from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
-import { enableStatusRecord } from '@/constants/business';
 import RoleOperateDrawer from './modules/role-operate-drawer.vue';
 import RoleSearch from './modules/role-search.vue';
 import {$t} from "@/locales";
+import { useAuth } from '@/hooks/business/auth';
+
 
 const { tableWrapperRef, scrollConfig } = useTableScroll();
+
+const generateActionButtons = (record, editButtonCode, deleteButtonCode) => {
+  const originAuth = useAuth();
+  const hasEdit = originAuth.hasAuth(editButtonCode);
+  const hasDelete = originAuth.hasAuth(deleteButtonCode);
+  const actions = [];
+  if (hasEdit) {
+    actions.push(
+      <Button type="primary" ghost size="small" onClick={() => edit(record.id)}>
+        {$t('common.edit')}
+      </Button>
+    );
+  }
+  if (hasDelete) {
+    actions.push(
+      <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
+        <Button danger size="small">
+          {$t('common.delete')}
+        </Button>
+      </Popconfirm>
+    );
+  }
+
+  return actions.length ? <div class="flex-center gap-8px">{...actions}</div> : null;
+};
 
 const {
   columns,
@@ -68,18 +94,9 @@ const {
       title: $t('common.operate'),
       align: 'center',
       width: 130,
-      customRender: ({ record }) => (
-        <div class="flex-center gap-8px">
-          <Button type="primary" ghost size="small" onClick={() => edit(record.id)}>
-            {$t('common.edit')}
-          </Button>
-          <Popconfirm onConfirm={() => handleDelete(record.id)} title={$t('common.confirmDelete')}>
-            <Button danger size="small">
-              {$t('common.delete')}
-            </Button>
-          </Popconfirm>
-        </div>
-      )
+      customRender: ({ record }) => {
+        return generateActionButtons(record, 'sys:role:edit', 'sys:role:delete');
+      }
     }
   ]
 });
@@ -128,6 +145,7 @@ function edit(id: number) {
       <template #extra>
         <TableHeaderOperation
           v-model:columns="columnChecks"
+          button-perfix="sys:role"
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
           @add="handleAdd"

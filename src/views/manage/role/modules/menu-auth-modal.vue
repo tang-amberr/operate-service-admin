@@ -99,11 +99,6 @@ const onBusinessSelectChange = (selectedKeys, info) => {
   halfSelectedNodes.value = info.halfCheckedKeys;
 };
 
-const loadTreeNode = (selectedKeys, info) => {
-  console.log('load selectedKeys', selectedKeys)
-  console.log('load info', info)
-}
-
 const checks = shallowRef<number[]>([]);
 
 async function getChecks() {

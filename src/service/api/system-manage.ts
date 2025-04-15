@@ -1,4 +1,4 @@
-import {demoRequest, request} from '../request';
+import { demoRequest, request } from '../request';
 
 /** get user list */
 export function fetchGetUserList(data?: Api.SystemManage.UserSearchParams) {
@@ -9,7 +9,7 @@ export function fetchGetUserList(data?: Api.SystemManage.UserSearchParams) {
   });
 }
 
-/** edit user*/
+/** edit user */
 export function editUser(data?: Api.SystemManage.UserSearchParams) {
   return request({
     url: '/manage/user/edit',
@@ -36,24 +36,7 @@ export function fetchGetRoleList(data?: Api.SystemManage.RoleSearchParams) {
   });
 }
 
-/** get button list */
-export function fetchGetButtonList(data?: Api.SystemManage.ButtonSearchParams) {
-  return request<Api.SystemManage.AdminButtonList>({
-    url: '/manage/button/list',
-    method: 'post',
-    data
-  });
-}
-/** edit button*/
-export function editButton(data?: Api.SystemManage.EditAdminButton) {
-  return request({
-    url: '/manage/button/edit',
-    method: 'post',
-    data
-  });
-}
-
-/** get menu list tree*/
+/** get menu list tree */
 export function fetchGetMenuList(data?: Api.Common.CommonSearchParams) {
   return request<Api.SystemManage.MenuList>({
     url: '/manage/router/list',
@@ -62,7 +45,7 @@ export function fetchGetMenuList(data?: Api.Common.CommonSearchParams) {
   });
 }
 /** get menu list */
-export function fetchGetAllPages(data?: {role_id: number }) {
+export function fetchGetAllPages(data?: { role_id: number }) {
   return request<string[]>({
     url: '/manage/router/pages',
     method: 'post',
@@ -91,5 +74,3 @@ export function fetchGetMenuByRoleId(data?: { role_id: number }) {
     data
   });
 }
-
-

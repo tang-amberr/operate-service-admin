@@ -5,7 +5,6 @@ import { useAntdForm, useFormRules } from '@/hooks/common/form';
 import { $t } from '@/locales';
 import { enableStatusOptions } from '@/constants/business';
 import MenuAuthModal from './menu-auth-modal.vue';
-import ButtonAuthModal from './button-auth-modal.vue';
 import {editRole, editUser} from "@/service/api";
 
 defineOptions({
@@ -83,7 +82,7 @@ function closeDrawer() {
 async function handleSubmit() {
   await validate();
   // request
-  console.log('model: ', model.value)
+  model.value.type = props.operateType;
   await editRole(model.value)
   window.$message?.success($t('common.updateSuccess'));
   closeDrawer();
@@ -108,11 +107,11 @@ watch(visible, () => {
         <AInput v-model:value="model.role_desc" :placeholder="$t('page.manage.role.form.roleDesc')" />
       </AFormItem>
     </AForm>
-    <ASpace v-if="isEdit">
-      <AButton @click="openMenuAuthModal">{{ $t('page.manage.role.menuAuth') }}</AButton>
+    <ASpace v-if="isEdit" class="w-full">
+      <AButton type="primary" @click="openMenuAuthModal" class="w-312px">{{ $t('page.manage.role.menuAuth') }}</AButton>
       <MenuAuthModal v-model:visible="menuAuthVisible" :role-id="roleId" :row-data="props.rowData" />
-      <AButton @click="openButtonAuthModal">{{ $t('page.manage.role.buttonAuth') }}</AButton>
-      <ButtonAuthModal v-model:visible="buttonAuthVisible" :role-id="roleId" :row-data="props.rowData" />
+<!--      <AButton @click="openButtonAuthModal">{{ $t('page.manage.role.buttonAuth') }}</AButton>-->
+<!--      <ButtonAuthModal v-model:visible="buttonAuthVisible" :role-id="roleId" :row-data="props.rowData" />-->
     </ASpace>
     <template #footer>
       <div class="flex-y-center justify-end gap-12px">
