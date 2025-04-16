@@ -72,12 +72,12 @@ const debounceGetCaptcha = () => {
   // 设置新定时器
   debounceTimer.value = setTimeout(async () => {
     try {
-      await getCaptcha() // 实际获取验证码的方法
+      await getCaptcha(); // 实际获取验证码的方法
     } finally {
       loading.value = false
       debounceTimer.value = null
     }
-  }, 500) //
+  }, 500); //
 }
 // 初始化时获取验证码
 getCaptcha();

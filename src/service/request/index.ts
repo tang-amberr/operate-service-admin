@@ -20,7 +20,9 @@ export const request = createFlatRequest<App.Service.Response, RequestInstanceSt
     async onRequest(config) {
       const Authorization = getAuthorization();
       Object.assign(config.headers, { Authorization });
-
+      // 添加按钮key
+      Object.assign(config.headers, { 'X-Button-Key': config.data?.buttonKey ?? 'pass' });
+      console.log('27')
       return config;
     },
     isBackendSuccess(response) {

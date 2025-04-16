@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
-import { editUser, fetchGetUserList } from '@/service/api';
+import { deleteUser, fetchGetUserList } from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import { enableStatusRecord } from '@/constants/business';
@@ -53,7 +53,8 @@ const {
     // if you want to use the searchParams in Form, you need to define the following properties, and the value is null
     // the value can not be undefined, otherwise the property in Form will not be reactive
     status: null,
-    username: ''
+    username: '',
+    buttonKey: 'sys:user:list'
   },
   columns: () => [
     {
@@ -140,17 +141,17 @@ const {
 
 async function handleDelete(id: number) {
   // request
-  const res = await editUser({
-    id,
-    type: 'delete'
+  const res = await deleteUser({
+    // 按钮key，用于后端鉴权
+    buttonKey: 'sys:user:delete',
+    id
   });
   if (res.response.data.code === 200) {
-    message.success('删除成功');
+    // message.success('删除成功');
+    onDeleted();
   } else {
     message.error('删除失败');
   }
-
-  onDeleted();
 }
 
 function edit(id: number) {

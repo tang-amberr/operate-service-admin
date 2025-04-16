@@ -56,12 +56,14 @@ export const useAuthStore = defineStore(SetupStoreId.Auth, () => {
    *
    * @param userName User name
    * @param password Password
+   * @param code
+   * @param id
    * @param [redirect=true] Whether to redirect after login. Default is `true`
    */
-  async function login(userName: string, password: string, code: string,id: string, redirect = true) {
+  async function login(userName: string, password: string, code: string, id: string, redirect = true) {
     // startLoading();
     redirectFromLogin()
-    const { data: loginToken, code: error } = await fetchLogin(userName, password,code, id);
+    const { data: loginToken, code: error } = await fetchLogin(userName, password, code, id);
     if (error === 200) {
       const pass = await loginByToken(loginToken);
 

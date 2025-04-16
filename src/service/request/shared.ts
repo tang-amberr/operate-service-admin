@@ -2,6 +2,7 @@ import { useAuthStore } from '@/store/modules/auth';
 import { localStg } from '@/utils/storage';
 import { fetchRefreshToken } from '../api';
 import type { RequestInstanceState } from './type';
+import {useRouterPush} from "@/hooks/common/router";
 
 export function getAuthorization() {
   const token = localStg.get('token');
@@ -28,6 +29,8 @@ async function handleRefreshToken() {
 }
 
 export async function handleExpiredRequest(state: RequestInstanceState) {
+  const { toLogin } = useRouterPush();
+  toLogin();
   if (!state.refreshTokenFn) {
     state.refreshTokenFn = handleRefreshToken();
   }

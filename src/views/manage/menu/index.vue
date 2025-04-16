@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
 import type { Ref } from 'vue';
 import { useBoolean } from '@sa/hooks';
-import { editMenu, fetchGetMenuList } from '@/service/api';
+import { deleteMenu, fetchGetMenuList } from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import { yesOrNoRecord } from '@/constants/common';
@@ -39,7 +39,7 @@ const generateActionButtons = (record, codeMap) => {
   }
   if (hasEdit) {
     actions.push(
-      <Button type="primary" ghost size="small" onClick={() => handleEdit(record.id)}>
+      <Button type="primary" ghost size="small" onClick={() => handleEdit(record)}>
         {$t('common.edit')}
       </Button>
     );
@@ -61,7 +61,8 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
   apiFn: fetchGetMenuList,
   apiParams: {
     current: 1,
-    page_size: 10
+    page_size: 10,
+    buttonKey: 'sys:menu:list'
   },
   columns: () => [
     {
@@ -236,9 +237,10 @@ async function handleBatchDelete() {
 async function handleDelete(id: number) {
   // request
   console.log(id);
-  const res = await editMenu({
-    id,
-    type: 'delete'
+  const res = await deleteMenu({
+    // 按钮key，用于后端鉴权
+    buttonKey: 'sys:menu:delete',
+    id
   });
   if (res.response.data.code !== 200) {
     return;
@@ -251,7 +253,7 @@ const editingData: Ref<Api.SystemManage.Menu | null> = ref(null);
 function handleEdit(item: Api.SystemManage.Menu) {
   operateType.value = 'edit';
   editingData.value = { ...item };
-
+  console.log('handleEdit', item)
   openModal();
 }
 
@@ -305,7 +307,7 @@ const allPages = computed(() => {
         :loading="loading"
         row-key="id"
         :scroll="scrollConfig"
-        :pagination="pagination"
+        :pagination="false"
         class="h-full"
       />
       <MenuOperateModal

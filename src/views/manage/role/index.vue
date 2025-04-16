@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import {Button, message, Popconfirm, Tag} from 'ant-design-vue';
-import {editRole,  fetchGetRoleList} from '@/service/api';
+import {deleteRole,  fetchGetRoleList} from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import RoleOperateDrawer from './modules/role-operate-drawer.vue';
 import RoleSearch from './modules/role-search.vue';
@@ -50,7 +50,8 @@ const {
   apiParams: {
     current: 1,
     page_size: 10,
-    role_name: ''
+    role_name: '',
+    buttonKey: 'sys:role:list'
   },
   columns: () => [
     {
@@ -115,17 +116,16 @@ const {
 
 async function handleDelete(id: number) {
   // request
-  const res = await editRole({
-    id,
-    type: 'delete'
+  const res = await deleteRole({
+    // 按钮key，用于后端鉴权
+    buttonKey: 'sys:role:delete',
+    id
   });
   if (res.response.data.code === 200) {
-    message.success('删除成功');
+    onDeleted();
   } else {
     message.error('删除失败');
   }
-
-  onDeleted();
 }
 
 function edit(id: number) {

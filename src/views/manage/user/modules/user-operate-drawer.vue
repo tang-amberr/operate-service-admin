@@ -93,8 +93,13 @@ function handleInitModel() {
   if (props.operateType === 'edit' && props.rowData) {
     Object.assign(model.value, props.rowData);
   }
-  model.value.role_ids = model.value.user_roles.map(item => item.id);
   model.value.type = props.operateType;
+  // 按钮key，用于后端鉴权
+  if (props.operateType === 'edit') {
+    Object.assign(model.value, { buttonKey: 'sys:user:edit' });
+  } else {
+    Object.assign(model.value, { buttonKey: 'sys:user:add' });
+  }
 }
 
 function closeDrawer() {

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
+import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
+import { Upload, message } from 'ant-design-vue';
 import { useAntdForm, useFormRules } from '@/hooks/common/form';
 import { $t } from '@/locales';
-import {editCouponLink, fetchGetAllCategorys, uploadFile} from "@/service/api";
-import {message, Upload, UploadChangeParam, UploadProps} from "ant-design-vue";
+import { editCouponLink, fetchGetAllCategorys, uploadFile } from '@/service/api';
 
 defineOptions({
   name: 'CategoryOperateDrawer'
@@ -29,7 +30,7 @@ const visible = defineModel<boolean>('visible', {
 });
 
 const { formRef, validate, resetFields } = useAntdForm();
-const { defaultRequiredRule , notZeroRequiredRule} = useFormRules();
+const { defaultRequiredRule, notZeroRequiredRule } = useFormRules();
 
 const title = computed(() => {
   const titles: Record<AntDesign.TableOperateType, string> = {
@@ -41,7 +42,7 @@ const title = computed(() => {
 
 type Model = Pick<
   Api.CouponManage.CouponLinkEditParams,
-  |'type'
+  | 'type'
   | 'cps_link_category_id'
   | 'cps_link_name'
   | 'cps_link_app_id'
@@ -84,12 +85,10 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
 const categoryOptions = ref<CommonType.Option<number>[]>([]);
 
 async function getCategoryOptions() {
-  const { error, data } = await fetchGetAllCategorys(
-    {
-      current: 1,
-      page_size: 10,
-    }
-  );
+  const { error, data } = await fetchGetAllCategorys({
+    current: 1,
+    page_size: 10
+  });
 
   if (!error) {
     const options = data?.list.map(item => ({
@@ -107,7 +106,14 @@ function handleInitModel() {
   if (props.operateType === 'edit' && props.rowData) {
     Object.assign(model.value, props.rowData);
   }
-  model.value.type = props.operateType
+  model.value.type = props.operateType;
+
+  // 按钮key，用于后端鉴权
+  if (props.operateType === 'edit') {
+    Object.assign(model.value, { buttonKey: 'coupon:link:edit' });
+  } else {
+    Object.assign(model.value, { buttonKey: 'coupon:link:add' });
+  }
 }
 
 function closeDrawer() {
@@ -117,7 +123,7 @@ function closeDrawer() {
 async function handleSubmit() {
   await validate();
   // request
-  const res = await editCouponLink(model.value)
+  const res = await editCouponLink(model.value);
   if (res.response.data.code !== 200) {
     window.$message?.error(res.response.data.msg);
     return;
@@ -128,6 +134,7 @@ async function handleSubmit() {
 
 const loading = ref<boolean>(false);
 const imageUrl = ref<string>('');
+
 function getBase64(img: Blob, callback: (base64Url: string) => void) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result as string));
@@ -168,24 +175,24 @@ const beforeUpload: UploadProps['beforeUpload'] = file => {
   return true;
 };
 
-const customUpload= (e) => {
+const customUpload = e => {
   console.log(e);
   const formdata = new FormData();
   formdata.append('file', e.file);
-  formdata.append('type','1');
+  formdata.append('type', '1');
 
   uploadFile(formdata)
-    .then((res) => {
+    .then(res => {
       console.log('上传成功', res.data);
       // 调用实例的成功方法通知组件该文件上传成功
       model.value.cps_link_icon_url = res.data?.url;
       e.onSuccess(res.data, e);
     })
-    .catch((err) => {
+    .catch(err => {
       // 调用实例的失败方法通知组件该文件上传失败
       e.onError(err);
     });
-}
+};
 
 const file = ref([]);
 // const headers = {
@@ -205,9 +212,15 @@ watch(visible, () => {
 <template>
   <ADrawer v-model:open="visible" :title="title" :width="360">
     <AForm ref="formRef" layout="vertical" :model="model" :rules="rules">
-      <AFormItem label="排序值 (越小越靠前)"  name="cps_link_sort">
-        <a-input-number class="w-full" id="inputNumber" v-model:value="model.cps_link_sort" :min="1" :max="1000" placeholder="排序值-越小越靠前"/>
-
+      <AFormItem label="排序值 (越小越靠前)" name="cps_link_sort">
+        <AInputNumber
+          id="inputNumber"
+          v-model:value="model.cps_link_sort"
+          class="w-full"
+          :min="1"
+          :max="1000"
+          placeholder="排序值-越小越靠前"
+        />
       </AFormItem>
       <AFormItem label="名称" name="cps_link_name">
         <AInput v-model:value="model.cps_link_name" placeholder="请输入领券链接名称" />
@@ -216,23 +229,23 @@ watch(visible, () => {
         <ASelect
           v-model:value="model.cps_link_category_id"
           multiple
-          @click="getCategoryOptions"
           :options="categoryOptions"
           placeholder="请选择分类id"
+          @click="getCategoryOptions"
         />
       </AFormItem>
       <AFormItem label="" name="cps_link_status">
         <ARadioGroup v-model:value="model.cps_link_status">
-          <a-radio  :value="1">启用</a-radio>
-          <a-radio  :value="2">禁用</a-radio>
+          <ARadio :value="1">启用</ARadio>
+          <ARadio :value="2">禁用</ARadio>
         </ARadioGroup>
       </AFormItem>
       <AFormItem label="链接类型" name="cps_link_type">
         <ARadioGroup v-model:value="model.cps_link_type">
           <ARadioGroup v-model:value="model.cps_link_type">
-            <a-radio  :value="1">普通链接</a-radio>
-            <a-radio  :value="2">小程序</a-radio>
-            <a-radio  :value="3">APP链接</a-radio>
+            <ARadio :value="1">普通链接</ARadio>
+            <ARadio :value="2">小程序</ARadio>
+            <ARadio :value="3">APP链接</ARadio>
           </ARadioGroup>
         </ARadioGroup>
       </AFormItem>
@@ -246,22 +259,22 @@ watch(visible, () => {
         <AInput v-model:value="model.cps_link_path" placeholder="请输入跳转链接" />
       </AFormItem>
       <AFormItem label="图标地址" name="cps_link_icon_url">
-        <a-upload
+        <AUpload
           v-model:file="file"
           name="file"
           class="avatar-uploader"
           :before-upload="beforeUpload"
-          :customRequest="customUpload"
+          :custom-request="customUpload"
           :show-upload-list="false"
           @change="handleChange"
         >
           <img v-if="imageUrl" :src="imageUrl" alt="icon" />
           <div v-else>
-            <loading-outlllined v-if="loading"></loading-outlllined>
-            <plus-outlined v-else></plus-outlined>
-            <AButton class="bg-gray-300 w-full">上传图标</AButton>
+            <LoadingOutlllined v-if="loading"></LoadingOutlllined>
+            <PlusOutlined v-else></PlusOutlined>
+            <AButton class="w-full bg-gray-300">上传图标</AButton>
           </div>
-        </a-upload>
+        </AUpload>
       </AFormItem>
       <AFormItem label="描述" name="cps_link_desc">
         <ATextarea v-model:value="model.cps_link_desc" placeholder="输入描述" />

@@ -33,7 +33,6 @@ const visible = defineModel<boolean>('visible', {
 const { formRef, validate, resetFields } = useAntdForm();
 const { defaultRequiredRule } = useFormRules();
 const { bool: menuAuthVisible, setTrue: openMenuAuthModal } = useBoolean();
-const { bool: buttonAuthVisible, setTrue: openButtonAuthModal } = useBoolean();
 
 const title = computed(() => {
   const titles: Record<AntDesign.TableOperateType, string> = {
@@ -73,6 +72,13 @@ function handleInitModel() {
   if (props.operateType === 'edit' && props.rowData) {
     Object.assign(model.value, props.rowData);
   }
+  model.value.type = props.operateType;
+  // 按钮key，用于后端鉴权
+  if (props.operateType === 'edit') {
+    Object.assign(model.value, { buttonKey: 'sys:role:edit' });
+  } else {
+    Object.assign(model.value, { buttonKey: 'sys:role:add' });
+  }
 }
 
 function closeDrawer() {
@@ -82,7 +88,6 @@ function closeDrawer() {
 async function handleSubmit() {
   await validate();
   // request
-  model.value.type = props.operateType;
   await editRole(model.value)
   window.$message?.success($t('common.updateSuccess'));
   closeDrawer();

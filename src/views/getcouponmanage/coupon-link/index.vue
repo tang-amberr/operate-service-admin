@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
-import {editCouponLink, fetchGetAllCategorys, fetchGetCouponLinkList} from '@/service/api';
+import {deleteCouponLink, fetchGetAllCategorys, fetchGetCouponLinkList} from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import CouponOperateDrawer from './modules/coupon-operate-drawer.vue';
@@ -43,12 +43,14 @@ const {
   getDataByPage,
   loading,
   searchParams,
+  mobilePagination,
   resetSearchParams
 } = useTable({
   apiFn: fetchGetCouponLinkList,
   apiParams: {
     current: 1,
     page_size: 10,
+    buttonKey: 'coupon:link:list'
     // if you want to use the searchParams in Form, you need to define the following properties, and the value is null
     // the value can not be undefined, otherwise the property in Form will not be reactive
   },
@@ -225,9 +227,8 @@ const categorys = ref<Api.CouponManage.CouponLinkCategory[]>([]);
 const getCategorys = async () => {
   const res = await fetchGetAllCategorys({
     current: 1,
-    page_size: 1000,
+    page_size: 1000
   });
-  console.log(res)
   if(res.response.data.code === 200) {
     categorys.value = res.response.data.data.list;
   }
@@ -236,16 +237,17 @@ const getCategorys = async () => {
 
 async function handleDelete(id: number) {
   // request
-  const res = await editCouponLink({
-    id,
-    type: 'delete'
+  const res = await deleteCouponLink({
+    // 按钮key，用于后端鉴权
+    buttonKey: 'coupon:link:delete',
+    id
   });
   if (res.response.data.code === 200) {
-    message.success('删除成功');
+    // message.success('删除成功');
+    onDeleted();
   } else {
     message.error('删除失败');
   }
-  onDeleted();
 }
 
 
@@ -288,7 +290,7 @@ onMounted(async () => {
         :scroll="scrollConfig"
         :loading="loading"
         row-key="id"
-        :pagination="false"
+        :pagination="mobilePagination"
         class="h-full"
       />
 

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import { useAntdForm, useFormRules } from '@/hooks/common/form';
-import { $t } from '@/locales';
-import {editCategory, editCouponLink, fetchGetAllCategorys, uploadFile} from "@/service/api";
-import {message, Upload, UploadChangeParam, UploadProps} from "ant-design-vue";
+import {computed, ref, watch} from 'vue';
+import type {UploadChangeParam, UploadProps} from 'ant-design-vue';
+import {Upload, message} from 'ant-design-vue';
+import {useAntdForm, useFormRules} from '@/hooks/common/form';
+import {$t} from '@/locales';
+import {editCategory, editCouponLink, fetchGetAllCategorys, uploadFile} from '@/service/api';
 
 defineOptions({
   name: 'CategoryOperateDrawer'
@@ -28,8 +29,8 @@ const visible = defineModel<boolean>('visible', {
   default: false
 });
 
-const { formRef, validate, resetFields } = useAntdForm();
-const { defaultRequiredRule} = useFormRules();
+const {formRef, validate, resetFields} = useAntdForm();
+const {defaultRequiredRule} = useFormRules();
 
 const title = computed(() => {
   const titles: Record<AntDesign.TableOperateType, string> = {
@@ -41,11 +42,7 @@ const title = computed(() => {
 
 type Model = Pick<
   Api.CouponManage.CouponLinkCategoryEditParams,
-  |'type'
- | 'cps_category_name'
-  | 'cps_category_status'
-  | 'cps_category_icon_url'
-  | 'cps_category_desc'
+  'type' | 'cps_category_name' | 'cps_category_status' | 'cps_category_icon_url' | 'cps_category_desc'
 >;
 
 const model = ref(createDefaultModel());
@@ -56,7 +53,7 @@ function createDefaultModel(): Model {
     cps_category_name: '',
     cps_category_icon_url: '',
     cps_category_desc: '',
-    cps_category_status: 1,
+    cps_category_status: 1
   };
 }
 
@@ -73,7 +70,14 @@ function handleInitModel() {
   if (props.operateType === 'edit' && props.rowData) {
     Object.assign(model.value, props.rowData);
   }
-  model.value.type = props.operateType
+  model.value.type = props.operateType;
+
+  // 按钮key，用于后端鉴权
+  if (props.operateType === 'edit') {
+    Object.assign(model.value, { buttonKey: 'coupon:category:edit' });
+  } else {
+    Object.assign(model.value, { buttonKey: 'coupon:category:add' });
+  }
 }
 
 function closeDrawer() {
@@ -83,8 +87,8 @@ function closeDrawer() {
 async function handleSubmit() {
   await validate();
   // request
-  const res = await editCategory(model.value)
-  console.log('res: ', res)
+  const res = await editCategory(model.value);
+  console.log('res: ', res);
   if (res.response.data.code !== 200) {
     window.$message?.error(res.response.data.msg);
     return;
@@ -92,8 +96,10 @@ async function handleSubmit() {
   closeDrawer();
   emit('submitted');
 }
+
 const loading = ref<boolean>(false);
 const imageUrl = ref<string>('');
+
 function getBase64(img: Blob, callback: (base64Url: string) => void) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result as string));
@@ -131,24 +137,24 @@ const beforeUpload: UploadProps['beforeUpload'] = file => {
   return true;
 };
 
-const customUpload= (e) => {
+const customUpload = e => {
   console.log(e);
   const formdata = new FormData();
   formdata.append('file', e.file);
-  formdata.append('type','1');
+  formdata.append('type', '1');
 
   uploadFile(formdata)
-    .then((res) => {
+    .then(res => {
       console.log('上传成功', res.data);
       // 调用实例的成功方法通知组件该文件上传成功
       model.value.cps_category_icon_url = res.data?.url;
       e.onSuccess(res.data, e);
     })
-    .catch((err) => {
+    .catch(err => {
       // 调用实例的失败方法通知组件该文件上传失败
       e.onError(err);
     });
-}
+};
 
 const file = ref({});
 // const headers = {
@@ -159,7 +165,7 @@ watch(visible, () => {
   if (visible.value) {
     handleInitModel();
     resetFields();
-    }
+  }
 });
 </script>
 
@@ -167,32 +173,32 @@ watch(visible, () => {
   <ADrawer v-model:open="visible" :title="title" :width="360">
     <AForm ref="formRef" layout="vertical" :model="model" :rules="rules">
       <AFormItem label="名称" name="cps_category_name">
-        <AInput v-model:value="model.cps_category_name" placeholder="请输入分类名称" />
+        <AInput v-model:value="model.cps_category_name" placeholder="请输入分类名称"/>
       </AFormItem>
       <AFormItem label="" name="cps_category_status">
         <ARadioGroup v-model:value="model.cps_category_status">
-          <a-radio  :value="1">启用</a-radio>
-          <a-radio  :value="2">禁用</a-radio>
+          <ARadio :value="1">启用</ARadio>
+          <ARadio :value="2">禁用</ARadio>
         </ARadioGroup>
       </AFormItem>
       <AFormItem label="图标地址" name="cps_category_icon_url">
-        <a-upload
+        <AUpload
           v-model:file="file"
           name="file"
           :before-upload="beforeUpload"
-          :customRequest="customUpload"
+          :custom-request="customUpload"
           :show-upload-list="false"
           @change="handleChange"
         >
-          <img v-if="imageUrl" :src="imageUrl" alt="icon" />
-          <a-button>
-            <upload-outlined></upload-outlined>
+          <img v-if="imageUrl" :src="imageUrl" alt="icon"/>
+          <AButton>
+            <UploadOutlined></UploadOutlined>
             上传图标
-          </a-button>
-        </a-upload>
+          </AButton>
+        </AUpload>
       </AFormItem>
       <AFormItem label="描述" name="cps_category_desc">
-        <ATextarea v-model:value="model.cps_category_desc" placeholder="输入描述" />
+        <ATextarea v-model:value="model.cps_category_desc" placeholder="输入描述"/>
       </AFormItem>
     </AForm>
     <template #footer>

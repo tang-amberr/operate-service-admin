@@ -93,13 +93,13 @@ function createDefaultModel(): Model {
     route_path: '',
     pathParam: '',
     component: '',
-    layout: '',
+    layout: 'base',
     page: '',
     i18n_key: null,
     icon: '',
     icon_type: 1,
     pid: 0,
-    status: null,
+    status: 1,
     keep_alive: 1,
     constant: 1,
     order: 0,
@@ -187,35 +187,6 @@ async function getRoleOptions() {
   }
 }
 
-/** - add a query input */
-function addQuery(index: number) {
-  model.value.query.splice(index + 1, 0, {
-    key: '',
-    value: ''
-  });
-}
-
-/** - remove a query input */
-function removeQuery(index: number) {
-  model.value.query.splice(index, 1);
-}
-
-/** - add a button input */
-function addButton(index: number) {
-  model.value.buttons.splice(index + 1, 0, {
-    key: '',
-    title: '',
-    id: 0,
-    create_at: '',
-    update_at: ''
-  });
-}
-
-/** - remove a button input */
-function removeButton(index: number) {
-  model.value.buttons.splice(index, 1);
-}
-
 async function handleInitModel() {
   model.value = createDefaultModel();
 
@@ -225,17 +196,22 @@ async function handleInitModel() {
 
   if (props.operateType === 'addChild') {
     const { id } = props.rowData;
-
     Object.assign(model.value, { pid: id });
   }
 
   if (props.operateType === 'edit') {
     const { component, ...rest } = props.rowData;
-    console.log('rowdata', props.rowData);
     const { layout, page } = getLayoutAndPage(component);
     const { path, param } = getPathParamFromRoutePath(rest.route_path);
 
-    Object.assign(model.value, rest, { layout, page, route_path: path, pathParam: param });
+    Object.assign(model.value, rest, {
+      layout,
+      page,
+      route_path: path,
+      pathParam: param
+    });
+    // 按钮key，用于后端鉴权
+    Object.assign(model.value, { buttonKey: 'sys:menu:edit' });
   }
 
   if (!model.value.query) {
@@ -283,10 +259,16 @@ async function handleSubmit() {
 
   const params = getSubmitParams();
 
-  console.log('params: ', params);
   if (props.operateType === 'edit') {
     params.type = 'edit';
   } else {
+    if (params.menu_type === 3) {
+      // 按钮key，用于后端鉴权
+      Object.assign(model.value, { buttonKey: 'sys:menu:addButton' });
+    } else {
+      // 按钮key，用于后端鉴权
+      Object.assign(model.value, { buttonKey: 'sys:menu:addChild' });
+    }
     params.type = 'add';
   }
   // request

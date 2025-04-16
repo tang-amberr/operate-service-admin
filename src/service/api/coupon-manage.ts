@@ -18,6 +18,15 @@ export function editCouponLink(data?: Api.CouponManage.CouponLinkEditParams) {
   });
 }
 
+/** delete role */
+export function deleteCouponLink(data?: {id : number}) {
+  return request({
+    url: '/link/delete',
+    method: 'post',
+    data
+  });
+}
+
 /**
  *
  * these roles are all enabled
@@ -37,6 +46,15 @@ export function fetchGetAllCategorys(data?: Api.CouponManage.CouponLinkCategoryS
 export function editCategory(data?: Api.CouponManage.CouponLinkCategoryEditParams) {
   return request<string[]>({
     url: '/link/category/edit',
+    method: 'post',
+    data
+  });
+}
+
+/** delete role */
+export function deleteCategory(data?: {id : number}) {
+  return request({
+    url: '/link/category/delete',
     method: 'post',
     data
   });

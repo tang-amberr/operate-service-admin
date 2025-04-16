@@ -112,13 +112,13 @@ async function getChecks() {
 }
 
 function handleSubmit() {
-  console.log(checks.value, props.roleId);
   // request
-  if(isChange.value === true) {
+  if(isChange.value) {
     const requestData = {
       ...props.rowData,
       router_ids: allSelectedNodes.value,
-      type: 'edit'
+      type: 'edit',
+      buttonKey: 'sys:role:edit'
     };
     editRole({
       ...requestData
@@ -161,7 +161,6 @@ watch(visible, val => {
       checkable
       :height="280"
       class="h-280px"
-      @load="loadTreeNode"
       @check="onBusinessSelectChange"
     />
     <template #footer>

@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
-import {editCategory, editCouponLink, fetchGetAllCategorys, fetchGetCouponLinkList} from '@/service/api';
+import {editCategory, deleteCategory, fetchGetAllCategorys, fetchGetCouponLinkList} from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import CategoryOperateDrawer from './modules/category-operate-drawer.vue';
@@ -48,6 +48,7 @@ const {
   apiParams: {
     current: 1,
     page_size: 10,
+    buttonKey: 'coupon:category:list'
     // if you want to use the searchParams in Form, you need to define the following properties, and the value is null
     // the value can not be undefined, otherwise the property in Form will not be reactive
   },
@@ -137,17 +138,16 @@ async function handleBatchDelete() {
 
 async function handleDelete(id: number) {
   // request
-  const res = await editCategory({
-    id,
-    type: 'delete'
+  const res = await deleteCategory({
+    // 按钮key，用于后端鉴权
+    buttonKey: 'coupon:category:delete',
+    id
   });
   if (res.response.data.code === 200) {
-    message.success('删除成功');
+    // message.success('删除成功');
+    onDeleted();
   } else {
     message.error('删除失败, ',res.response.data.msg);
-  }
-  if (res.response.data.code === 200) {
-    onDeleted();
   }
 }
 
