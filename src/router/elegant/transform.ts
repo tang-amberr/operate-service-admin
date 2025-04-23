@@ -187,7 +187,10 @@ const routeMap: RouteMap = {
   "manage": "/manage",
   "manage_menu": "/manage/menu",
   "manage_role": "/manage/role",
-  "manage_user": "/manage/user"
+  "manage_user": "/manage/user",
+  "wechatfans": "/wechatfans",
+  "wechatfans_fans": "/wechatfans/fans",
+  "wechatfans_wechatmanage": "/wechatfans/wechatmanage"
 };
 
 /**

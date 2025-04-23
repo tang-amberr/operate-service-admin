@@ -26,4 +26,6 @@ export const views: Record<LastLevelRouteKey, RouteComponent | (() => Promise<Ro
   manage_menu: () => import("@/views/manage/menu/index.vue"),
   manage_role: () => import("@/views/manage/role/index.vue"),
   manage_user: () => import("@/views/manage/user/index.vue"),
+  wechatfans_fans: () => import("@/views/wechatfans/fans/index.vue"),
+  wechatfans_wechatmanage: () => import("@/views/wechatfans/wechatmanage/index.vue"),
 };

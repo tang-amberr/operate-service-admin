@@ -265,9 +265,11 @@ async function handleSubmit() {
     if (params.menu_type === 3) {
       // 按钮key，用于后端鉴权
       Object.assign(model.value, { buttonKey: 'sys:menu:addButton' });
-    } else {
+    } else if(params.menu_type === 2){
       // 按钮key，用于后端鉴权
       Object.assign(model.value, { buttonKey: 'sys:menu:addChild' });
+    } else {
+      Object.assign(model.value, { buttonKey: 'sys:menu:add' });
     }
     params.type = 'add';
   }

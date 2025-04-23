@@ -5,7 +5,7 @@ import {editCouponLink, editUser, fetchGetRoleList} from '@/service/api';
 import { $t } from '@/locales';
 
 defineOptions({
-  name: 'ButtonOperateDrawer'
+  name: 'ResetPassword'
 });
 
 interface Props {
@@ -30,13 +30,6 @@ const visible = defineModel<boolean>('visible', {
 const { formRef, validate, resetFields } = useAntdForm();
 const { defaultRequiredRule } = useFormRules();
 
-const title = computed(() => {
-  const titles: Record<AntDesign.TableOperateType, string> = {
-    add: $t('page.manage.user.addUser'),
-    edit: $t('page.manage.user.editUser')
-  };
-  return titles[props.operateType];
-});
 
 type Model = Pick<
   Api.SystemManage.EditUser,
@@ -50,17 +43,15 @@ function createDefaultModel(): Model {
     password: '',
     username: '',
     status: null,
-    type: 'add',
+    type: 'edit',
     role_ids: [],
     user_roles: []
   };
 }
 
-type RuleKey = Extract<keyof Model, 'username' | 'password' | 'status'>;
+type RuleKey = Extract<keyof Model, 'password'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
-  username: defaultRequiredRule,
-  status: defaultRequiredRule,
   password: defaultRequiredRule
 };
 
@@ -126,28 +117,10 @@ watch(visible, () => {
 </script>
 
 <template>
-  <ADrawer v-model:open="visible" :title="title" :width="360">
+  <ADrawer v-model:open="visible" title="重置密码" :width="80">
     <AForm ref="formRef" layout="vertical" :model="model" :rules="rules">
-      <AFormItem :label="$t('page.manage.user.userName')" name="username">
-        <AInput v-model:value="model.username" :placeholder="$t('page.manage.user.form.userName')" />
-      </AFormItem>
       <AFormItem label="密码" name="password">
         <AInput v-model:value="model.password" placeholder="请输入密码" />
-      </AFormItem>
-      <AFormItem :label="$t('page.manage.user.userStatus')" name="status">
-        <ARadioGroup v-model:value="model.status">
-          <a-radio :value="1">启用</a-radio>
-          <a-radio :value="2">禁用</a-radio>
-        </ARadioGroup>
-      </AFormItem>
-      <AFormItem :label="$t('page.manage.user.userRole')" name="roles">
-        <ASelect
-          v-model:value="model.role_ids"
-          multiple
-          mode="tags"
-          :options="roleOptions"
-          :placeholder="$t('page.manage.user.form.userRole')"
-        />
       </AFormItem>
     </AForm>
     <template #footer>

@@ -42,6 +42,9 @@ declare module "@elegant-router/types" {
     "manage_menu": "/manage/menu";
     "manage_role": "/manage/role";
     "manage_user": "/manage/user";
+    "wechatfans": "/wechatfans";
+    "wechatfans_fans": "/wechatfans/fans";
+    "wechatfans_wechatmanage": "/wechatfans/wechatmanage";
   };
 
   /**
@@ -93,6 +96,7 @@ declare module "@elegant-router/types" {
     | "iframe-page"
     | "login"
     | "manage"
+    | "wechatfans"
   >;
 
   /**
@@ -122,6 +126,8 @@ declare module "@elegant-router/types" {
     | "manage_menu"
     | "manage_role"
     | "manage_user"
+    | "wechatfans_fans"
+    | "wechatfans_wechatmanage"
   >;
 
   /**

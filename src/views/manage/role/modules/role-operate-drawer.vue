@@ -94,6 +94,13 @@ async function handleSubmit() {
   emit('submitted');
 }
 
+// 关闭权限抽屉时，这个抽屉也关闭
+watch(menuAuthVisible, (childVisible)=> {
+  if(!childVisible) {
+    closeDrawer();
+  }
+});
+
 watch(visible, () => {
   if (visible.value) {
     handleInitModel();

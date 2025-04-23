@@ -1,8 +1,8 @@
-import { demoRequest, request } from '../request';
+import { request } from '../request';
 
 /** get user list */
 export function fetchGetUserList(data?: Api.SystemManage.UserSearchParams) {
-  return demoRequest<Api.SystemManage.UserList>({
+  return request<Api.SystemManage.UserList>({
     url: '/manage/user/list',
     method: 'post',
     data

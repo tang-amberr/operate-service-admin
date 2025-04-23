@@ -98,7 +98,7 @@ const {
 
         const label = record.cps_link_status === 1 ? '启用' : '停用';
 
-        return <Tag color={record.cps_link_status === 1 ? 'blue' : 'default'}>{label}</Tag>;
+        return <Tag style="font-size: 14px; line-height: 22px" color={record.cps_link_status === 1 ? 'blue' : 'default'}>{label}</Tag>;
       }
     },
     {
@@ -121,7 +121,7 @@ const {
         const label =
           record.cps_link_type === 1 ? '普通链接' : record.cps_link_type === 2 ? '小程序链接' : 'APP链接';
 
-        return <Tag color={tagMap[record.cps_link_type]}>{label}</Tag>;
+        return <Tag style="font-size: 14px; line-height: 22px" color={tagMap[record.cps_link_type]}>{label}</Tag>;
       }
     },
     {
@@ -148,11 +148,17 @@ const {
         if (record.cps_link_path === null) {
           return null;
         }
-        return (
-          <a-card size="small">
-              {record.cps_link_path}
-          </a-card>
-        );
+        // return (
+        //   <a-card size="small">
+        //       {record.cps_link_path}
+        //   </a-card>
+        // );
+
+        return <a-collapse accordion>
+          <a-collapse-panel key="1" header="点击查看路径">
+            <p>{ record.cps_link_path }</p>
+          </a-collapse-panel>
+        </a-collapse>;
       }
     },
     {

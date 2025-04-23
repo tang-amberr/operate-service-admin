@@ -86,7 +86,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
 
         const label = $t(menuTypeRecord[record.menu_type]);
 
-        return <Tag color={tagMap[record.menu_type]}>{label}</Tag>;
+        return <Tag style="font-size: 14px; line-height: 26px" color={tagMap[record.menu_type]}>{label}</Tag>;
       }
     },
     {
@@ -118,7 +118,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
 
         return (
           <div class="flex-center">
-            <SvgIcon icon={icon} localIcon={localIcon} class="text-icon" />
+            <SvgIcon style="height:1.5em; width: 1.5em" icon={icon} localIcon={localIcon} class="text-icon" />
           </div>
         );
       }
@@ -158,7 +158,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
 
         const label = $t(enableStatusRecord[record.status]);
 
-        return <Tag color={tagMap[record.status]}>{label}</Tag>;
+        return <Tag style="font-size: 14px; line-height: 26px" color={tagMap[record.status]}>{label}</Tag>;
       }
     },
     {
@@ -179,7 +179,7 @@ const { columns, columnChecks, data, loading, pagination, getData, getDataByPage
 
         const label = $t(yesOrNoRecord[hide]);
 
-        return <Tag color={tagMap[hide]}>{label}</Tag>;
+        return <Tag style="font-size: 14px; line-height: 26px" color={tagMap[hide]}>{label}</Tag>;
       }
     },
     {

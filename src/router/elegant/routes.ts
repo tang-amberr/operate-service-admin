@@ -137,7 +137,7 @@ export const generatedRoutes: GeneratedRoute[] = [
         meta: {
           title: 'manage_role',
           i18nKey: 'route.manage_role',
-          icon: 'carbon:user-role'
+          icon: 'material-symbols:person-pin-circle-rounded'
         }
       },
       {
@@ -148,6 +148,40 @@ export const generatedRoutes: GeneratedRoute[] = [
           title: 'manage_user',
           i18nKey: 'route.manage_user',
           icon: 'ic:round-manage-accounts'
+        }
+      }
+    ]
+  },
+  {
+    name: 'wechatfans',
+    path: '/wechatfans',
+    component: 'layout.base',
+    meta: {
+      title: 'wechatfans',
+      i18nKey: 'route.wechatfans',
+      icon: 'ant-design:wechat-work-outlined',
+      order: 4
+    },
+    children: [
+      {
+        name: 'wechatfans_fans',
+        path: '/wechatfans/fans',
+        component: 'view.wechatfans_fans',
+        meta: {
+          title: 'wechatfans_fans',
+          i18nKey: 'route.wechatfans_fans',
+          icon: 'ic:round-people-alt',
+          order: 2
+        }
+      },
+      {
+        name: 'wechatfans_wechatmanage',
+        path: '/wechatfans/wechatmanage',
+        component: 'view.wechatfans_wechatmanage',
+        meta: {
+          title: 'wechatfans_wechatmanage',
+          i18nKey: 'route.wechatfans_wechatmanage',
+          icon: 'material-symbols:enterprise'
         }
       }
     ]

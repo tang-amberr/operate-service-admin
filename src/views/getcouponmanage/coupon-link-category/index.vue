@@ -80,7 +80,7 @@ const {
 
         const label = record.cps_category_status === 1 ? '启用' : '停用';
 
-        return <Tag color={record.cps_category_status === 1 ? 'blue' : 'default'}>{label}</Tag>;
+        return <Tag style="font-size: 14px; line-height: 26px" color={record.cps_category_status === 1 ? 'blue' : 'default'}>{label}</Tag>;
       }
     },
     {
