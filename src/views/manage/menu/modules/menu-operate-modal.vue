@@ -245,7 +245,12 @@ function handleUpdateI18nKeyByRouteName() {
 function getSubmitParams() {
   const { layout, page, pathParam, ...params } = model.value;
 
-  const component = transformLayoutAndPageToComponent(layout, page);
+  let component: string;
+  if(page) {
+    component = transformLayoutAndPageToComponent(null, page);
+  } else {
+    component = transformLayoutAndPageToComponent(layout, page);
+  }
   const routePath = getRoutePathWithParam(model.value.route_path, pathParam);
 
   params.component = component;

@@ -26,6 +26,7 @@ export function transformLayoutAndPageToComponent(layout: string, page: string) 
   const hasLayout = Boolean(layout);
   const hasPage = Boolean(page);
 
+  console.log('haslayout',hasLayout)
   if (hasLayout && hasPage) {
     return `${LAYOUT_PREFIX}${layout}${FIRST_LEVEL_ROUTE_COMPONENT_SPLIT}${VIEW_PREFIX}${page}`;
   }
