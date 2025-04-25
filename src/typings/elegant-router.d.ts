@@ -38,6 +38,11 @@ declare module "@elegant-router/types" {
     "manage": "/manage";
     "manage_coupon-link": "/manage/coupon-link";
     "manage_coupon-link-category": "/manage/coupon-link-category";
+    "wechatfans": "/wechatfans";
+    "wechatfans_fans": "/wechatfans/fans";
+    "wechatfans_qrcode": "/wechatfans/qrcode";
+    "wechatfans_tags": "/wechatfans/tags";
+    "wechatfans_wechatmanage": "/wechatfans/wechatmanage";
   };
 
   /**
@@ -88,6 +93,7 @@ declare module "@elegant-router/types" {
     | "iframe-page"
     | "login"
     | "manage"
+    | "wechatfans"
   >;
 
   /**
@@ -114,6 +120,10 @@ declare module "@elegant-router/types" {
     | "home"
     | "manage_coupon-link-category"
     | "manage_coupon-link"
+    | "wechatfans_fans"
+    | "wechatfans_qrcode"
+    | "wechatfans_tags"
+    | "wechatfans_wechatmanage"
   >;
 
   /**

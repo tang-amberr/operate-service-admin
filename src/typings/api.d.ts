@@ -395,4 +395,120 @@ declare namespace Api {
     >;
     type CouponLinkCategoryStatus = '1' | '2'; // 1 正常 2 停用
   }
+
+  namespace WechatFans {
+    type WechatFansList = {
+      company_fans_id: number;
+      company_fans_name: string;
+      company_fans_profile_picture: string;
+      company_fans_external_user_id: string;
+      company_belong_id: string;
+      company_fans_status: number;
+      company_fans_bind_type: number;
+      company_fans_loss_at: string;
+      company_fans_last_active_time: string;
+    };
+
+    type SearchParams = {
+      company_type: number;
+      /** 当前页 */
+      current: number;
+      /** 每页大小 */
+      page_size: number;
+      [property: string]: any;
+    };
+  }
+
+  namespace FansAnalysis {
+    type FansAnalysis = {
+      company_valid_fans: number;
+      company_accumulated_loss: number;
+      company_accomulated_enter: number;
+    };
+
+    type SearchParams = {
+      company_id: string;
+    };
+  }
+
+  namespace WechatEnterprise {
+    type WechatEnterpriseList = {
+      id: number;
+      company_name: string;
+      company_corp_id: string; // 企业标识
+      company_type: string;
+      company_status: string;
+      company_remarks: string;
+      company_seats_numbers: string;
+      company_agent_id: string;
+      company_create_at: string;
+      company_update_at: string;
+    };
+
+    type SearchParams = {
+      /** 当前页 */
+      current: number;
+      /** 每页大小 */
+      page_size: number;
+      [property: string]: any;
+    };
+  }
+
+  namespace EnterpriseMember {
+    type EnterpriseMemberList = {
+      company_member_user_account: string;
+      company_member_account_type: number;
+      company_member_scope_of_authority: string;
+      company_member_user_name: string;
+      company_member_operate: string;
+    };
+
+    type SearchParams = {
+      company_id: number;
+      /** 当前页 */
+      current: number;
+      /** 每页大小 */
+      page_size: number;
+      [property: string]: any;
+    };
+  }
+  namespace MemberManage {
+    type MemberManageParam = {
+      company_id: number;
+      type: string;
+      user_account: string;
+      user_name: string;
+      account_type: number;
+      authorization_label: string;
+    };
+
+    type SearchParams = {
+      company_id: number;
+      /** 当前页 */
+      current: number;
+      /** 每页大小 */
+      page_size: number;
+      [property: string]: any;
+    };
+  }
+
+  namespace CompanyManage {
+    type CompanyAddParam = {
+      company_name: string;
+      company_type: number;
+      company_status: number;
+      company_remarks: string;
+      company_seats_numbers: number;
+      company_corp_id: string;
+      company_agent_id: string;
+    };
+
+    type SearchParams = {
+      /** 当前页 */
+      current: number;
+      /** 每页大小 */
+      page_size: number;
+      [property: string]: any;
+    };
+  }
 }

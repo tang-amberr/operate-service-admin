@@ -103,5 +103,52 @@ export const generatedRoutes: GeneratedRoute[] = [
         }
       }
     ]
+  },
+  {
+    name: 'wechatfans',
+    path: '/wechatfans',
+    component: 'layout.base',
+    meta: {
+      title: 'wechatfans',
+      i18nKey: 'route.wechatfans'
+    },
+    children: [
+      {
+        name: 'wechatfans_fans',
+        path: '/wechatfans/fans',
+        component: 'view.wechatfans_fans',
+        meta: {
+          title: 'wechatfans_fans',
+          i18nKey: 'route.wechatfans_fans'
+        }
+      },
+      {
+        name: 'wechatfans_qrcode',
+        path: '/wechatfans/qrcode',
+        component: 'view.wechatfans_qrcode',
+        meta: {
+          title: 'wechatfans_qrcode',
+          i18nKey: 'route.wechatfans_qrcode'
+        }
+      },
+      {
+        name: 'wechatfans_tags',
+        path: '/wechatfans/tags',
+        component: 'view.wechatfans_tags',
+        meta: {
+          title: 'wechatfans_tags',
+          i18nKey: 'route.wechatfans_tags'
+        }
+      },
+      {
+        name: 'wechatfans_wechatmanage',
+        path: '/wechatfans/wechatmanage',
+        component: 'view.wechatfans_wechatmanage',
+        meta: {
+          title: 'wechatfans_wechatmanage',
+          i18nKey: 'route.wechatfans_wechatmanage'
+        }
+      }
+    ]
   }
 ];

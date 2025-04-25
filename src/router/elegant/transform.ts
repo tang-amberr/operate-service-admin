@@ -183,7 +183,12 @@ const routeMap: RouteMap = {
   "login": "/login/:module(pwd-login|code-login|register|reset-pwd|bind-wechat)?",
   "manage": "/manage",
   "manage_coupon-link": "/manage/coupon-link",
-  "manage_coupon-link-category": "/manage/coupon-link-category"
+  "manage_coupon-link-category": "/manage/coupon-link-category",
+  "wechatfans": "/wechatfans",
+  "wechatfans_fans": "/wechatfans/fans",
+  "wechatfans_qrcode": "/wechatfans/qrcode",
+  "wechatfans_tags": "/wechatfans/tags",
+  "wechatfans_wechatmanage": "/wechatfans/wechatmanage"
 };
 
 /**
