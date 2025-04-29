@@ -1,29 +1,21 @@
 <script setup lang="tsx">
 import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
-// import {editCategory, deleteCategory, fetchGetAllCategorys, fetchGetCouponLinkList} from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
+import { companyQrcodeList } from '@/service/api/wechatfans';
 import QrcodeOperateDrawer from './modules/qrcode-operate-drawer.vue';
 import QrcodeSearch from './modules/qrcode-search.vue';
-import {useAuth} from "@/hooks/business/auth";
 
 const { tableWrapperRef, scrollConfig } = useTableScroll();
 
-const {
-  columns,
-  columnChecks,
-  data,
-  getData,
-  getDataByPage,
-  loading,
-  searchParams,
-  resetSearchParams
-} = useTable({
-  // apiFn: fetchGetAllCategorys,
+let innerData: Api.LiveCode.AssociatedEmployee[] = [];
+
+const { columns, columnChecks, data, getData, getDataByPage, loading, searchParams, resetSearchParams } = useTable({
+  apiFn: companyQrcodeList,
   apiParams: {
     current: 1,
-    page_size: 10,
-    buttonKey: 'coupon:category:list'
+    page_size: 10
+    // buttonKey: 'coupon:category:list'
     // if you want to use the searchParams in Form, you need to define the following properties, and the value is null
     // the value can not be undefined, otherwise the property in Form will not be reactive
   },
@@ -36,48 +28,50 @@ const {
       width: 50
     },
     {
-      key: 'cps_category_name',
-      title: '名称',
+      key: 'company_name',
+      title: '企业名称',
       align: 'center',
-      dataIndex: 'cps_category_name',
+      dataIndex: 'company_name',
       width: 100
     },
     {
-      key: 'cps_category_status',
-      dataIndex: 'cps_category_status',
-      title: '分类状态',
+      key: 'channel_name',
+      title: '渠道名称',
       align: 'center',
-      width: 100,
-      customRender: ({ record }) => {
-        if (record.cps_category_status === null) {
-          return null;
-        }
-
-        const label = record.cps_category_status === 1 ? '启用' : '停用';
-
-        return <Tag style="font-size: 14px; line-height: 26px" color={record.cps_category_status === 1 ? 'blue' : 'default'}>{label}</Tag>;
-      }
+      dataIndex: 'channel_name',
+      width: 100
     },
     {
-      key: 'cps_category_icon_url',
-      dataIndex: 'cps_category_icon_url',
-      title: '图标',
+      key: 'qrcode_link',
+      title: '二维码',
       align: 'center',
-      width: 150,
-      customRender: ({ record }) =>{
+      dataIndex: 'qrcode_link',
+      width: 280,
+      height: 280,
+      customRender: ({ record }) => {
         return (
           <div class="flex-center">
-            <img class="w-100px" src={`https://private-domin-1327252780.cos.ap-chengdu.myqcloud.com/hqt/admin/${  record.cps_category_icon_url}` } alt="icon" class="w-40px h-40px" />
+            <img class="w-150px" src={record.qrcode_link} alt="icon" />
           </div>
         );
       }
     },
     {
-      key: 'cps_category_desc',
-      dataIndex: 'cps_category_desc',
-      title: '描述',
+      key: 'add_fans_num',
+      dataIndex: 'add_fans_num',
+      title: '今日新加客户',
       align: 'center',
-      width: 200
+      width: 100
+    },
+    {
+      key: 'associated_employee',
+      dataIndex: 'associated_employee',
+      title: '关联成员',
+      align: 'center',
+      width: 200,
+      customRender: ({ record }) => {
+        innerData = record.associated_employee;
+      }
     },
     {
       key: 'operate',
@@ -85,20 +79,30 @@ const {
       align: 'center',
       width: 130,
       customRender: ({ record }) => {
-        return <div class="flex-center gap-8px">
-          <Button type="primary" ghost size="small" onClick={() => edit(record.id)}>
-            {$t('common.edit')}
-          </Button>
-          <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
-            <Button danger size="small">
-              {$t('common.delete')}
+        return (
+          <div class="flex-center gap-8px">
+            <Button type="primary" ghost size="small" onClick={() => edit(record.id)}>
+              {$t('common.edit')}
             </Button>
-          </Popconfirm>
-        </div>;
+            <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
+              <Button danger size="small">
+                {$t('common.delete')}
+              </Button>
+            </Popconfirm>
+          </div>
+        );
       }
     }
   ]
 });
+
+const innerColumns = [
+  { title: '成员id', dataIndex: 'employee_id', key: 'employee_id' },
+  { title: '成员名称', dataIndex: 'employee_name', key: 'employee_name' },
+  { title: '每日添加限制', dataIndex: 'employee_limit_num', key: 'employee_limit_num' },
+  { title: '当天已加好友', dataIndex: 'employee_has_add', key: 'employee_has_add' },
+  { title: '当天状态', dataIndex: 'employee_status', key: 'employee_status' }
+];
 
 const {
   drawerVisible,
@@ -131,7 +135,7 @@ async function handleDelete(id: number) {
     // message.success('删除成功');
     onDeleted();
   } else {
-    message.error('删除失败, ',res.response.data.msg);
+    message.error('删除失败, ', res.response.data.msg);
   }
 }
 
@@ -165,13 +169,45 @@ function edit(id: number) {
         :columns="columns"
         :data-source="data"
         size="small"
-        :row-selection="rowSelection"
         :scroll="scrollConfig"
         :loading="loading"
         row-key="id"
         :pagination="false"
         class="h-full"
-      />
+      >
+        <template #expandedRowRender>
+          <ATable :columns="innerColumns" :data-source="innerData" :pagination="false">
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.key === 'employee_status'">
+                <span>
+                  <Tag v-if="record.employee_status === 1" style="font-size: 14px; line-height: 22px" color="blue">
+                    正常
+                  </Tag>
+                  <Tag v-else style="font-size: 14px; line-height: 22px" color="default">正常</Tag>
+                </span>
+              </template>
+              <template v-else-if="column.key === 'operation'">
+                <span class="table-operation">
+                  <a>Pause</a>
+                  <a>Stop</a>
+                  <ADropdown>
+                    <template #overlay>
+                      <AMenu>
+                        <AMenuItem>Action 1</AMenuItem>
+                        <AMenuItem>Action 2</AMenuItem>
+                      </AMenu>
+                    </template>
+                    <a>
+                      More
+                      <DownOutlined />
+                    </a>
+                  </ADropdown>
+                </span>
+              </template>
+            </template>
+          </ATable>
+        </template>
+      </ATable>
 
       <QrcodeOperateDrawer
         v-model:visible="drawerVisible"

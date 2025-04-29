@@ -64,3 +64,20 @@ export function companyTags(data: { company_id: string }) {
   });
 }
 
+// 企微活码列表
+export function companyQrcodeList(data: Api.LiveCode.SearchParams) {
+  return request<Api.LiveCode.CompanyQrcodeList>({
+    url: '/company/qrcode/list',
+    method: 'post',
+    data
+  });
+}
+
+// 企微标签列表
+export function companyTagList(data: Api.CompanyTag.SearchParams) {
+  return request<Api.CompanyTag.CompanyTagList>({
+    url: '/company/tags/page',
+    method: 'post',
+    data
+  });
+}

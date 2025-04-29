@@ -240,7 +240,7 @@ declare namespace Api {
       /** 小程序appid */
       op_cps_link_app_id: string;
       /** 领券链接分类id */
-      op_cps_link_category_id: number|null;
+      op_cps_link_category_id: number | null;
       /** 备注 */
       op_cps_link_desc: string;
       /** 图标地址 */
@@ -329,7 +329,7 @@ declare namespace Api {
         | 'op_cps_link_type'
         | 'op_cps_link_desc'
       > &
-      Common.CommonSearchParams
+        Common.CommonSearchParams
     >;
 
     type CouponLinkCategory = Common.CommonRecord<{
@@ -504,6 +504,91 @@ declare namespace Api {
     };
 
     type SearchParams = {
+      /** 当前页 */
+      current: number;
+      /** 每页大小 */
+      page_size: number;
+      [property: string]: any;
+    };
+  }
+
+  /** 活码结构 */
+  namespace LiveCode {
+    type CompanyQrcodeList = {
+      /** 今日新加客户数 */
+      add_fans_num: number;
+      /** 添加时间 */
+      add_time: string;
+      /** 关联成员详情 */
+      associated_employee: AssociatedEmployee[];
+      /** 渠道名称 */
+      channel_name: string;
+      /** 企业名称 */
+      company_name: string;
+      /** 活码Id */
+      qrcode_id: number;
+      /** 二维码地址 */
+      qrcode_link: string;
+      /** 标签 */
+      tags: string;
+    };
+
+    /** AssociatedEmployee */
+    export interface AssociatedEmployee {
+      /** 当天已添加客户数 */
+      employee_has_add: number;
+      /** 成员Id */
+      employee_id: number;
+      /** 每日添加限制 */
+      employee_limit_num: number;
+      /** 成员名称 */
+      employee_name: string;
+      /** 当天状态 */
+      employee_status: number;
+    }
+
+    type SearchParams = {
+      /** 企业Id */
+      company_id: number;
+      /** 渠道名称 */
+      channel_name: string;
+      /** 当前页 */
+      current: number;
+      /** 每页大小 */
+      page_size: number;
+      [property: string]: any;
+    };
+  }
+
+  /** 企业标签结构 */
+  namespace CompanyTag {
+    type CompanyTagList = {
+      id: number;
+      /** 标签名称 */
+      tag_name?: string;
+      /**
+       * 企业名称
+       */
+      company_name: string;
+      /**
+       * 标签ID
+       */
+      fans_tags_id: string;
+      /**
+       * 父标签名称
+       */
+      father_name: string;
+      /**
+       * 标签名称
+       */
+      tags_name: string;
+    };
+
+    type SearchParams = {
+      /** 企业自增id */
+      company_id: number;
+      /** 父标签ID */
+      pid?: number;
       /** 当前页 */
       current: number;
       /** 每页大小 */

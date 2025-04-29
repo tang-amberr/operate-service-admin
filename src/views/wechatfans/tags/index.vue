@@ -1,10 +1,9 @@
 <script setup lang="tsx">
 import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
-import {editCategory, deleteCategory, fetchGetAllCategorys, fetchGetCouponLinkList} from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
-import { $t } from '@/locales';
 import QrcodeOperateDrawer from './modules/qrcode-operate-drawer.vue';
-import QrcodeSearch from './modules/qrcode-search.vue';
+import TagSearch from './modules/tag-search.vue';
+import {companyTagList} from "@/service/api/wechatfans";
 
 const { tableWrapperRef, scrollConfig } = useTableScroll();
 
@@ -12,16 +11,17 @@ const {
   columns,
   columnChecks,
   data,
+  mobilePagination,
   getData,
   getDataByPage,
   loading,
   searchParams,
   resetSearchParams
 } = useTable({
-  apiFn: fetchGetAllCategorys,
+  apiFn: companyTagList,
   apiParams: {
     current: 1,
-    page_size: 10,
+    page_size: 10
     // if you want to use the searchParams in Form, you need to define the following properties, and the value is null
     // the value can not be undefined, otherwise the property in Form will not be reactive
   },
@@ -34,66 +34,32 @@ const {
       width: 50
     },
     {
-      key: 'cps_category_name',
-      title: '名称',
+      key: 'fans_tags_id',
+      title: '标签id',
       align: 'center',
-      dataIndex: 'cps_category_name',
+      dataIndex: 'fans_tags_id',
       width: 100
     },
     {
-      key: 'cps_category_status',
-      dataIndex: 'cps_category_status',
-      title: '分类状态',
+      key: 'tags_name',
+      title: '标签名称',
       align: 'center',
-      width: 100,
-      customRender: ({ record }) => {
-        if (record.cps_category_status === null) {
-          return null;
-        }
-
-        const label = record.cps_category_status === 1 ? '启用' : '停用';
-
-        return <Tag style="font-size: 14px; line-height: 26px" color={record.cps_category_status === 1 ? 'blue' : 'default'}>{label}</Tag>;
-      }
+      dataIndex: 'tags_name',
+      width: 100
     },
     {
-      key: 'cps_category_icon_url',
-      dataIndex: 'cps_category_icon_url',
-      title: '图标',
+      key: 'company_name',
+      dataIndex: 'company_name',
+      title: '企业名称',
       align: 'center',
-      width: 150,
-      customRender: ({ record }) =>{
-        return (
-          <div class="flex-center">
-            <img class="w-100px" src={`https://private-domin-1327252780.cos.ap-chengdu.myqcloud.com/hqt/admin/${  record.cps_category_icon_url}` } alt="icon" class="w-40px h-40px" />
-          </div>
-        );
-      }
+      width: 150
     },
     {
-      key: 'cps_category_desc',
-      dataIndex: 'cps_category_desc',
-      title: '描述',
+      key: 'father_name',
+      dataIndex: 'father_name',
+      title: '父标签名称',
       align: 'center',
       width: 200
-    },
-    {
-      key: 'operate',
-      title: $t('common.operate'),
-      align: 'center',
-      width: 130,
-      customRender: ({ record }) => {
-        return <div class="flex-center gap-8px">
-          <Button type="primary" ghost size="small" onClick={() => edit(record.id)}>
-            {$t('common.edit')}
-          </Button>
-          <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
-            <Button danger size="small">
-              {$t('common.delete')}
-            </Button>
-          </Popconfirm>
-        </div>;
-      }
     }
   ]
 });
@@ -140,7 +106,7 @@ function edit(id: number) {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <QrcodeSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage" />
+    <TagSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage" />
     <ACard
       title="所有企业成员列表"
       :bordered="false"
@@ -167,7 +133,7 @@ function edit(id: number) {
         :scroll="scrollConfig"
         :loading="loading"
         row-key="id"
-        :pagination="false"
+        :pagination="mobilePagination"
         class="h-full"
       />
 

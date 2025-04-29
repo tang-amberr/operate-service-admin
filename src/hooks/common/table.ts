@@ -34,22 +34,22 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
     apiParams,
     columns: config.columns,
     transformer: res => {
-      const { list = [], current = 1, page_size = 10, total = 0 } = res.data || {};
-
+      const { list = [], page } = res.data || {};
+      const {current = 1, request_page_size = 10, total = 0 } = page || {};
       // Ensure that the size is greater than 0, If it is less than 0, it will cause paging calculation errors.
-      const pageSize = page_size <= 0 ? 10 : page_size;
-
+      // const pageSize = page_size <= 0 ? 10 : page_size;
+      // dataList.value = list;
       const recordsWithIndex = list.map((item, index) => {
         return {
           ...item,
-          index: (current - 1) * pageSize + index + 1
+          index: index + 1
         };
       });
 
       return {
         data: recordsWithIndex,
         pageNum: current,
-        pageSize,
+        page_size: request_page_size,
         total
       };
     },
