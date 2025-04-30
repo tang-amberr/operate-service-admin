@@ -61,7 +61,7 @@ const roleOptions = ref<CommonType.Option<string>[]>([]);
 async function getRoleOptions() {
   const { error, data } = await fetchGetRoleList({
     current: 1,
-    page_size: 10
+    page_size: 1000
   });
 
   if (!error) {

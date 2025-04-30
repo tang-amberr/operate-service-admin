@@ -116,7 +116,7 @@ function handleSubmit() {
   if(isChange.value) {
     const requestData = {
       ...props.rowData,
-      router_ids: allSelectedNodes.value,
+      router_ids: allSelectedNodes.value.join(','),
       type: 'edit',
       buttonKey: 'sys:role:edit'
     };

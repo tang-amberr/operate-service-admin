@@ -51,7 +51,7 @@ function createDefaultModel(): Model {
     type: 'add',
     role_name: '',
     role_desc: '',
-    router_ids: [],
+    router_ids: '',
     button_ids: []
   };
 }

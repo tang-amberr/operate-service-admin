@@ -8,6 +8,7 @@ import { $t } from '@/locales';
 import { getAuthorization, handleExpiredRequest, showErrorMsg } from './shared';
 import type { RequestInstanceState } from './type';
 const { endLoading } = useLoading();
+import { router } from '@/router';
 
 const isHttpProxy = import.meta.env.DEV && import.meta.env.VITE_HTTP_PROXY === 'Y';
 const { baseURL, otherBaseURL } = getServiceBaseURL(import.meta.env, isHttpProxy);
@@ -30,6 +31,7 @@ export const request = createFlatRequest<App.Service.Response, RequestInstanceSt
       return String(response.data.code) === import.meta.env.VITE_SERVICE_SUCCESS_CODE;
     },
     async onBackendFail(response, instance) {
+      console.log('request fail', response)
       const authStore = useAuthStore();
       const responseCode = String(response.data.code);
 
@@ -149,6 +151,21 @@ export const demoRequest = createRequest<App.Service.DemoResponse>(
     async onBackendFail(_response) {
       // when the backend response code is not "200", it means the request is fail
       // for example: the token is expired, refresh token and retry request
+      function redirectLogin() {
+        return new Promise<void>((resolve, reject) => {
+          setTimeout(() => {
+            const authStore = useAuthStore();
+            authStore.resetStore();  // 参考退出登录的逻辑
+            resolve();
+          }, 500);
+        })
+      }
+      const logoutCodes = import.meta.env.VITE_SERVICE_LOGOUT_CODES?.split(',') || [];
+      console.log('logoutCodes', logoutCodes)
+      if (logoutCodes.includes(_response.data.code.toString())) {
+        redirectLogin();
+      }
+      console.log(_response)
     },
     transformBackendResponse(response) {
       return response.data;

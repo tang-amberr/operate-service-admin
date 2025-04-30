@@ -40,7 +40,7 @@ const generateActionButtons = (record, editButtonCode, deleteButtonCode) => {
       );
     } else {
       actions.push(
-          <Button danger type="primary" ghost size="small" onClick={() => handleClose(record)}>
+          <Button danger type="primary" dashed size="small" onClick={() => handleClose(record)}>
             { '解禁' }
           </Button>,
       );
