@@ -59,7 +59,14 @@ const {
       dataIndex: 'father_name',
       title: '父标签名称',
       align: 'center',
-      width: 200
+      width: 200,
+      customRender: ({ record }) => {
+        return (
+          <Tag v-if="record.employee_status === 1" style="font-size: 14px; line-height: 22px" color="cyan">
+            re
+          </Tag>
+        );
+      }
     }
   ]
 });
@@ -69,44 +76,15 @@ const {
   operateType,
   editingData,
   handleAdd,
-  handleEdit,
   checkedRowKeys,
   rowSelection,
-  onBatchDeleted,
-  onDeleted
-  // closeDrawer
 } = useTableOperate(data, getData);
 
-async function handleBatchDelete() {
-  // request
-  // console.log(checkedRowKeys.value);
-
-  onBatchDeleted();
-}
-
-async function handleDelete(id: number) {
-  // request
-  const res = await deleteCategory({
-    // 按钮key，用于后端鉴权
-    buttonKey: 'coupon:category:delete',
-    id
-  });
-  if (res.response.data.code === 200) {
-    // message.success('删除成功');
-    onDeleted();
-  } else {
-    message.error('删除失败, ',res.response.data.msg);
-  }
-}
-
-function edit(id: number) {
-  handleEdit(id);
-}
 </script>
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <TagSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage" />
+    <TagSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getData" />
     <ACard
       title="所有企业成员列表"
       :bordered="false"
@@ -120,7 +98,6 @@ function edit(id: number) {
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
           @add="handleAdd"
-          @delete="handleBatchDelete"
           @refresh="getData"
         />
       </template>

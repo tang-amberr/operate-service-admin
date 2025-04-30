@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
 import { useAntdForm, useFormRules } from '@/hooks/common/form';
-import {fetchGetAllCategorys} from "@/service/api";
+import { fetchGetAllCategorys } from '@/service/api';
+import {companyTagList, enterpriseList} from '@/service/api/wechatfans';
+import {onMounted, ref} from "vue";
 
 defineOptions({
   name: 'TagSearch'
@@ -29,30 +31,52 @@ async function reset() {
   emit('reset');
 }
 
-async function getCompanyOptions() { // todo
-  const { error, data } = await fetchGetAllCategorys(
-    {
-      current: 1,
-      page_size: 10,
-      type: 'list'
-    }
-  );
+const companyOptions = ref<CommonType.Option<number>[]>([]);
+// 企业列表
+async function getCompanyOptions() {
+  const { error, data } = await enterpriseList({
+    current: 1,
+    page_size: 100
+  });
 
   if (!error) {
     const options = data?.list.map(item => ({
-      label: item.op_cps_category_name,
+      label: item.company_name,
       value: item.id
     }));
 
-    categoryOptions.value = [...options];
+    companyOptions.value = [...options];
+  }
+}
+
+const parentTagOptions = ref<CommonType.Option<number>[]>([]);
+// 父标签列表
+async function getParentTagOptions() {
+  const { error, data } = await companyTagList({
+    current: 1,
+    page_size: 100,
+    query_pid: 1
+  });
+
+  if (!error) {
+    const options = data?.list.map(item => ({
+      label: item.tags_name,
+      value: item.id
+    }));
+
+    parentTagOptions.value = [...options];
   }
 }
 
 async function search() {
   await validate();
-
   emit('search');
 }
+onMounted(() => {
+  getCompanyOptions();
+  getParentTagOptions();
+});
+
 </script>
 
 <template>
@@ -68,7 +92,12 @@ async function search() {
       <ARow :gutter="[16, 16]" wrap>
         <ACol :span="24" :md="12" :lg="6">
           <AFormItem label="父标签" name="pid" class="m-0">
-            <AInput v-model:value.number="model.pid" placeholder="请选择父标签" />
+            <ASelect
+              v-model:value="model.pid"
+              multiple
+              :options="parentTagOptions"
+              placeholder="请选择分类id"
+            />
           </AFormItem>
         </ACol>
         <ACol :span="24" :md="12" :lg="6">
@@ -77,15 +106,13 @@ async function search() {
           </AFormItem>
         </ACol>
         <ACol :span="24" :md="12" :lg="6">
-          <AFormItem label="链接状态" name="company_id" class="m-0">
+          <AFormItem label="公司" name="company_id" class="m-0">
             <ASelect
               v-model:value="model.company_id"
-              placeholder="选择公司"
-              clearable
-            >
-              <a-select-option :value="1">启用</a-select-option>
-              <a-select-option :value="2">停用</a-select-option>
-            </ASelect>
+              multiple
+              :options="companyOptions"
+              placeholder="请选择分类id"
+            />
           </AFormItem>
         </ACol>
         <div class="flex-1">

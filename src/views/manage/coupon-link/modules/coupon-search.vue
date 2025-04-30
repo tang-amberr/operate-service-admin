@@ -44,7 +44,6 @@ async function reset() {
 }
 
 async function search() {
-  model.value.type = 'search';
   await validate();
   emit('search');
 }
