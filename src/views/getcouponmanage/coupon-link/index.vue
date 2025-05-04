@@ -40,7 +40,6 @@ const {
   columnChecks,
   data,
   getData,
-  getDataByPage,
   loading,
   searchParams,
   mobilePagination,
@@ -269,7 +268,7 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <CouponLinkSearch v-model:model="searchParams" @reset="resetSearchParams" :categorys="categorys" @search="getDataByPage" />
+    <CouponLinkSearch v-model:model="searchParams" @reset="resetSearchParams" :categorys="categorys" @search="getData" />
     <ACard
       title="领券链接列表"
       :bordered="false"
@@ -304,7 +303,7 @@ onMounted(async () => {
         v-model:visible="drawerVisible"
         :operate-type="operateType"
         :row-data="editingData"
-        @submitted="getDataByPage"
+        @submitted="getData"
       />
     </ACard>
   </div>

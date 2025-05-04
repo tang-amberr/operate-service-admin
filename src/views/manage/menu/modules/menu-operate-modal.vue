@@ -93,7 +93,7 @@ function createDefaultModel(): Model {
     route_path: '',
     pathParam: '',
     component: '',
-    layout: 'base',
+    layout: '',
     page: '',
     i18n_key: null,
     icon: '',
@@ -114,13 +114,14 @@ function createDefaultModel(): Model {
   };
 }
 
-type RuleKey = Extract<keyof Model, 'menu_name' | 'status' | 'route_name' | 'route_path'>;
+type RuleKey = Extract<keyof Model, 'menu_name' | 'status' | 'route_name' | 'route_path' | 'i18n_key'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
   menu_name: defaultRequiredRule,
   status: defaultRequiredRule,
   route_name: defaultRequiredRule,
-  route_path: defaultRequiredRule
+  route_path: defaultRequiredRule,
+  i18n_key: defaultRequiredRule
 };
 
 const disabledMenuType = computed(() => props.operateType === 'edit');
@@ -194,6 +195,7 @@ async function handleInitModel() {
 
   await nextTick();
 
+  // 添加子菜单
   if (props.operateType === 'addChild') {
     const { id } = props.rowData;
     Object.assign(model.value, { pid: id });
@@ -246,11 +248,9 @@ function getSubmitParams() {
   const { layout, page, pathParam, ...params } = model.value;
 
   let component: string;
-  if(page) {
-    component = transformLayoutAndPageToComponent(null, page);
-  } else {
+
     component = transformLayoutAndPageToComponent(layout, page);
-  }
+
   const routePath = getRoutePathWithParam(model.value.route_path, pathParam);
 
   params.component = component;
@@ -367,8 +367,8 @@ watch(
               </AFormItem>
             </ACol>
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.i18nKey')" name="i18n_key">
-                <AInput v-model:value="model.i18n_key as string" :placeholder="$t('page.manage.menu.form.i18nKey')" />
+              <AFormItem label="i18key/菜单名" name="i18n_key">
+                <AInput v-model:value="model.i18n_key as string" placeholder="请输入菜单名" />
               </AFormItem>
             </ACol>
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">

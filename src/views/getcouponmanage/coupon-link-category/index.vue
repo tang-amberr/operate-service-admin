@@ -39,7 +39,6 @@ const {
   columnChecks,
   data,
   getData,
-  getDataByPage,
   loading,
   searchParams,
   resetSearchParams
@@ -158,7 +157,7 @@ function edit(id: number) {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <CategorySearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage" />
+    <CategorySearch v-model:model="searchParams" @reset="resetSearchParams" @search="getData" />
     <ACard
       title="领券链接分类列表"
       :bordered="false"
@@ -193,7 +192,7 @@ function edit(id: number) {
         v-model:visible="drawerVisible"
         :operate-type="operateType"
         :row-data="editingData"
-        @submitted="getDataByPage"
+        @submitted="getData"
       />
     </ACard>
   </div>

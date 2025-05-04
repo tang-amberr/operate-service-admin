@@ -75,7 +75,6 @@ const {
   columnChecks,
   data,
   getData,
-  getDataByPage,
   loading,
   mobilePagination,
   searchParams,
@@ -252,7 +251,7 @@ function edit(id: number) {
     <UserSearch
       v-model:model="searchParams"
       @reset="resetSearchParams"
-      @search="getDataByPage"
+      @search="getData"
     />
     <ACard
       :title="$t('page.manage.user.title')"
@@ -287,13 +286,7 @@ function edit(id: number) {
         v-model:visible="drawerVisible"
         :operate-type="operateType"
         :row-data="editingData"
-        @submitted="getDataByPage"
-      />
-      <ResetPassword
-        v-model:visible="drawerVisible"
-        :operate-type="operateType"
-        :row-data="editingData"
-        @submitted="getDataByPage"
+        @submitted="getData"
       />
     </ACard>
   </div>

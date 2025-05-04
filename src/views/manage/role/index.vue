@@ -41,7 +41,6 @@ const {
   data,
   loading,
   getData,
-  getDataByPage,
   mobilePagination,
   searchParams,
   resetSearchParams
@@ -135,7 +134,7 @@ function edit(id: number) {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <RoleSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getDataByPage" />
+    <RoleSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getData" />
     <ACard
       :title="$t('page.manage.role.title')"
       :bordered="false"
@@ -168,7 +167,7 @@ function edit(id: number) {
         v-model:visible="drawerVisible"
         :operate-type="operateType"
         :row-data="editingData"
-        @submitted="getDataByPage"
+        @submitted="getData"
       />
     </ACard>
   </div>

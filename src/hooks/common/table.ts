@@ -11,7 +11,6 @@ import { $t } from '@/locales';
 type TableData = AntDesign.TableData;
 type GetTableData<A extends AntDesign.TableApiFn> = AntDesign.GetTableData<A>;
 type TableColumn<T> = AntDesign.TableColumn<T>;
-const dataList = ref();
 export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDesignTableConfig<A>) {
   const scope = effectScope();
   const appStore = useAppStore();
@@ -35,7 +34,7 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
     columns: config.columns,
     transformer: res => {
       const { list = [], page } = res.data || {};
-      const {current = 1, request_page_size = 10, total = 0 } = page || {};
+      const { current = 1, request_page_size = 10, total = 0 } = page || {};
       // Ensure that the size is greater than 0, If it is less than 0, it will cause paging calculation errors.
       // const pageSize = page_size <= 0 ? 10 : page_size;
       // dataList.value = list;
@@ -134,18 +133,18 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
    *
    * @param pageNum the page number. default is 1
    */
-  async function getDataByPage(pageNum: number = 1) {
-    updatePagination({
-      current: pageNum
-    });
-
-    updateSearchParams({
-      current: pageNum,
-      page_size: pagination.pageSize!
-    });
-
-    await getData();
-  }
+  // async function getDataByPage(pageNum: number = 1) {
+  //   updatePagination({
+  //     current: pageNum
+  //   });
+  //
+  //   updateSearchParams({
+  //     current: pageNum,
+  //     page_size: pagination.pageSize!
+  //   });
+  //
+  //   await getData();
+  // }
 
   scope.run(() => {
     watch(
@@ -171,7 +170,6 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
     mobilePagination,
     updatePagination,
     getData,
-    getDataByPage,
     searchParams,
     updateSearchParams,
     resetSearchParams

@@ -9,6 +9,7 @@ import { getAuthorization, handleExpiredRequest, showErrorMsg } from './shared';
 import type { RequestInstanceState } from './type';
 const { endLoading } = useLoading();
 import { router } from '@/router';
+import {clearAuthStorage} from "@/store/modules/auth/shared";
 
 const isHttpProxy = import.meta.env.DEV && import.meta.env.VITE_HTTP_PROXY === 'Y';
 const { baseURL, otherBaseURL } = getServiceBaseURL(import.meta.env, isHttpProxy);
@@ -155,7 +156,10 @@ export const demoRequest = createRequest<App.Service.DemoResponse>(
         return new Promise<void>((resolve, reject) => {
           setTimeout(() => {
             const authStore = useAuthStore();
-            authStore.resetStore();  // 参考退出登录的逻辑
+            clearAuthStorage();
+            // token过期直接清空信息跳转登录
+            authStore.$reset();
+            router.push("/login")
             resolve();
           }, 500);
         })

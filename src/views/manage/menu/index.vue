@@ -57,7 +57,7 @@ const generateActionButtons = (record, codeMap) => {
   return actions.length ? <div class="flex-center gap-8px">{...actions}</div> : null;
 };
 
-const { columns, columnChecks, data, loading, pagination, getData, getDataByPage } = useTable({
+const { columns, columnChecks, data, loading, pagination, getData } = useTable({
   apiFn: fetchGetMenuList,
   apiParams: {
     current: 1,
@@ -228,12 +228,6 @@ function handleAdd() {
   openModal();
 }
 
-async function handleBatchDelete() {
-  // request
-
-  onBatchDeleted();
-}
-
 async function handleDelete(id: number) {
   // request
   console.log(id);
@@ -294,7 +288,6 @@ const allPages = computed(() => {
           :disabled-delete="checkedRowKeys.length === 0"
           :loading="loading"
           @add="handleAdd"
-          @delete="handleBatchDelete"
           @refresh="getData"
         />
       </template>
@@ -315,7 +308,7 @@ const allPages = computed(() => {
         :operate-type="operateType"
         :row-data="editingData"
         :all-pages="allPages"
-        @submitted="getDataByPage"
+        @submitted="getData"
       />
     </ACard>
   </div>
