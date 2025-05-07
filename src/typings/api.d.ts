@@ -596,4 +596,32 @@ declare namespace Api {
       [property: string]: any;
     };
   }
+
+  /** 企业员工结构 */
+  namespace CompanyEmployee {
+    type CompanyEmployeeList = {
+      id: number;
+      user_id: string;
+      company_id: number;
+      company_name: string;
+      company_employee_name: string;
+      company_employee_status: number;
+      company_employee_gender: number;
+      company_employee_avatar: string;
+    };
+
+    type SearchParams = {
+      /** 企业自增id */
+      company_id: number;
+      /** 父标签ID */
+      company_employee_name?: string;
+      /** 员工状态 */
+      employee_status?: number;
+      /** 当前页 */
+      current: number;
+      /** 每页大小 */
+      page_size: number;
+      [property: string]: any;
+    };
+  }
 }

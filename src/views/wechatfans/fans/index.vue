@@ -165,13 +165,11 @@ function getTotal() {
     </ACard>
     <AMenu v-model:selectedKeys="currentmenu" mode="horizontal" :items="items" @click="handleClick" />
     <!--    <PrivatefanSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getData" />-->
-    <ACard title="粉丝列表" :bordered="false">
+    <ACard title="粉丝列表">
       <template #extra>
         <TableHeaderOperation
           v-model:columns="columnChecks"
           :loading="loading"
-          :delete-show="true"
-          :add-show="true"
           @refresh="getData"
         />
       </template>
@@ -186,6 +184,7 @@ function getTotal() {
         :scroll="scrollConfig"
         class="h-full"
       />
+      <a-divider/>
     </ACard>
   </div>
 </template>

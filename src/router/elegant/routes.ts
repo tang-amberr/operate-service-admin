@@ -110,16 +110,28 @@ export const generatedRoutes: GeneratedRoute[] = [
     component: 'layout.base',
     meta: {
       title: 'wechatfans',
-      i18nKey: 'route.wechatfans'
+      i18nKey: 'route.wechatfans',
+      icon: 'ant-design:wechat-work-filled'
     },
     children: [
+      {
+        name: 'wechatfans_employees',
+        path: '/wechatfans/employees',
+        component: 'view.wechatfans_employees',
+        meta: {
+          title: 'wechatfans_employees',
+          i18nKey: 'route.wechatfans_employees',
+          icon: 'clarity:employee-group-solid'
+        }
+      },
       {
         name: 'wechatfans_fans',
         path: '/wechatfans/fans',
         component: 'view.wechatfans_fans',
         meta: {
           title: 'wechatfans_fans',
-          i18nKey: 'route.wechatfans_fans'
+          i18nKey: 'route.wechatfans_fans',
+          icon: 'fluent:people-audience-32-filled'
         }
       },
       {
@@ -128,7 +140,8 @@ export const generatedRoutes: GeneratedRoute[] = [
         component: 'view.wechatfans_qrcode',
         meta: {
           title: 'wechatfans_qrcode',
-          i18nKey: 'route.wechatfans_qrcode'
+          i18nKey: 'route.wechatfans_qrcode',
+          icon: 'uil:qrcode-scan'
         }
       },
       {
@@ -137,7 +150,8 @@ export const generatedRoutes: GeneratedRoute[] = [
         component: 'view.wechatfans_tags',
         meta: {
           title: 'wechatfans_tags',
-          i18nKey: 'route.wechatfans_tags'
+          i18nKey: 'route.wechatfans_tags',
+          icon: 'material-symbols:label'
         }
       },
       {
@@ -146,7 +160,8 @@ export const generatedRoutes: GeneratedRoute[] = [
         component: 'view.wechatfans_wechatmanage',
         meta: {
           title: 'wechatfans_wechatmanage',
-          i18nKey: 'route.wechatfans_wechatmanage'
+          i18nKey: 'route.wechatfans_wechatmanage',
+          icon: 'material-symbols:enterprise'
         }
       }
     ]

@@ -81,3 +81,30 @@ export function companyTagList(data: Api.CompanyTag.SearchParams) {
     data
   });
 }
+
+// 拉取企微标签列表
+export function companyTagPull(data: { company_id: number}) {
+  return request({
+    url: '/company/tags/pull',
+    method: 'post',
+    data
+  });
+}
+
+// 拉取企微员工
+export function companyEmployeePull(data: { company_id: number}) {
+  return request({
+    url: '/company/employee/pull',
+    method: 'post',
+    data
+  });
+}
+
+// 企微员工列表
+export function companyEmployeeList(data: Api.CompanyEmployee.SearchParams) {
+  return request<Api.CompanyEmployee.CompanyEmployeeList>({
+    url: '/company/employee/list',
+    method: 'post',
+    data
+  });
+}

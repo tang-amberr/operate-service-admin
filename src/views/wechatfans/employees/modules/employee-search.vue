@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { $t } from '@/locales';
 import { useAntdForm, useFormRules } from '@/hooks/common/form';
-import { fetchGetAllCategorys } from '@/service/api';
-import {companyTagList, companyTagPull, enterpriseList} from '@/service/api/wechatfans';
+import {companyEmployeePull, companyTagPull, enterpriseList} from '@/service/api/wechatfans';
 import {onMounted, ref} from "vue";
 
 defineOptions({
@@ -18,10 +17,10 @@ const emit = defineEmits<Emits>();
 
 const { formRef, validate, resetFields } = useAntdForm();
 
-const model = defineModel<Api.CompanyTag.SearchParams>('model', {
+const model = defineModel<Api.CompanyEmployee.SearchParams>('model', {
   default: () => ({
-    pid: null,
-    tag_name: '',
+    employee_status: null,
+    company_employee_name: '',
     company_id: null
   })
 });
@@ -31,12 +30,34 @@ async function reset() {
   emit('reset');
 }
 
+// 员工状态选项statusOptions
+const statusOptions = ref<CommonType.Option<number>[]>([]);
+statusOptions.value = [
+  {
+    label: '正常',
+    value: 1
+  },
+  {
+    label: '禁用',
+    value: 2
+  },
+  {
+    label: '未激活',
+    value: 4
+  },
+  {
+    label: '退出企业',
+    value: 5
+  }
+];
+
+// 企业选项statusOptions
 const companyOptions = ref<CommonType.Option<number>[]>([]);
 // 企业列表
 async function getCompanyOptions() {
   const { error, data } = await enterpriseList({
     current: 1,
-    page_size: 100
+    page_size: 1000
   });
 
   if (!error) {
@@ -46,25 +67,6 @@ async function getCompanyOptions() {
     }));
 
     companyOptions.value = [...options];
-  }
-}
-
-const parentTagOptions = ref<CommonType.Option<number>[]>([]);
-// 父标签列表
-async function getParentTagOptions() {
-  const { error, data } = await companyTagList({
-    current: 1,
-    page_size: 100,
-    query_pid: 1
-  });
-
-  if (!error) {
-    const options = data?.list.map(item => ({
-      label: item.tags_name,
-      value: item.id
-    }));
-
-    parentTagOptions.value = [...options];
   }
 }
 
@@ -87,7 +89,7 @@ const companyId = ref(null);
 
 // 拉取标签
 async function pullTags() {
-  await companyTagPull({
+  await companyEmployeePull({
     company_id: companyId.value
   });
 
@@ -101,7 +103,6 @@ async function search() {
 }
 onMounted(() => {
   getCompanyOptions();
-  getParentTagOptions();
 });
 
 </script>
@@ -119,9 +120,9 @@ onMounted(() => {
       <ARow :gutter="[16, 16]" wrap>
         <ACol :span="12" :md="6" :lg="3">
           <a-button type="primary" @click="showModal" >
-            拉取企业标签
+            拉取企业员工
           </a-button>
-          <a-modal width="310px" v-model:open="open" title="选择要拉取标签的企业" @ok="handleOk">
+          <a-modal width="310px" v-model:open="open" title="选择要拉取员工的企业" @ok="handleOk">
             <ASelect
               v-model:value="companyId"
               :options="companyOptions"
@@ -130,22 +131,22 @@ onMounted(() => {
           </a-modal>
         </ACol>
         <ACol :span="24" :md="12" :lg="5">
-          <AFormItem label="父标签" name="pid" class="m-0">
+          <AFormItem label="员工名称" name="company_employee_name" class="m-0">
+            <AInput v-model:value="model.company_employee_name" placeholder="请输入员工名称" />
+          </AFormItem>
+        </ACol>
+        <ACol :span="24" :md="12" :lg="5">
+          <AFormItem label="员工状态" name="employee_status" class="m-0">
             <ASelect
-              v-model:value="model.pid"
+              v-model:value="model.employee_status"
               multiple
-              :options="parentTagOptions"
-              placeholder="请选择父标签"
+              :options="statusOptions"
+              placeholder="请选择员工状态"
             />
           </AFormItem>
         </ACol>
         <ACol :span="24" :md="12" :lg="5">
-          <AFormItem label="标签名称" name="tag_name" class="m-0">
-            <AInput v-model:value="model.tag_name" placeholder="请输入标签名称" />
-          </AFormItem>
-        </ACol>
-        <ACol :span="24" :md="12" :lg="5">
-          <AFormItem label="公司" name="company_id" class="m-0">
+          <AFormItem label="企业" name="company_id" class="m-0">
             <ASelect
               v-model:value="model.company_id"
               multiple

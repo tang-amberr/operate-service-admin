@@ -192,7 +192,13 @@ const local: App.I18n.Schema = {
     exception: '异常页',
     exception_403: '403',
     exception_404: '404',
-    exception_500: '500'
+    exception_500: '500',
+    wechatfans: '企业微信',
+    wechatfans_fans: '企微粉丝',
+    wechatfans_qrcode: '企微活码',
+    wechatfans_tags: '企微标签',
+    wechatfans_wechatmanage: '企微企业管理',
+    wechatfans_employees: '企微员工管理'
   },
   page: {
     login: {
@@ -436,6 +442,11 @@ const local: App.I18n.Schema = {
           iconify: 'iconify图标',
           local: '本地图标'
         }
+      }
+    },
+    wechatfans: {
+      tags: {
+
       }
     }
   },

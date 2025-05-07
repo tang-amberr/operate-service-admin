@@ -49,7 +49,7 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
       return {
         data: recordsWithIndex,
         pageNum: current,
-        page_size: request_page_size,
+        pageSize: request_page_size,
         total
       };
     },

@@ -41,6 +41,7 @@ async function reset() {
 
 async function search() {
   await validate();
+  emit('reset');
   emit('search');
 }
 </script>
@@ -56,11 +57,6 @@ async function search() {
       }"
     >
       <ARow :gutter="[16, 16]" wrap>
-        <ACol :span="24" :md="12" :lg="6">
-          <AFormItem label="id" name="id" class="m-0">
-            <AInput v-model:value.number="model.id" placeholder="请输入领券链接id" />
-          </AFormItem>
-        </ACol>
         <ACol :span="24" :md="12" :lg="6">
           <AFormItem label="名称" name="cps_category_name" class="m-0">
             <AInput v-model:value="model.cps_category_name" placeholder="请输入分类名称" />

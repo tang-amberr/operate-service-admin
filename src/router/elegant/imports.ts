@@ -23,6 +23,7 @@ export const views: Record<LastLevelRouteKey, RouteComponent | (() => Promise<Ro
   home: () => import("@/views/home/index.vue"),
   "manage_coupon-link-category": () => import("@/views/manage/coupon-link-category/index.vue"),
   "manage_coupon-link": () => import("@/views/manage/coupon-link/index.vue"),
+  wechatfans_employees: () => import("@/views/wechatfans/employees/index.vue"),
   wechatfans_fans: () => import("@/views/wechatfans/fans/index.vue"),
   wechatfans_qrcode: () => import("@/views/wechatfans/qrcode/index.vue"),
   wechatfans_tags: () => import("@/views/wechatfans/tags/index.vue"),

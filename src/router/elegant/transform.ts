@@ -185,6 +185,7 @@ const routeMap: RouteMap = {
   "manage_coupon-link": "/manage/coupon-link",
   "manage_coupon-link-category": "/manage/coupon-link-category",
   "wechatfans": "/wechatfans",
+  "wechatfans_employees": "/wechatfans/employees",
   "wechatfans_fans": "/wechatfans/fans",
   "wechatfans_qrcode": "/wechatfans/qrcode",
   "wechatfans_tags": "/wechatfans/tags",

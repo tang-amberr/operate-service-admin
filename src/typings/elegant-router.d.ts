@@ -39,6 +39,7 @@ declare module "@elegant-router/types" {
     "manage_coupon-link": "/manage/coupon-link";
     "manage_coupon-link-category": "/manage/coupon-link-category";
     "wechatfans": "/wechatfans";
+    "wechatfans_employees": "/wechatfans/employees";
     "wechatfans_fans": "/wechatfans/fans";
     "wechatfans_qrcode": "/wechatfans/qrcode";
     "wechatfans_tags": "/wechatfans/tags";
@@ -120,6 +121,7 @@ declare module "@elegant-router/types" {
     | "home"
     | "manage_coupon-link-category"
     | "manage_coupon-link"
+    | "wechatfans_employees"
     | "wechatfans_fans"
     | "wechatfans_qrcode"
     | "wechatfans_tags"

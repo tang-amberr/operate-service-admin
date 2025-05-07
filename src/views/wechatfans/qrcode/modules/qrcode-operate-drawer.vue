@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {computed, reactive, ref, watch} from 'vue';
-import type {UploadChangeParam, UploadProps} from 'ant-design-vue';
-import {Upload, message} from 'ant-design-vue';
-import {useAntdForm, useFormRules} from '@/hooks/common/form';
-import {$t} from '@/locales';
-import {editCategory, editCouponLink, fetchGetAllCategorys, uploadFile} from '@/service/api';
-import {enterpriseList, enterpriseMemberList} from "@/service/api/wechatfans";
+import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue';
+import {Tag, UploadChangeParam, UploadProps} from 'ant-design-vue';
+import { Upload, message } from 'ant-design-vue';
+import { useAntdForm, useFormRules } from '@/hooks/common/form';
+import { $t } from '@/locales';
+import { editCategory, editCouponLink, fetchGetAllCategorys, uploadFile } from '@/service/api';
+import { companyEmployeeList, enterpriseList, enterpriseMemberList } from '@/service/api/wechatfans';
 
 defineOptions({
   name: 'QrcodeOperateDrawer'
@@ -30,8 +30,8 @@ const visible = defineModel<boolean>('visible', {
   default: false
 });
 
-const {formRef, validate, resetFields} = useAntdForm();
-const {defaultRequiredRule} = useFormRules();
+const { formRef, validate, resetFields } = useAntdForm();
+const { defaultRequiredRule } = useFormRules();
 
 const title = computed(() => {
   const titles: Record<AntDesign.TableOperateType, string> = {
@@ -41,10 +41,7 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-
-/**
- * 数据类型
- */
+/** 数据类型 */
 interface ApiParams {
   id?: number;
   type: string;
@@ -54,7 +51,9 @@ interface ApiParams {
   employees_kip_verify: number;
   auto_remark: number;
   employee_demonstrations: string;
-  employee_list: string[];
+  employee_list: string;
+  employee_limit_type: number;
+  employee_limit_value: number;
   employee_limit: {
     EmployeeId: string;
     EmployeeLimitNum: number;
@@ -66,26 +65,27 @@ interface ApiParams {
   associate_backend_members: string;
 }
 
-
 type Model = Pick<
   ApiParams,
   Extract<
     keyof ApiParams,
-    'id',
-    |'type',
-    |'company_id',
-    |'channel_name',
-    |'auto_tags',
-    |'employees_kip_verify',
-    |'auto_remark',
-    |'employee_demonstrations',
-    |'employee_list',
-    |'employee_limit',
-    |'backup_members',
-    |'enable_greeting',
-    |'greeting',
-    |'enable_monitor',
-    |'associate_backend_members'
+    | 'id'
+    | 'type'
+    | 'company_id'
+    | 'channel_name'
+    | 'auto_tags'
+    | 'employees_kip_verify'
+    | 'auto_remark'
+    | 'employee_demonstrations'
+    | 'employee_list'
+    | 'employee_limit_type'
+    | 'employee_limit_value'
+    | 'employee_limit'
+    | 'backup_members'
+    | 'enable_greeting'
+    | 'greeting'
+    | 'enable_monitor'
+    | 'associate_backend_members'
   >
 >;
 
@@ -95,13 +95,15 @@ function createDefaultModel(): Model {
   return {
     id: undefined,
     type: '',
-    company_id: null,
+    company_id: 0,
     channel_name: '',
     auto_tags: 0,
     employees_kip_verify: 1,
     auto_remark: 0,
     employee_demonstrations: '',
-    employee_list: [],
+    employee_list: '0',
+    employee_limit_type: 0,
+    employee_limit_value: 0,
     employee_limit: [],
     backup_members: [],
     enable_greeting: 0,
@@ -121,142 +123,113 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   employee_limit: defaultRequiredRule
 };
 
-function handleInitModel() {
-  model.value = createDefaultModel();
-
+async function handleInitModel() {
+  Object.assign(model, createDefaultModel());
   if (props.operateType === 'edit' && props.rowData) {
-    Object.assign(model.value, props.rowData);
+    const data = props.rowData;
+    await nextTick();
+    Object.assign(model, data);
+    model.type = props.operateType;
   }
-  model.value.type = props.operateType;
 }
+
+// 企业id
+const companyId = ref<number>(null);
+// todo 员工列表是字符串
+// 员工列表
+const employeeList = ref<number[]>([]);
 
 // 获取企微列表
 const companyOptions = ref<CommonType.Option<number>[]>([]);
 async function getCompanyOptions() {
-  const { error, data } = await enterpriseList(
-    {
-      current: 1,
-      page_size: 10,
-    }
-  );
+  const { error, data } = await enterpriseList({
+    current: 1,
+    page_size: 1000
+  });
 
   if (!error) {
     const options = data?.list.map(item => ({
       label: item.company_name,
-      value: item.company_id
+      value: item.id
     }));
 
     companyOptions.value = [...options];
   }
 }
 
-// 获取企微下的成员列表
-const employeeOptions = ref<CommonType.Option<string>[]>([]);
+// 成员选项 employeeOptions
+const employeeOptions = ref<CommonType.Option<number>[]>([]);
+// 企业列表
 async function getEmployeeOptions() {
-  // const { error, data } = await enterpriseMemberList(
-  //   {
-  //     company_id: model.value.company_id,
-  //     current: 1,
-  //     page_size: 10,
-  //   }
-  // );
-
-  employeeOptions.value = [
-    { label: '张三', value: '1' },
-    { label: '李四', value: '2' },
-    { label: '王五', value: '3' },
-    { label: '赵六', value: '4' }
-  ];
-
-  // if (!error) {
-  //   const options = data?.list.map(item => ({
-  //     label: item.company_member_user_name,
-  //     value: item.id
-  //   }));
-  //
-  //   // employeeOptions.value = [...options];
-  //   // 模拟员工数据
-  //   employeeOptions.value = [
-  //     { label: '张三', value: '1' },
-  //     { label: '李四', value: '2' },
-  //     { label: '王五', value: '3' },
-  //     { label: '赵六', value: '4' }
-  //   ];
-  // }
-}
-
-
-// 获取企微下的限制成员列表
-const employeeLimitOptions = ref<CommonType.Option<string>[]>([]);
-async function getEmployeeLimitOptions() {
-  console.log('employee_list', model.employee_list)
-  employeeLimitOptions.value = employeeOptions.value.filter(emp =>{
-    return model.employee_list.includes(emp.value);
+  const { error, data } = await companyEmployeeList({
+    current: 1,
+    page_size: 1000,
+    company_id: model.company_id
   });
-  console.log('employeeLimitOptions', employeeLimitOptions)
-}
 
-// 根据ID获取员工名称
-const getEmployeeName = (id: string) => {
-  const employee = employeeOptions.value.find(emp => emp.value === id);
-  return employee ? employee.label : id;
-};
+  if (!error) {
+    const options = data?.list.map(item => ({
+      label: item.company_employee_name,
+      value: item.id
+    }));
 
-// tabs
-const activeKey = ref(1);
-
-// 处理标签页切换
-const handleTabChange = (key: number) => {
-  activeKey.value = key;
-
-  // 根据选择的限制类型准备数据
-  if (key === 1) {
-    // 不限制
-    model.employee_limit = [];
-  } else if (key === 2) {
-    // 固定限制 - 清空自定义限制
-    model.employee_limit = [];
+    employeeOptions.value = [...options];
   }
-  // 自定义限制(key === '3')保持原有设置
+}
+
+// 过滤员工名称
+const filterOption = (value: any, option: any) => {
+  return `${option.label}`.toLowerCase().includes(`${value || ''}`.toLowerCase());
 };
 
-const greetActiveKey = ref(1);
-function isGreeting(key : number) {
-  model.value.enable_greeting = key;
+// 员工限制
+// 限制类型
+const activeKey = ref(1);
+// 统一限制值
+const employeeLimitValue = ref(0);
+// 所有员工名字和id的map
+const employeeMap = ref<Map<number, string>>(new Map());
+
+// 处理tab变化
+const handleTabChange = (key: number) => {
+  model.employee_limit_type = Number(key);
+  activeKey.value = Number(key);
+
+  // 2 统一限制
+  if (key === 2) {
+    model.employee_limit_value = employeeLimitValue.value;
+  }
+
+  // 3 自定义， 指定＋其余统一
+  if (key === 3) {
+    model.employee_limit_value = employeeLimitValue.value;
+  }
+
+  // 构建所有员工名字和id的map
+  employeeMap.value = new Map(employeeOptions.value.map(item => [item.value, item.label]));
+  console.log('map',employeeMap.value)
 };
 
-// 人数限制时选择的员工
-const selectedEmployees = ref<string[]>([]);
+// 限制成员选项 limitEmployeeOptions
+const limitEmployeeOptions = ref<CommonType.Option<number>[]>([]);
 
-// 处理员工选择
-const handleEmployeeSelect = (values: string[]) => {
-  // 找出新增的员工
-  const currentIds = model.employee_limit.map(item => item.EmployeeId);
-  const newIds = values.filter(id => !currentIds.includes(id));
-
-  // 添加新员工到限制列表
-  newIds.forEach(id => {
-    model.employee_limit.push({
-      EmployeeId: id,
-      EmployeeLimitNum: model.fixedLimitNum, // 默认使用固定限制的值
-    });
-  });
-
-  // 移除不在选择列表中的员工
-  model.employee_limit = model.employee_limit.filter(item =>
-    values.includes(item.EmployeeId)
+function getLimitEmployeeOptions() {
+  const options = employeeOptions.value.filter(option =>
+    employeeList.value.includes(option.value)
   );
+  limitEmployeeOptions.value = [...options];
 };
 
-// 其他员工限制人数
-const otherLimitNum = ref(0);
+// 选中的自定义员工
+const selectedEmployees = ref<number[]>([]);
+
 
 function closeDrawer() {
   visible.value = false;
 }
 
 async function handleSubmit() {
-  console.log('model.value: ', model)
+  console.log('model.value: ', model);
   await validate();
   // request
   const res = await editCategory(model.value);
@@ -270,9 +243,9 @@ async function handleSubmit() {
 }
 
 // 选的员工变化，限制选中的员工也变化
-watch(model.employee_list, () => {
-  getEmployeeLimitOptions();
-})
+// watch(model.employee_list, () => {
+//   getEmployeeLimitOptions();
+// });
 
 const loading = ref<boolean>(false);
 
@@ -281,8 +254,25 @@ watch(visible, () => {
     handleInitModel();
     resetFields();
     getCompanyOptions();
+    console.log('company', companyOptions);
+  }
+});
+
+// 企业变化，员工选项也变化
+watch(companyId, () => {
+  console.log('companyId', companyId)
+  if (companyId.value) {
+    console.log('companyId', companyId)
+    model.employee_list = '';
+    model.company_id = companyId.value;
     getEmployeeOptions();
   }
+});
+
+// 监听员工
+watch(employeeList, () => {
+  model.employee_list = employeeList.value.join(',');
+  getLimitEmployeeOptions();
 });
 </script>
 
@@ -290,72 +280,77 @@ watch(visible, () => {
   <ADrawer v-model:open="visible" :title="title" :width="660">
     <AForm ref="formRef" layout="vertical" :model="model" :rules="rules">
       <AFormItem label="选择企微" name="company_id">
-        <ASelect
-          v-model:value="model.company_id"
-          @click="getCompanyOptions"
-          :options="companyOptions"
-          placeholder="请选择企微"
-        />
+        <ASelect v-model:value="companyId" :options="companyOptions" placeholder="请选择企微" />
       </AFormItem>
       <AFormItem label="渠道名称" name="channel_name">
-        <AInput v-model:value="model.channel_name" placeholder="请输入渠道名称"/>
+        <AInput v-model:value="model.channel_name" placeholder="请输入渠道名称" />
       </AFormItem>
       <AFormItem label="自动通过验证" name="employees_kip_verify">
-        <a-switch v-model:checked="model.employees_kip_verify" />
+        <ASwitch v-model:checked="model.employees_kip_verify" />
       </AFormItem>
       <AFormItem label="选择员工" name="employee_list">
         <ASelect
-          v-model:value="model.employee_list"
+          v-model:value="employeeList"
           multiple
-          mode="tags"
+          :filter-option="filterOption"
+          mode="multiple"
+          :allow-clear="true"
           :options="employeeOptions"
           placeholder="请选择员工"
         />
       </AFormItem>
       <AFormItem label="好友限制" name="employee_limit">
-        <a-card class="limit-card" style="padding: 8px">
-          <a-tabs v-model:activeKey="activeKey" @change="handleTabChange">
-            <a-tab-pane :key="1" tab="不限制"></a-tab-pane>
-            <a-tab-pane :key="2" tab="固定限制">
-              <span>每日限加</span><a-input-number id="inputNumber" v-model:value="model.fixedLimitNum" :min="1" /><span>个好友</span>
-            </a-tab-pane>
-            <a-tab-pane :key="3" tab="自定义限制">
+        <ACard class="limit-card">
+          <ATabs v-model:active-key="activeKey" @change="handleTabChange">
+            <ATabPane :key="1" tab="不限制"></ATabPane>
+            <ATabPane :key="2" tab="固定限制">
+              <span>每日限加</span>
+              <AInputNumber id="inputNumber" v-model:value="employeeLimitValue" :min="1" />
+              <span>个好友</span>
+            </ATabPane>
+            <ATabPane :key="3" tab="自定义限制">
               <ASelect
                 v-model:value="selectedEmployees"
                 multiple
                 mode="tags"
-                :options="employeeLimitOptions"
+                :options="limitEmployeeOptions"
                 placeholder="请选择员工"
                 style="margin-bottom: 20px"
                 @click="getEmployeeLimitOptions"
                 @change="handleEmployeeSelect"
               />
-              <div v-for="(item, index) in model.employee_limit" :key="item.EmployeeId" class="employee-limit-item">
-                <div class="limit-setting">
-                  <a-tag>{{ getEmployeeName(item.EmployeeId) }}</a-tag>
-                  <span>每日限加</span>
-                  <a-input-number
+              <div v-for="item in selectedEmployees" :key="item" class="employee-limit-item">
+                <div class="limit-setting" style="margin-bottom: 6px">
+                  <ATag style="font-size: 14px; line-height: 19px"
+                        color="cyan">{{employeeMap.get(item)}}</ATag>
+                  <div style="margin-right: 4px; display: inline-block">每日限加</div>
+                  <AInputNumber
+                    v-model:value="model.employee_limit[item]"
                     style="text-align: center"
-                    v-model:value="model.employee_limit[index].EmployeeLimitNum"
                     :min="1"
                   />
-                  <span>个好友</span>
+                  <div style="margin-left: 4px; display: inline-block">个好友</div>
                 </div>
               </div>
-              <a-divider />
-              其他员工限制人数 <a-input-number v-model:value="otherLimitNum" :min="1" /> 个好友
-            </a-tab-pane>
-          </a-tabs>
-        </a-card>
+              <ADivider />
+              其他员工限制人数
+              <AInputNumber v-model:value="employeeLimitValue" :min="1" />
+              个好友
+            </ATabPane>
+          </ATabs>
+        </ACard>
       </AFormItem>
-      <a-divider style="height: 2px" />
+      <ADivider style="height: 2px" />
       <AFormItem label="欢迎语" name="greeting">
-        <a-tabs @click="isGreeting" v-model:activeKey="greetActiveKey">
-          <a-tab-pane :key="1" tab="关闭欢迎语"></a-tab-pane>
-          <a-tab-pane :key="2" tab="开启欢迎语">
-            默认欢迎语 <a-textarea v-model:value="model.greeting" placeholder="请输入欢迎语"/>
-          </a-tab-pane>
-        </a-tabs>
+        <ACard>
+          <ATabs v-model:active-key="greetActiveKey" @click="isGreeting">
+            <ATabPane :key="1" tab="关闭欢迎语"></ATabPane>
+            <ATabPane :key="2" tab="开启欢迎语">
+              默认欢迎语
+              <ATextarea v-model:value="model.greeting" placeholder="请输入欢迎语" />
+            </ATabPane>
+          </ATabs>
+        </ACard>
       </AFormItem>
     </AForm>
     <template #footer>
@@ -368,4 +363,7 @@ watch(visible, () => {
 </template>
 
 <style scoped>
+::v-deep .ant-card-body {
+  padding: 1px 3px 1px 9px;
+}
 </style>
