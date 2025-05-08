@@ -91,8 +91,17 @@ export function companyTagPull(data: { company_id: number}) {
   });
 }
 
+// 拉取企微标签列表
+export function companyTagTree(data: { company_id: number}) {
+  return request<Api.CompanyTag.TagTree[]>({
+    url: '/company/tags/tree',
+    method: 'post',
+    data
+  });
+}
+
 // 拉取企微员工
-export function companyEmployeePull(data: { company_id: number}) {
+export function companyEmployeePull(data: { company_id: number }) {
   return request({
     url: '/company/employee/pull',
     method: 'post',
@@ -106,5 +115,47 @@ export function companyEmployeeList(data: Api.CompanyEmployee.SearchParams) {
     url: '/company/employee/list',
     method: 'post',
     data
+  });
+}
+
+/**
+ *
+ * 添加附件
+ */
+export function addCompanyAttachment(data: Api.CompanyAttachment.AddCompanyAttachment) {
+  return request<Api.CompanyAttachment.AddCompanyAttachmentResponse>({
+    url: '/company/qrcode/attachment/add',
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ *
+ * 上传图片
+ */
+export function uploadCompanyImage(data?: FormData) {
+  return request<Api.CompanyAttachment.AddCompanyAttachmentImageResponse>({
+    url: '/company/qrcode/attachment/image',
+    method: 'post',
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+}
+
+/**
+ *
+ * 上传附件
+ */
+export function uploadCompanyAttachment(data?: FormData) {
+  return request<Api.CompanyAttachment.UploadCompanyAttachmentResponse>({
+    url: '/company/qrcode/attachment/upload',
+    method: 'post',
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   });
 }

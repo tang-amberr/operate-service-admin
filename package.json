@@ -47,7 +47,9 @@
     "update-pkg": "sa update-pkg"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@better-scroll/core": "2.5.1",
+    "@emoji-mart/data": "^1.2.1",
     "@iconify/vue": "4.3.0",
     "@sa/axios": "workspace:*",
     "@sa/color": "workspace:*",
@@ -68,7 +70,8 @@
     "vue": "3.5.13",
     "vue-draggable-plus": "0.6.0",
     "vue-i18n": "11.1.1",
-    "vue-router": "4.5.0"
+    "vue-router": "4.5.0",
+    "vue3-emoji-picker": "^1.1.8"
   },
   "devDependencies": {
     "@elegant-router/vue": "0.3.8",

@@ -595,6 +595,16 @@ declare namespace Api {
       page_size: number;
       [property: string]: any;
     };
+
+    type TagTree = {
+      id: number;
+      /** 父标签ID */
+      pid?: number;
+      /** 标签名称 */
+      name: string;
+      /** 子标签 */
+      children?: TagTree[];
+    };
   }
 
   /** 企业员工结构 */
@@ -623,5 +633,42 @@ declare namespace Api {
       page_size: number;
       [property: string]: any;
     };
+  }
+
+  /** 企业附件结构 */
+  namespace CompanyAttachment {
+    type AddCompanyAttachment = {
+      company_id: number;
+      attachment_type: string;
+      url: string;
+      media_id:  string;
+      create_at: number;
+      bucket_file_name: string;
+      link_url: string;
+      title: string;
+      description: string;
+      mini_program_app_id: string;
+      mini_program_title: string;
+      mini_program_page_path: string;
+      mini_program_child_title: string;
+    };
+
+    type AddCompanyAttachmentResponse = {
+      attachment_id: number;
+      attachment_type: string;
+    };
+
+    // 上传图片消息接口响应
+    type AddCompanyAttachmentImageResponse = {
+      url: string;
+    }
+
+    // 上传附件接口响应
+    type UploadCompanyAttachmentResponse = {
+      type: string;
+      media_id: string;
+      created_at: number;
+    }
+
   }
 }
