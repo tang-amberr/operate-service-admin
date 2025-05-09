@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, shallowRef, watch } from 'vue';
+import { computed, nextTick, reactive, ref, shallowRef, watch } from 'vue';
 import type { TreeSelectProps, UploadChangeParam, UploadProps } from 'ant-design-vue';
 import { Upload, message } from 'ant-design-vue';
 import EmojiPicker from 'vue3-emoji-picker';
+import type { Rule } from 'ant-design-vue/es/form';
 import { useAntdForm, useFormRules } from '@/hooks/common/form';
 import { $t } from '@/locales';
-import { editCategory, editCouponLink, fetchGetAllCategorys, uploadFile } from '@/service/api';
+import { uploadFile } from '@/service/api';
 import {
   addCompanyAttachment,
   companyEmployeeList,
+  companyQrcodeAdd,
   companyTagTree,
   enterpriseList,
   uploadCompanyAttachment,
@@ -50,36 +52,14 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-/** 活码数据类型 */
-interface ApiParams {
-  id?: number;
-  type: string;
-  company_id: number;
-  channel_name: string;
-  tag_ids: string;
-  employees_kip_verify: number;
-  remark: string;
-  employee_list: string;
-  employee_limit_type: number;
-  employee_limit_value: number;
-  employee_limit: {
-    employee_id: number;
-    employee_limit_num: number;
-  }[];
-  greeting: string;
-  attachment_ids: string;
-}
-
 type Model = Pick<
-  ApiParams,
+  Api.LiveCode.CompanyMessageAdd,
   Extract<
-    keyof ApiParams,
-    | 'id'
-    | 'type'
+    keyof Api.LiveCode.CompanyMessageAdd,
     | 'company_id'
     | 'channel_name'
     | 'tag_ids'
-    | 'employees_kip_verify'
+    | 'employee_skip_verify'
     | 'remark'
     | 'employee_list'
     | 'employee_limit_type'
@@ -94,12 +74,10 @@ const model: Model = reactive(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
-    id: undefined,
-    type: '',
     company_id: 0,
     channel_name: '',
     tag_ids: '',
-    employees_kip_verify: 1,
+    employee_skip_verify: 1,
     remark: '',
     employee_list: '0',
     employee_limit_type: 0,
@@ -115,20 +93,11 @@ type RuleKey = Extract<keyof Model, string>;
 const rules: Record<RuleKey, App.Global.FormRule> = {
   company_id: defaultRequiredRule,
   channel_name: defaultRequiredRule,
-  employees_kip_verify: defaultRequiredRule,
+  employee_skip_verify: defaultRequiredRule,
   employee_list: defaultRequiredRule,
   employee_limit: defaultRequiredRule
 };
 
-async function handleInitModel() {
-  Object.assign(model, createDefaultModel());
-  if (props.operateType === 'edit' && props.rowData) {
-    const data = props.rowData;
-    await nextTick();
-    Object.assign(model, data);
-    model.type = props.operateType;
-  }
-}
 
 // 企业id
 const companyId = ref<number>(null);
@@ -155,10 +124,22 @@ async function getCompanyOptions() {
 }
 
 // 标签相关 todo 过滤掉父亲标签
+// 标签相关 todo 过滤掉父亲标签
+// 标签相关 todo 过滤掉父亲标签
+// 标签相关 todo 过滤掉父亲标签// 标签相关 todo 过滤掉父亲标签// 标签相关 todo 过滤掉父亲标签
 // 标签选项
 const treeData = ref<TreeSelectProps['treeData']>([]);
 const tagValue = ref<string[]>([]);
+// 父标签
+const parentTagIds = ref<string[]>([]);
+const reloadKey = ref(0); // 用于强制刷新组件
 
+function validSelect() {
+  if (companyId.value === null) {
+    message.error('请先选择企业');
+  }
+}
+// 获取标签树
 async function getTree() {
   const { error, data } = await companyTagTree({
     company_id: companyId.value
@@ -168,9 +149,15 @@ async function getTree() {
     treeData.value = recursiveTransform(data);
     console.log('treeData', treeData);
   }
+
+  data?.forEach(tag => {
+    if (tag.pid === 0) {
+      parentTagIds.value.push(tag.id.toString());
+    }
+  });
 }
 
-// 标签树
+// 构建标签树
 function recursiveTransform(data: Api.CompanyTag.TagTree[]): TreeSelectProps['treeData'] {
   return data.map(item => {
     const { id: value, name } = item;
@@ -324,16 +311,6 @@ function deselectCustomEmployee(value: number) {
 // 设置欢迎语
 const greetActiveKey = ref<number>(1);
 
-const open = ref<boolean>(false);
-
-const showEmoji = () => {
-  open.value = true;
-};
-
-const handleOk = (e: MouseEvent) => {
-  open.value = false;
-};
-
 // 选择表情
 const handleEmojiSelect = (emoji: any) => {
   // 将表情添加到输入框中
@@ -351,13 +328,7 @@ const bucket_file_name = ref('');
 // 已经上传的附件id
 const uploadedAttachmentIds = ref<number[]>([]);
 
-interface UploadAttachmentResponseType {
-  type: string;
-  media_id: string;
-  create_at: number;
-}
 // 上传附件响应
-const uploadAttachmentResponse = ref<UploadAttachmentResponseType>({});
 
 const file = ref({});
 const uploadLoading = ref<boolean>(false);
@@ -405,18 +376,94 @@ function createDefaultAttachmentModel(): AttachmentModel {
   };
 }
 
+// 初始化附件model
 async function handleInitAttachmentModel() {
   Object.assign(attachmentModel, createDefaultAttachmentModel());
   attachmentModel.attachment_type = messageType.value;
 }
 
+const checkPicture = async (_rule: Rule, value: string) => {};
+
+type AttachmentRuleKey = Extract<keyof AttachmentModel, string>;
+
+const linkRules: Record<AttachmentRuleKey, App.Global.FormRule> = {
+  link_url: defaultRequiredRule,
+  title: defaultRequiredRule
+};
+
+const miniProgramRules: Record<AttachmentRuleKey, App.Global.FormRule> = {
+  mini_program_app_id: defaultRequiredRule,
+  mini_program_child_title: defaultRequiredRule,
+  media_id: [{ validator: checkPicture, trigger: 'change' }]
+};
+// 回显图片
+const imageUrl = ref<string>('');
+
+// 上传本地消息表
+async function handleAddMessage() {
+  attachmentModel.company_id = companyId.value;
+  attachmentModel.attachment_type = messageType.value;
+  const res = await addCompanyAttachment(attachmentModel);
+  if (res.response.data.code === 200) {
+    message.success('上传成功');
+  }
+  uploadedAttachmentIds.value.push(res.data?.attachment_id);
+}
+
+// 上传图片变化
 const handleChange = async (info: UploadChangeParam, type: string) => {
+  console.log('info', info);
   messageType.value = type;
-  await handleInitAttachmentModel();
+  // await handleInitAttachmentModel();
+  console.log('info', info);
   if (info.file.status === 'uploading') {
     uploadLoading.value = true;
     return;
   }
+  // 上传完毕
+  if (info.file.status === 'done') {
+    try {
+      const formdata = new FormData();
+      formdata.append('file', info.file.originFileObj);
+      formdata.append('company_id', String(model.company_id));
+      formdata.append('attachment_type', String(messageType.value === 'video' ? 'video' : 'image'));
+
+      attachmentModel.company_id = model.company_id;
+      // 上传企业微信为永久图片
+      if (messageType.value === 'image') {
+        const result = await uploadCompanyImage(formdata);
+        console.log('res', result);
+        url.value = result.response.data.data?.url;
+        if (result.response?.data.code !== 200) {
+          message.error(result.response?.data.message);
+        } else {
+          message.success('上传成功!');
+        }
+        // 本地构建消息
+        attachmentModel.bucket_file_name = bucket_file_name.value;
+        attachmentModel.url = url.value;
+      }
+
+      // 上传企业微信附件
+      const res = await uploadCompanyAttachment(formdata);
+      attachmentModel.bucket_file_name = bucket_file_name.value;
+      attachmentModel.attachment_type = messageType.value;
+      attachmentModel.media_id = res.response.data.data?.media_id;
+      attachmentModel.create_at = res.response.data.data?.create_at;
+
+      // 上传消息s
+      const ress = await addCompanyAttachment(attachmentModel);
+      console.log('res: ', ress);
+      console.log('res.data', ress.data);
+      uploadedAttachmentIds.value.push(ress.data?.attachment_id);
+      console.log('uploadids', uploadedAttachmentIds);
+    } catch (err) {
+      console.error('上传过程出错:', err);
+      message.error(err.message || '上传过程出错');
+      uploadLoading.value = false;
+    }
+  }
+
   if (info.file.status === 'error') {
     uploadLoading.value = false;
     message.error('upload error');
@@ -425,6 +472,15 @@ const handleChange = async (info: UploadChangeParam, type: string) => {
 
 // 检查大小和类型
 const beforeUpload: UploadProps['beforeUpload'] = file => {
+  if (companyId.value === null) {
+    message.error('请先选择企微');
+    return false;
+  }
+  if (uploadedAttachmentIds.value.length >= 9) {
+    message.error('最多上传9个附件');
+    return Upload.LIST_IGNORE;
+  }
+
   // 图片类型
   if (messageType.value !== 'video') {
     // 支持JPG,PNG
@@ -443,6 +499,7 @@ const beforeUpload: UploadProps['beforeUpload'] = file => {
 
     return true;
   }
+
   const isVideo = file.type.startsWith('video/');
   if (!isVideo) {
     message.error(`${file.name} is not a video file`);
@@ -459,89 +516,206 @@ const beforeUpload: UploadProps['beforeUpload'] = file => {
   return true;
 };
 
-const customUpload = e => {
+const customUpload = async e => {
   const formdata = new FormData();
   formdata.append('file', e.file);
   formdata.append('type', '3');
-  formdata.append('company_id', String(model.company_id));
-  formdata.append('attachment_type', String(messageType.value === 'video' ? 'video' : 'image'));
 
   // 上传存储桶
-  uploadFile(formdata)
-    .then(res => {
-      console.log('上传成功', res.data);
-      // 调用实例的成功方法通知组件该文件上传成功
-      bucket_file_name.value = res.data?.url;
-      e.onSuccess(res.data, e);
-    })
-    .catch(err => {
-      // 调用实例的失败方法通知组件该文件上传失败
-      e.onError(err);
-    });
-
-  attachmentModel.company_id = model.company_id;
-  // 上传企微附件
-  if (messageType.value === 'image') {
-    // 上传企业微信为永久图片
-    const res = uploadCompanyImage(formdata);
-    url.value = res.response.data.data?.url;
-
-    // 本地构建消息
-    attachmentModel.bucket_file_name = bucket_file_name.value;
-    attachmentModel.url = url.value;
-  } else if (messageType.value === 'video') {
-    // 上传企业微信视频
-    const res = uploadCompanyAttachment(formdata);
-    uploadAttachmentResponse.value.type = res.reponse.data.data?.type;
-    uploadAttachmentResponse.value.media_id = res.reponse.data.data?.media_id;
-    uploadAttachmentResponse.value.create_at = res.reponse.data.data?.create_at;
-
-    // 本地构建视频消息
-    attachmentModel.bucket_file_name = bucket_file_name.value;
-    attachmentModel.attachment_type = res.reponse.data.data?.type;
-    attachmentModel.media_id = res.reponse.data.data?.media_id;
-    attachmentModel.created_at = res.reponse.data.data?.create_at;
+  const result = await uploadFile(formdata);
+  if (result.response?.data.code !== 200) {
+    message.error(result.response?.data.message);
+  } else {
+    bucket_file_name.value = result.response.data.data?.url;
+    e.onSuccess(result.response.data.data?.url, e.file);
   }
-
-  // 上传本地数据库
-  const res = addCompanyAttachment(attachmentModel);
-  // 上传后 id放入数组
-  uploadedAttachmentIds.value.push(res.reponse.data.data?.attachment_id);
-
-  //小程序 link
+  // 回显路径
+  if (messageType.value === 'link' || messageType.value === 'miniprogram') {
+    imageUrl.value = `https://store.ssccn.cn${bucket_file_name.value}`;
+  }
 };
 
+// 第一级抽屉
+const open = ref<boolean>(false);
+// 二级链接抽屉
+const linkChildrenDrawer = ref<boolean>(false);
+// 展示二级链接抽屉
+const showLinkChildrenDrawer = () => {
+  if (companyId.value === null) {
+    message.error('请先选择企微');
+    return;
+  }
+  imageUrl.value = '';
+  // 初始化附件model
+  handleInitAttachmentModel();
+  linkChildrenDrawer.value = true;
+};
+
+// 关闭二级链接抽屉
+function closeLinkChildDrawer() {
+  imageUrl.value = '';
+  linkChildrenDrawer.value = false;
+}
+// 提交二级链接抽屉
+function handleLinkChildSubmit() {
+  closeLinkChildDrawer();
+  // todo
+  handleAddMessage();
+}
+
+// 二级小程序抽屉
+const miniProgramModal = ref<boolean>(false);
+// 展示二级小程序抽屉
+const showMiniProgramModal = () => {
+  if (companyId.value === null) {
+    message.error('请先选择企微');
+    return;
+  }
+  imageUrl.value = '';
+  // 初始化附件model
+  handleInitAttachmentModel();
+  miniProgramModal.value = true;
+};
+
+// 关闭二级小程序抽屉
+function closeMiniProgramChildDrawer() {
+  imageUrl.value = '';
+  miniProgramModal.value = false;
+}
+// 提交二级小程序抽屉
+function handleMiniprogramChildSubmit() {
+  closeMiniProgramChildDrawer();
+  // todo
+  handleAddMessage();
+}
+
+// 开启表情modal
+const showEmoji = () => {
+  open.value = true;
+};
+// 关闭表情modal
+const handleEmojiOk = (e: MouseEvent) => {
+  open.value = false;
+};
+
+// 关闭一级抽屉
 function closeDrawer() {
   visible.value = false;
 }
 
+// 设置model数据
+function setModelData() {
+  const tagIds = tagValue.value.filter(item => {
+    return !parentTagIds.value.includes(item);
+  });
+  model.tag_ids = tagIds.join(',');
+
+  // 附件id
+  model.attachment_ids = uploadedAttachmentIds.value.join(',');
+
+  // 处理bool
+  model.employee_skip_verify = model.employee_skip_verify ? 1 : 2;
+}
+
 async function handleSubmit() {
-  console.log('model.value: ', model);
+  console.log('model.value before: ', model);
   await validate();
+  setModelData();
+  console.log('model.value: after', model);
   // request
-  const res = await editCategory(model.value);
-  console.log('res: ', res);
-  if (res.response.data.code !== 200) {
-    window.$message?.error(res.response.data.msg);
-    return;
+  const res = await companyQrcodeAdd(model);
+  if (res.response.data.code === 200) {
+    message.success('添加成功');
   }
   closeDrawer();
   emit('submitted');
 }
 
-// 选的员工变化，限制选中的员工也变化
-// watch(model.employee_list, () => {
-//   getEmployeeLimitOptions();
-// });
-
 const loading = ref<boolean>(false);
+const activeTagKey = ref(1);
+const limitNumMap = ref<Map<number, number>>(new Map());
+
+async function handleInitModel() {
+  Object.assign(model, createDefaultModel());
+
+  if (props.operateType === 'edit' && props.rowData) {
+    const data = props.rowData;
+
+    Object.assign(model, data);
+    // 公司
+    companyId.value = model.company_id;
+    // 是否自动跳过
+    model.employee_skip_verify = model.employee_skip_verify === 1;
+
+    // 好友限制
+    activeKey.value = model.employee_limit_type;
+
+    // 员工
+    const stringEmployeeIds = model.employee_list.split(',');
+    const numberEmployeeIds: number[] = [];
+    stringEmployeeIds.forEach(item => {
+      numberEmployeeIds.push(Number(item));
+    });
+    employeeList.value = numberEmployeeIds;
+
+    // 标签
+    if (model.tag_ids.length === 0) {
+      // await nextTick();
+      return;
+    }
+
+    // 解析json
+    if(data.employee_limit.length) {
+      const limitInfo = JSON.parse(data.employee_limit)
+      model.employee_limit = limitInfo.employee_limits;
+      employeeLimitValue.value  = limitInfo.employee_limit_value;
+    }
+    if (model.employee_limit_type === 3) {
+      selectedEmployees.value = model.employee_limit.map(item => {
+        return item.employee_id;
+      });
+
+      employeeMap.value = new Map(employeeOptions.value.map(item => [item.value, item.label]));
+
+      await getEmployeeOptions();
+      limitNumMap.value = model.employee_limit.reduce((map, item) => {
+        map.set(item.employee_id, item.employee_limit_num);
+        return map;
+      }, new Map<number, number>());
+      console.log('limitNumMap.value', limitNumMap.value)
+    }
+
+    // 招呼语
+    greetActiveKey.value = model.greeting.length ? 2 : 1;
+
+    activeTagKey.value = 2;
+    tagValue.value = model.tag_ids.split(',');
+
+    await nextTick();
+
+    console.log('tagValue.value', tagValue);
+    console.log('model.tagids', model.tag_ids);
+
+
+    console.log('model', model);
+    console.log('data', data);
+  } else {
+    companyId.value = null;
+    tagValue.value = [];
+    activeTagKey.value = 1;
+    employeeList.value = [];
+    activeKey.value = 1;
+  }
+}
 
 watch(visible, () => {
   if (visible.value) {
+    if (companyId.value) {
+      getTree();
+    }
     handleInitModel();
     resetFields();
     getCompanyOptions();
-    console.log('company', companyOptions);
   }
 });
 
@@ -554,11 +728,13 @@ watch(companyId, () => {
     model.employee_list = '';
     model.company_id = companyId.value;
     getEmployeeOptions();
+    tagValue.value = [];
   }
 });
 
 // 监听员工
 watch(employeeList, () => {
+  console.log('employeeList', employeeList)
   model.employee_list = employeeList.value.join(',');
   getLimitEmployeeOptions();
   // 删除的员工
@@ -571,8 +747,10 @@ watch(employeeList, () => {
     return false;
   });
   // 删除取消选中的
-  model.employee_limit = model.employee_limit.filter(item => item.employee_id !== val);
-  console.log('model.employee_limit: ', model.employee_limit);
+  if(model.employee_limit.length > 0 ) {
+    model.employee_limit = model.employee_limit.filter(item => item.employee_id !== val);
+  }
+  console.log('model.employee_limit: ', typeof model.employee_limit);
 });
 </script>
 
@@ -585,9 +763,9 @@ watch(employeeList, () => {
       <AFormItem label="渠道名称" name="channel_name">
         <AInput v-model:value="model.channel_name" placeholder="请输入渠道名称" />
       </AFormItem>
-      <AFormItem label="自动通过验证" name="employees_kip_verify">
+      <AFormItem label="自动通过验证" name="employee_skip_verify">
         <ACard>
-          <ASwitch v-model:checked="model.employees_kip_verify" />
+          <ASwitch v-model:checked="model.employee_skip_verify" />
         </ACard>
       </AFormItem>
       <AFormItem label="备注" name="remark">
@@ -608,7 +786,7 @@ watch(employeeList, () => {
       </AFormItem>
       <AFormItem label="选择标签" name="tag_ids">
         <ACard>
-          <ATabs>
+          <ATabs v-model:active-key="activeTagKey">
             <ATabPane :key="1" tab="不打标签"></ATabPane>
             <ATabPane :key="2" tab="自动打标签">
               <ATreeSelect
@@ -619,9 +797,11 @@ watch(employeeList, () => {
                 placeholder="选择标签"
                 allow-clear
                 multiple
+                :key="reloadKey"
                 :tree-data="treeData"
                 :filter-tree-node="filterTreeNode"
                 tree-node-filter-prop="label"
+                @click="validSelect"
               ></ATreeSelect>
             </ATabPane>
           </ATabs>
@@ -648,7 +828,7 @@ watch(employeeList, () => {
                 id="inputNumber"
                 v-model:value="employeeLimitValue"
                 style="vertical-align: middle"
-                :min="1"
+                :min="0"
               />
               <div style="margin-left: 4px; display: inline-block">个好友</div>
             </ATabPane>
@@ -669,7 +849,8 @@ watch(employeeList, () => {
                   <AInputNumber
                     name="employee_limit_num"
                     style="vertical-align: middle"
-                    :min="1"
+                    :min="0"
+                    :value="limitNumMap.get(employeeId)"
                     @update:value="val => updateLimit(employeeId, val)"
                   />
                   <div style="margin-left: 4px; display: inline-block">个好友</div>
@@ -681,7 +862,7 @@ watch(employeeList, () => {
               <AInputNumber
                 v-model:value="employeeLimitValue"
                 style="vertical-align: middle"
-                :min="1"
+                :min="0"
                 @change="setLimitNum"
               />
               <div style="margin-left: 4px; display: inline-block">个好友</div>
@@ -697,12 +878,12 @@ watch(employeeList, () => {
               默认欢迎语
               <ATextarea v-model:value="model.greeting" placeholder="请输入欢迎语" />
               <AButton type="dashed" style="margin-top: 8px" @click="showEmoji">表情</AButton>
-              <AModal v-model:open="open" title="选择表情" centered style="width: 540px" @ok="handleOk">
+              <AModal v-model:open="open" title="选择表情" centered style="width: 540px" @ok="handleEmojiOk">
                 <EmojiPicker :native="true" style="width: 500px; height: 500px" @select="handleEmojiSelect" />
               </AModal>
               <ATooltip placement="top" title="附件 不超过9条">
                 <ATag style="font-size: 16px; line-height: 32px; margin-left: 16px; margin-right: 5px" color="blue">
-                  其他消息》》》
+                  其他消息
                 </ATag>
               </ATooltip>
               <ATooltip placement="top" title="图片支持jpeg和png且不超过10M">
@@ -721,7 +902,7 @@ watch(employeeList, () => {
               <ATooltip placement="top" title="视频不超过10M">
                 <AUpload
                   v-model:file="file"
-                  style="margin-top: 8px; margin-right: 5px; display: inline-block"
+                  style="margin-top: 8px; margin-right: 15px; display: inline-block"
                   name="file"
                   :show-upload-list="false"
                   :before-upload="beforeUpload"
@@ -731,8 +912,88 @@ watch(employeeList, () => {
                   <AButton>视频</AButton>
                 </AUpload>
               </ATooltip>
-              <AButton type="dashed" style="margin-top: 8px; margin-right: 5px" @click="showEmoji">链接</AButton>
-              <AButton type="dashed" style="margin-top: 8px; margin-right: 5px" @click="showEmoji">小程序</AButton>
+              <AButton type="dashed" style="margin-top: 8px; margin-right: 5px" @click="showLinkChildrenDrawer">
+                链接
+              </AButton>
+              <ADrawer v-model:open="linkChildrenDrawer" title="h5链接" width="460">
+                <AForm ref="formRef" layout="vertical" :model="attachmentModel" :rules="linkRules">
+                  <AFormItem label="链接" name="link_url">
+                    <ATextarea v-model:value="attachmentModel.link_url" placeholder="请输入链接" />
+                  </AFormItem>
+                  <AFormItem label="标题" name="title">
+                    <AInput v-model:value="attachmentModel.title" placeholder="请输入标题" />
+                  </AFormItem>
+                  <AFormItem label="封面图片" name="title">
+                    <ATooltip placement="top" class="w-full" title="大小不超过10M">
+                      <AUpload
+                        v-model:file="file"
+                        style="margin-top: 8px; margin-right: 5px; display: inline-block"
+                        class="w-full"
+                        name="file"
+                        :show-upload-list="false"
+                        :before-upload="beforeUpload"
+                        :custom-request="customUpload"
+                        @change="info => handleChange(info, 'link')"
+                      >
+                        <img v-if="imageUrl" :src="imageUrl" alt="icon" />
+                        <AButton style="width: 410px">上传</AButton>
+                      </AUpload>
+                    </ATooltip>
+                  </AFormItem>
+                  <AFormItem label="描述" name="description">
+                    <ATextarea v-model:value="attachmentModel.description" placeholder="请输入描述" />
+                  </AFormItem>
+                </AForm>
+                <template #footer>
+                  <ASpace :size="16">
+                    <AButton @click="closeLinkChildDrawer">{{ $t('common.cancel') }}</AButton>
+                    <AButton type="primary" @click="handleLinkChildSubmit">{{ $t('common.confirm') }}</AButton>
+                  </ASpace>
+                </template>
+              </ADrawer>
+              <AButton type="dashed" style="margin-top: 8px; margin-right: 5px" @click="showMiniProgramModal">
+                小程序
+              </AButton>
+              <ADrawer v-model:open="miniProgramModal" title="小程序链接" width="460">
+                <AForm ref="formRef" layout="vertical" :model="attachmentModel" :rules="miniProgramRules">
+                  <AFormItem label="小程序标题" name="mini_program_title">
+                    <ATextarea v-model:value="attachmentModel.mini_program_title" placeholder="请输入小程序标题" />
+                  </AFormItem>
+                  <AFormItem label="appid" name="mini_program_app_id">
+                    <AInput v-model:value="attachmentModel.mini_program_app_id" placeholder="请输入appid" />
+                  </AFormItem>
+                  <AFormItem label="小程序路径" name="mini_program_page_path">
+                    <AInput v-model:value="attachmentModel.mini_program_page_path" placeholder="请输入小程序路径" />
+                  </AFormItem>
+                  <AFormItem label="小程序子标题" name="mini_program_child_title">
+                    <AInput v-model:value="attachmentModel.mini_program_child_title" placeholder="请输入小程序子标题" />
+                  </AFormItem>
+                  <AFormItem label="封面图片" name="mini_program_app_id">
+                    <ATooltip placement="top" class="w-full" title="大小不超过10M">
+                      <AUpload
+                        v-model:file="file"
+                        style="margin-top: 8px; margin-right: 5px; display: inline-block"
+                        class="w-full"
+                        name="file"
+                        :value="0"
+                        :show-upload-list="false"
+                        :before-upload="beforeUpload"
+                        :custom-request="customUpload"
+                        @change="info => handleChange(info, 'miniprogram')"
+                      >
+                        <img v-if="imageUrl" :src="imageUrl" alt="icon" />
+                        <AButton style="width: 410px">上传</AButton>
+                      </AUpload>
+                    </ATooltip>
+                  </AFormItem>
+                </AForm>
+                <template #footer>
+                  <ASpace :size="16">
+                    <AButton @click="closeMiniProgramChildDrawer">{{ $t('common.cancel') }}</AButton>
+                    <AButton type="primary" @click="handleMiniprogramChildSubmit">{{ $t('common.confirm') }}</AButton>
+                  </ASpace>
+                </template>
+              </ADrawer>
             </ATabPane>
           </ATabs>
         </ACard>

@@ -73,6 +73,15 @@ export function companyQrcodeList(data: Api.LiveCode.SearchParams) {
   });
 }
 
+// 企微活码创建
+export function companyQrcodeAdd(data: Api.LiveCode.CompanyMessageAdd) {
+  return request({
+    url: '/company/qrcode/add',
+    method: 'post',
+    data
+  });
+}
+
 // 企微标签列表
 export function companyTagList(data: Api.CompanyTag.SearchParams) {
   return request<Api.CompanyTag.CompanyTagList>({

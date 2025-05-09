@@ -533,6 +533,28 @@ declare namespace Api {
       tags: string;
     };
 
+    /** 活码添加 */
+    type CompanyMessageAdd  = {
+      company_id: number;
+      channel_name: string;
+      employee_skip_verify: number;
+      tag_ids: string;
+      remark: string;
+      employee_list: string;
+      employee_limit_type: number;
+      employee_limit_value: number;
+      employee_limit: EmployeeLimit[];
+      greeting: string;
+      attachment_ids: string;
+    }
+
+    type EmployeeLimit = {
+      /** 成员id */
+      employee_id: number;
+      /** 成员每日添加限制 */
+      employee_limit_num: number;
+    };
+
     /** AssociatedEmployee */
     export interface AssociatedEmployee {
       /** 当天已添加客户数 */
@@ -597,7 +619,7 @@ declare namespace Api {
     };
 
     type TagTree = {
-      id: number;
+      id: string;
       /** 父标签ID */
       pid?: number;
       /** 标签名称 */

@@ -5,6 +5,7 @@ import { $t } from '@/locales';
 import { companyQrcodeList } from '@/service/api/wechatfans';
 import QrcodeOperateDrawer from './modules/qrcode-operate-drawer.vue';
 import QrcodeSearch from './modules/qrcode-search.vue';
+import {DownCircleTwoTone} from '@ant-design/icons-vue'
 
 const { tableWrapperRef, scrollConfig } = useTableScroll();
 
@@ -71,6 +72,9 @@ const { columns, columnChecks, data, getData, getDataByPage, loading, searchPara
       width: 200,
       customRender: ({ record }) => {
         innerData = record.associated_employee;
+        return(
+          <DownCircleTwoTone style="font-size: 36px;" />
+        )
       }
     },
     {
@@ -183,7 +187,7 @@ function edit(id: number) {
                   <Tag v-if="record.employee_status === 1" style="font-size: 14px; line-height: 22px" color="blue">
                     正常
                   </Tag>
-                  <Tag v-else style="font-size: 14px; line-height: 22px" color="default">正常</Tag>
+                  <Tag v-else style="font-size: 14px; line-height: 22px" color="default">添加超出限制,已下线</Tag>
                 </span>
               </template>
               <template v-else-if="column.key === 'operation'">
@@ -213,10 +217,18 @@ function edit(id: number) {
         v-model:visible="drawerVisible"
         :operate-type="operateType"
         :row-data="editingData"
-        @submitted="getDataByPage"
+        @submitted="getData"
       />
     </ACard>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+::v-deep .ant-table-cell {
+  width: 30px;
+  height: 30px;
+}
+::v-deep .ant-table-row-expand-icon-collapsed {
+  background-color: cyan;
+}
+</style>
