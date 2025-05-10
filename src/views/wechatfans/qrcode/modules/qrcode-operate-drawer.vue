@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref, shallowRef, watch } from 'vue';
+import { computed, nextTick, reactive, ref, shallowRef, watch, watchEffect } from 'vue';
 import type { TreeSelectProps, UploadChangeParam, UploadProps } from 'ant-design-vue';
 import { Upload, message } from 'ant-design-vue';
 import EmojiPicker from 'vue3-emoji-picker';
@@ -123,10 +123,7 @@ async function getCompanyOptions() {
   }
 }
 
-// 标签相关 todo 过滤掉父亲标签
-// 标签相关 todo 过滤掉父亲标签
-// 标签相关 todo 过滤掉父亲标签
-// 标签相关 todo 过滤掉父亲标签// 标签相关 todo 过滤掉父亲标签// 标签相关 todo 过滤掉父亲标签
+// 标签相关
 // 标签选项
 const treeData = ref<TreeSelectProps['treeData']>([]);
 const tagValue = ref<string[]>([]);
@@ -140,9 +137,9 @@ function validSelect() {
   }
 }
 // 获取标签树
-async function getTree() {
+async function getTree(id: number = companyId.value) {
   const { error, data } = await companyTagTree({
-    company_id: companyId.value
+    company_id: id
   });
 
   if (!error) {
@@ -601,6 +598,7 @@ const handleEmojiOk = (e: MouseEvent) => {
 // 关闭一级抽屉
 function closeDrawer() {
   visible.value = false;
+  handleInitModel();
 }
 
 // 设置model数据
@@ -618,15 +616,21 @@ function setModelData() {
 }
 
 async function handleSubmit() {
-  console.log('model.value before: ', model);
   await validate();
   setModelData();
-  console.log('model.value: after', model);
   // request
-  const res = await companyQrcodeAdd(model);
-  if (res.response.data.code === 200) {
-    message.success('添加成功');
+  if(props.operateType === 'add') {
+    const res = await companyQrcodeAdd(model);
+    if (res.response.data.code === 200) {
+      message.success('添加成功');
+    }
+  } else {
+    const res = await companyQrcodeAdd(model);
+    if (res.response.data.code === 200) {
+      message.success('更新成功');
+    }
   }
+
   closeDrawer();
   emit('submitted');
 }
@@ -637,11 +641,13 @@ const limitNumMap = ref<Map<number, number>>(new Map());
 
 async function handleInitModel() {
   Object.assign(model, createDefaultModel());
-
   if (props.operateType === 'edit' && props.rowData) {
     const data = props.rowData;
+    await getTree(data.company_id);
 
+    console.log('data: ', data)
     Object.assign(model, data);
+    console.log('model: ', model)
     // 公司
     companyId.value = model.company_id;
     // 是否自动跳过
@@ -658,45 +664,45 @@ async function handleInitModel() {
     });
     employeeList.value = numberEmployeeIds;
 
-    // 标签
-    if (model.tag_ids.length === 0) {
-      // await nextTick();
-      return;
-    }
-
     // 解析json
     if(data.employee_limit.length) {
       const limitInfo = JSON.parse(data.employee_limit)
       model.employee_limit = limitInfo.employee_limits;
       employeeLimitValue.value  = limitInfo.employee_limit_value;
     }
+
     if (model.employee_limit_type === 3) {
+      console.log('asdfasdfaasdfasfd',data.associated_employee)
+      employeeMap.value = new Map(data.associated_employee.map(item => [item.employee_id, item.employee_name]));
+      // 回显选中的自定义员工\
+      const options = data.associated_employee.map(item => ({
+        label: item.employee_name,
+        value: item.employee_id
+      }));
+      await nextTick();
+
+      limitEmployeeOptions.value = [...options];
+      // console.log('limitEmployeeOptions.value', limitEmployeeOptions.value)
       selectedEmployees.value = model.employee_limit.map(item => {
         return item.employee_id;
       });
-
-      employeeMap.value = new Map(employeeOptions.value.map(item => [item.value, item.label]));
-
-      await getEmployeeOptions();
+      // 每个员工对应的限制数量
       limitNumMap.value = model.employee_limit.reduce((map, item) => {
         map.set(item.employee_id, item.employee_limit_num);
         return map;
       }, new Map<number, number>());
+      await nextTick();
       console.log('limitNumMap.value', limitNumMap.value)
     }
 
     // 招呼语
     greetActiveKey.value = model.greeting.length ? 2 : 1;
 
+    await nextTick();
     activeTagKey.value = 2;
     tagValue.value = model.tag_ids.split(',');
 
     await nextTick();
-
-    console.log('tagValue.value', tagValue);
-    console.log('model.tagids', model.tag_ids);
-
-
     console.log('model', model);
     console.log('data', data);
   } else {
@@ -705,17 +711,17 @@ async function handleInitModel() {
     activeTagKey.value = 1;
     employeeList.value = [];
     activeKey.value = 1;
+    greetActiveKey.value = 1;
+    await nextTick();
+    Object.assign(model, createDefaultModel());
   }
 }
 
 watch(visible, () => {
+  getCompanyOptions();
   if (visible.value) {
-    if (companyId.value) {
-      getTree();
-    }
     handleInitModel();
     resetFields();
-    getCompanyOptions();
   }
 });
 
@@ -1013,3 +1019,6 @@ watch(employeeList, () => {
   padding: 3px 3px 6px 9px;
 }
 </style>
+
+// todo 选择关闭，提交时要是空
+// 修改添加附件，要往attachment_ids添加

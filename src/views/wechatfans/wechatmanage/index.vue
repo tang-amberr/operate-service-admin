@@ -51,7 +51,7 @@ const { columns, columnChecks, data, loading, getData, mobilePagination } = useT
     {
       key: 'company_status',
       dataIndex: 'company_status',
-      title: '企业类型',
+      title: '企业状态',
       align: 'center',
       minWidth: 120,
       customRender: ({ record }) => {
@@ -65,13 +65,6 @@ const { columns, columnChecks, data, loading, getData, mobilePagination } = useT
       key: 'company_remarks',
       dataIndex: 'company_remarks',
       title: '备注',
-      align: 'center',
-      minWidth: 120
-    },
-    {
-      key: 'company_seats_numbers',
-      dataIndex: 'company_seats_numbers',
-      title: '坐席数',
       align: 'center',
       minWidth: 120
     },
