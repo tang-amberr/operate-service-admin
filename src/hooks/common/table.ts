@@ -15,6 +15,7 @@ type TableColumn<T> = AntDesign.TableColumn<T>;
 export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDesignTableConfig<A>) {
   const scope = effectScope();
   const appStore = useAppStore();
+  const originalDataRef = ref<any>(null);
 
   const { apiFn, apiParams, immediate } = config;
 
@@ -45,6 +46,7 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
           index: index + 1
         };
       });
+      originalDataRef.value = res.data;
 
       return {
         data: recordsWithIndex,
@@ -157,6 +159,7 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
   onScopeDispose(() => {
     scope.stop();
   });
+  const originalData = computed(() => originalDataRef.value);
 
   return {
     loading,
@@ -172,7 +175,8 @@ export function useTable<A extends AntDesign.TableApiFn>(config: AntDesign.AntDe
     getDataByPage,
     searchParams,
     updateSearchParams,
-    resetSearchParams
+    resetSearchParams,
+    originalData
   };
 }
 

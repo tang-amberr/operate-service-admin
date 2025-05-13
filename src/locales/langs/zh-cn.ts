@@ -198,7 +198,8 @@ const local: App.I18n.Schema = {
     wechatfans_qrcode: '企微活码',
     wechatfans_tags: '企微标签',
     wechatfans_wechatmanage: '企微企业管理',
-    wechatfans_employees: '企微员工管理'
+    wechatfans_employees: '企微员工管理',
+    cpsorder: 'CPS订单',
   },
   page: {
     login: {

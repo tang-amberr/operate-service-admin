@@ -49,9 +49,10 @@ interface CompanyApiParams {
   company_type: number;
   company_status: number;
   company_remarks: string;
-  company_seats_numbers: number;
   company_corp_id: string;
-  company_agent_id: string;
+  company_app_token: string;
+  company_permanent_code: string;
+  company_encoding_aes_key: string;
 }
 
 type CompanyModel = Pick<
@@ -62,9 +63,10 @@ type CompanyModel = Pick<
     | 'company_type'
     | 'company_status'
     | 'company_remarks'
-    | 'company_seats_numbers'
     | 'company_corp_id'
-    | 'company_agent_id'
+    | 'company_permanent_code'
+    | 'company_app_token'
+    | 'company_encoding_aes_key'
   >
 >;
 
@@ -76,9 +78,10 @@ function createDefaultCompanyModel(): CompanyModel {
     company_type: null,
     company_status: null,
     company_remarks: '',
-    company_seats_numbers: null,
     company_corp_id: '',
-    company_agent_id: ''
+    company_permanent_code: '',
+    company_app_token: '',
+    company_encoding_aes_key: ''
   };
 }
 
@@ -123,11 +126,8 @@ type CompanyRuleKey = Extract<keyof CompanyModel, string>;
 const companyRules: Record<CompanyRuleKey, App.Global.FormRule> = {
   company_name: defaultRequiredRule,
   company_type: defaultRequiredRule,
-  company_status: defaultRequiredRule,
-  company_corp_id: defaultRequiredRule,
-  company_remarks: defaultRequiredRule,
-  company_seats_numbers: defaultRequiredRule,
-  company_agent_id: defaultRequiredRule
+  company_app_token: defaultRequiredRule,
+  company_encoding_aes_key: defaultRequiredRule
 };
 const rules: Record<RuleKey, App.Global.FormRule> = {
   user_account: [
@@ -157,6 +157,7 @@ async function handleInitModel() {
     await nextTick();
     Object.assign(model, data);
   }
+  console.log('handleInitModel', model);
 }
 
 // const value = ref();
@@ -314,7 +315,7 @@ async function handleSubmit() {
     }
     console.log(requestData);
 
-    await memberManage(requestData);
+    const res = await memberManage(requestData);
     closeChildDrawer();
     if (requestData.type === 'add') {
       window.$message?.success($t('common.addSuccess'));
@@ -341,34 +342,55 @@ function closeChildDrawer() {
   operateTypeNew.value = '';
 }
 const showChildrenDrawer = () => {
+  handleInitModel();
+  selectTags.value = [];
   addSuper.value = false;
   childrenDrawer.value = true;
   model.type = 'add';
 };
 const showChildrenDrawerAddSuper = () => {
+  handleInitModel();
+  selectTags.value = [];
   addSuper.value = true;
   childrenDrawer.value = true;
   model.type = 'add';
+};
+
+const filterOption = (value: any, option: any) => {
+  return option.fans_tags_name.includes(value);
 };
 </script>
 
 <template>
   <ADrawer v-if="operateType === 'add'" v-model:open="visible" :title="title" :width="600">
     <AForm ref="formRef" :model="companyModel" :rules="companyRules">
-      <AFormItem label="企业名称" name="company_name">
-        <AInput v-model:value="companyModel.company_name" />
-      </AFormItem>
-      <AFormItem label="企业标识" name="company_corp_id">
-        <AInput v-model:value="companyModel.company_corp_id" />
-      </AFormItem>
       <AFormItem label="企业类型" name="company_type">
         <ASelect
           v-model:value="companyModel.company_type"
           :options="[
-            { label: '私有', value: 1 },
-            { label: '外部', value: 2 }
+            { label: '私有(自建应用)', value: 1 },
+            { label: '外部(代开发应用)', value: 2 }
           ]"
         />
+      </AFormItem>
+      <AFormItem label="企业名称" name="company_name">
+        <AInput v-model:value="companyModel.company_name" />
+      </AFormItem>
+      <AFormItem label="企业ID" name="company_corp_id">
+        <ATooltip placement="top" title="代开发应用时为auth_corp_info_corpid">
+          <AInput v-model:value="companyModel.company_corp_id" />
+        </ATooltip>
+      </AFormItem>
+      <AFormItem label="自建应用secret" name="company_permanent_code">
+        <ATooltip placement="top" title="自建应用为secret，代开发应用为永久授权码">
+          <AInput v-model:value="companyModel.company_permanent_code" />
+        </ATooltip>
+      </AFormItem>
+      <AFormItem label="应用token" name="company_app_token">
+        <AInput v-model:value="companyModel.company_app_token" />
+      </AFormItem>
+      <AFormItem label="应用aesKey" name="company_encoding_aes_key">
+        <AInput v-model:value="companyModel.company_encoding_aes_key" />
       </AFormItem>
       <AFormItem label="企业状态" name="company_status">
         <ASelect
@@ -381,12 +403,6 @@ const showChildrenDrawerAddSuper = () => {
       </AFormItem>
       <AFormItem label="备注">
         <AInput v-model:value="companyModel.company_remarks" />
-      </AFormItem>
-      <AFormItem label="坐席数" name="company_seats_numbers">
-        <AInputNumber v-model:value="companyModel.company_seats_numbers" class="w-full" min="0" />
-      </AFormItem>
-      <AFormItem label="应用id" name="company_agent_id">
-        <AInput v-model:value="companyModel.company_agent_id" />
       </AFormItem>
     </AForm>
     <template #footer>
@@ -436,11 +452,12 @@ const showChildrenDrawerAddSuper = () => {
         <AFormItem v-if="!addSuper" label="授权标签" name="authorization_label">
           <ASelect
             v-model:value="selectTags"
+            :filter-option="filterOption"
             :options="fans_tags_info"
-            mode="tags"
+            mode="multiple"
             placeholder="请选择标签"
             class="w-full"
-            :field-names="{ label: 'fans_name', value: 'fans_tags_id' }"
+            :field-names="{ label: 'fans_tags_name', value: 'fans_tags_id' }"
           ></ASelect>
         </AFormItem>
         <AFormItem label="用户名称 (选填)">

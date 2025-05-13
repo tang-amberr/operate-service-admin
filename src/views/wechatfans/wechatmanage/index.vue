@@ -27,7 +27,8 @@ const { columns, columnChecks, data, loading, getData, mobilePagination } = useT
       key: 'company_name',
       dataIndex: 'company_name',
       title: '企业名称',
-      align: 'center'
+      align: 'center',
+      minWidth: 100
     },
     {
       key: 'company_corp_id',
@@ -40,9 +41,9 @@ const { columns, columnChecks, data, loading, getData, mobilePagination } = useT
       dataIndex: 'company_type',
       title: '企业类型',
       align: 'center',
-      minWidth: 120,
+      width: 80,
       customRender: ({ record }) => {
-        if (record.company_type === '1') {
+        if (record.company_type === 1) {
           return <Badge status="success" text="私有" />;
         }
         return <Badge status="processing" text="外部" />;
@@ -53,7 +54,7 @@ const { columns, columnChecks, data, loading, getData, mobilePagination } = useT
       dataIndex: 'company_status',
       title: '企业状态',
       align: 'center',
-      minWidth: 120,
+      width: 80,
       customRender: ({ record }) => {
         if (record.company_status === '1') {
           return <Badge status="success" text="禁用" />;
@@ -66,34 +67,27 @@ const { columns, columnChecks, data, loading, getData, mobilePagination } = useT
       dataIndex: 'company_remarks',
       title: '备注',
       align: 'center',
-      minWidth: 120
-    },
-    {
-      key: 'company_agent_id',
-      dataIndex: 'company_agent_id',
-      title: '应用id',
-      align: 'center',
-      minWidth: 120
+      minWidth: 180
     },
     {
       key: 'company_created_at',
       dataIndex: 'company_created_at',
       title: '创建时间',
       align: 'center',
-      minWidth: 120
+      width: 100
     },
     {
       key: 'company_updated_at',
       dataIndex: 'company_updated_at',
       title: '更新时间',
       align: 'center',
-      minWidth: 120
+      width: 100
     },
     {
       key: 'operate',
       title: '操作',
       align: 'center',
-      minWidth: 200,
+      width: 150,
       customRender: ({ record }) => {
         const originAuth = useAuth();
         if (!originAuth.hasAuth("originAuth.hasAuth")) {

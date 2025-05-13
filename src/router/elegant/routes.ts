@@ -40,6 +40,16 @@ export const generatedRoutes: GeneratedRoute[] = [
     }
   },
   {
+    name: 'cpsorder',
+    path: '/cpsorder',
+    component: 'layout.base$view.cpsorder',
+    meta: {
+      title: 'cpsorder',
+      i18nKey: 'route.cpsorder',
+      icon: 'material-symbols:draft-orders'
+    }
+  },
+  {
     name: 'home',
     path: '/home',
     component: 'layout.base$view.home',

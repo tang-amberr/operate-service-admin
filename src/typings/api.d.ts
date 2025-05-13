@@ -441,6 +441,9 @@ declare namespace Api {
       company_remarks: string;
       company_seats_numbers: string;
       company_agent_id: string;
+      company_permanent_code: string;
+      company_app_token: string;
+      company_encoding_aes_key: string;
       company_create_at: string;
       company_update_at: string;
     };
@@ -498,9 +501,10 @@ declare namespace Api {
       company_type: number;
       company_status: number;
       company_remarks: string;
-      company_seats_numbers: number;
       company_corp_id: string;
-      company_agent_id: string;
+      company_permanent_code: string;
+      company_app_token: string;
+      company_encoding_aes_key: string;
     };
 
     type SearchParams = {
@@ -579,6 +583,52 @@ declare namespace Api {
       /** 每页大小 */
       page_size: number;
       [property: string]: any;
+    };
+  }
+
+  namespace CpsOrder {
+    type CommonSearchParams = Pick<Common.PaginatingCommonParams, 'current' | 'page_size'>;
+
+    type CpsOrderList = Common.CommonRecord<{
+      id: number;
+      order_id: string;
+      order_pay_time: string;
+      order_pay_price: string;
+      order_cps_profit: string;
+      order_cpa_profit: string;
+      order_product_id: string;
+      order_product_name: string;
+      order_product_img: string;
+      order_trade_type: number;
+      order_platform: number;
+      order_status: number;
+      order_channel: string;
+      order_popularize_place: string;
+      order_channel_account: string;
+    }>;
+
+    type CpsOrderSearchParams = {
+      /** 当前页 */
+      current?: number;
+      /** 支付结束时间 */
+      pay_end_time?: string;
+      /** 渠道账号 */
+      order_channel_account?: string;
+      /** 订单佣金比例 */
+      order_commission_rate?: number;
+      /** order_id */
+      order_id?: string;
+      /** 平台类型，1:美团，2、饿了么，3、滴滴,4、淘宝,5、京东，6、拼多多 */
+      order_platform?: number;
+      /** 订单状态，1、付款，2、完成 ，3、取消 ，4、风控，5、结算 */
+      order_status?: number;
+      /** 交易类型，1：cps，2：cpa */
+      order_trade_type?: number;
+      /** 每页大小 */
+      page_size?: number;
+      /** 支付开始时间 */
+      pay_start_time?: string;
+      pay_date?: [string, string];
     };
   }
 
