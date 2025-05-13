@@ -85,7 +85,7 @@ getCaptcha();
 async function handleSubmit() {
   await validate();
   setTimeout(async () => {
-    debounceGetCaptcha()
+    debounceGetCaptcha();
   }, 600);
   await authStore.login(model.username, model.password, model.code, model.id);
 }
@@ -93,29 +93,30 @@ async function handleSubmit() {
 
 <template>
   <AForm ref="formRef" :model="model" :rules="rules" @keyup.enter="handleSubmit">
-    <AFormItem name="userName">
-      <AInput v-model:value="model.username" size="large" :placeholder="$t('page.login.common.userNamePlaceholder')" />
+    <AFormItem class="h-50px" name="userName">
+      <AInput v-model:value="model.username" class="h-50px"  size="large" :placeholder="$t('page.login.common.userNamePlaceholder')" />
     </AFormItem>
-    <AFormItem name="password">
+    <AFormItem class="h-50px" name="password">
       <AInputPassword
+        class="h-50px"
         v-model:value="model.password"
         size="large"
         :placeholder="$t('page.login.common.passwordPlaceholder')"
       />
     </AFormItem>
-    <AFormItem name="code">
-      <div class="w-full flex-y-center gap-16px">
-        <AInput v-model:value="model.code" size="large" :placeholder="$t('page.login.common.codePlaceholder')" />
+    <AFormItem class="h-50px" name="code">
+      <div class="w-full flex-y-center gap-16px w-50px">
+        <AInput class="h-50px"  v-model:value="model.code" size="large" :placeholder="$t('page.login.common.codePlaceholder')" />
         <!-- 替换为验证码图片展示 -->
         <div
           v-if="captchaImage"
-          class="captcha-image-wrapper  cursor-pointer"
+          class="captcha-image-wrapper  cursor-pointer w-400px"
           @click="debounceGetCaptcha"
         >
           <img
             :src="captchaImage"
             alt="验证码"
-            class="h-40px w-170px border-1 border-gray-300"
+            class="h-50px w-500px border-1 border-gray-300"
           />
           <div v-if="loading" class="loading-overlay">
             <ASpin size="small" />
@@ -149,12 +150,8 @@ async function handleSubmit() {
 
 <style scoped>
 .captcha-image-wrapper {
-  //position: relative;
-  //display: flex;
-  width: 190px;
-  height: 40px;
-  //align-items: center;
-  //justify-content: center;
+  width: 540px;
+  height: 50px;
 }
 
 .loading-overlay {

@@ -49,7 +49,7 @@ const bgColor = computed(() => {
   <div class="relative size-full flex-center" :style="{ backgroundColor: bgColor }">
     <WaveBg :theme-color="bgThemeColor" />
     <ACard class="relative z-4">
-      <div class="w-400px lt-sm:w-300px">
+      <div class="w-500px lt-sm:w-300px">
         <header class="flex-y-center justify-between">
           <SystemLogo class="text-64px text-primary lt-sm:text-48px" />
           <h3 class="text-28px text-primary font-500 lt-sm:text-22px">{{ $t('system.title') }}</h3>

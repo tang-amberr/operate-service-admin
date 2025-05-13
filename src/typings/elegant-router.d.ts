@@ -42,6 +42,8 @@ declare module "@elegant-router/types" {
     "manage_menu": "/manage/menu";
     "manage_role": "/manage/role";
     "manage_user": "/manage/user";
+    "test": "/test";
+    "test_test": "/test/test";
     "wechatfans": "/wechatfans";
     "wechatfans_fans": "/wechatfans/fans";
     "wechatfans_wechatmanage": "/wechatfans/wechatmanage";
@@ -96,6 +98,7 @@ declare module "@elegant-router/types" {
     | "iframe-page"
     | "login"
     | "manage"
+    | "test"
     | "wechatfans"
   >;
 
@@ -126,6 +129,7 @@ declare module "@elegant-router/types" {
     | "manage_menu"
     | "manage_role"
     | "manage_user"
+    | "test_test"
     | "wechatfans_fans"
     | "wechatfans_wechatmanage"
   >;

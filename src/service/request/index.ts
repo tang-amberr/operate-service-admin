@@ -159,9 +159,9 @@ export const demoRequest = createRequest<App.Service.DemoResponse>(
             clearAuthStorage();
             // token过期直接清空信息跳转登录
             authStore.$reset();
-            router.push("/login")
+            router.push('/login');
             resolve();
-          }, 500);
+          }, 200);
         })
       }
       const logoutCodes = import.meta.env.VITE_SERVICE_LOGOUT_CODES?.split(',') || [];
@@ -185,6 +185,17 @@ export const demoRequest = createRequest<App.Service.DemoResponse>(
       }
       // when the request is fail, you can show error message
 
+      function redirectLogin() {
+        return new Promise<void>((resolve, reject) => {
+            const authStore = useAuthStore();
+            clearAuthStorage();
+            // token过期直接清空信息跳转登录
+            authStore.$reset();
+            router.push('/login');
+            resolve();
+        })
+      }
+      redirectLogin();
       let message = error.message;
 
       // show backend error message

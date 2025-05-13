@@ -153,6 +153,26 @@ export const generatedRoutes: GeneratedRoute[] = [
     ]
   },
   {
+    name: 'test',
+    path: '/test',
+    component: 'layout.base',
+    meta: {
+      title: 'test',
+      i18nKey: 'route.test'
+    },
+    children: [
+      {
+        name: 'test_test',
+        path: '/test/test',
+        component: 'view.test_test',
+        meta: {
+          title: 'test_test',
+          i18nKey: 'route.test_test'
+        }
+      }
+    ]
+  },
+  {
     name: 'wechatfans',
     path: '/wechatfans',
     component: 'layout.base',

@@ -151,10 +151,10 @@ watch(visible, val => {
 
 <template>
   <AModal v-model:open="visible" :title="title" class="w-480px">
-    <div class="flex-y-center gap-16px pb-12px">
-      <div>{{ $t('page.manage.menu.home') }}</div>
-      <ASelect :value="home" :options="pageSelectOptions" class="w-240px" @update:value="updateHome" />
-    </div>
+<!--    <div class="flex-y-center gap-16px pb-12px">-->
+<!--      <div>{{ $t('page.manage.menu.home') }}</div>-->
+<!--      <ASelect :value="home" :options="pageSelectOptions" class="w-240px" @update:value="updateHome" />-->
+<!--    </div>-->
     <ATree
       v-model:checked-keys="checks"
       :tree-data="tree"
