@@ -96,35 +96,35 @@ declare namespace Api {
     type Role = Common.CommonRecord<{
       /** role name */
       id: number;
-      role_name: string;
-      router_ids: number[];
-      button_ids: number[];
+      admin_role_name: string;
+      admin_role_router_ids: number[];
+      admin_role_button_ids: number[];
       /** role description */
-      role_desc: string;
+      admin_role_desc: string;
     }>;
 
     /** edit role */
     type EditAdminRole = Common.CommonRecord<{
       /** role name */
       id: number;
-      role_name?: string;
-      router_ids?:number[];
-      button_ids?: number[];
+      admin_role_name?: string;
+      admin_role_router_ids?:number[];
+      admin_role_button_ids?: number[];
       /** role description */
-      role_desc?: string;
+      admin_role_desc?: string;
       type: string
     }>;
 
     /** role search params */
     type RoleSearchParams = Partial<
-      Pick<Api.SystemManage.Role, 'role_name'> & Common.CommonSearchParams
+      Pick<Api.SystemManage.Role, 'admin_role_name'> & Common.CommonSearchParams
     >;
 
     /** role list */
     type RoleList = Common.PaginatingQueryRecord<Role>;
 
     /** all role */
-    type AllRole = Pick<Role, 'id' | 'role_name'>;
+    type AllRole = Pick<Role, 'id' | 'admin_role_name'>;
 
     /** admin button */
     type AdminButton = Common.CommonRecord<{
@@ -156,8 +156,8 @@ declare namespace Api {
     type User = Common.CommonRecord<{
       /** user name */
       id: number;
-      username: string;
-      status: number; // 1 正常 2 停用
+      admin_user_username: string;
+      admin_user_status: number; // 1 正常 2 停用
       /** user role code collection */
       user_roles: Role[];
     }>;
@@ -167,16 +167,16 @@ declare namespace Api {
       /** user name */
       id: number;
       type: string;
-      username: string;
-      status: number; // 1 正常 2 停用
+      admin_user_username: string;
+      admin_user_status: number; // 1 正常 2 停用
       /** user role code collection */
       user_roles: Role[];
-      role_ids: number[];
+      admin_user_role_ids: number[];
     }>;
 
     /** user search params */
     type UserSearchParams = Partial<
-      Pick<Api.SystemManage.User, 'type' | 'username' | 'status'> &
+      Pick<Api.SystemManage.User, 'type' | 'admin_user_username' | 'admin_user_status'> &
       Common.CommonSearchParams
     >;
 
@@ -226,21 +226,21 @@ declare namespace Api {
 
     type Menu = Common.CommonRecord<{
       /** parent menu id */
-      pid: number;
+      admin_router_pid: number;
       /** menu type */
-      menu_type: MenuType;
+      admin_router_menu_type: MenuType;
       /** menu name */
-      menu_name: string;
+      admin_router_menu_name: string;
       /** route name */
-      route_name: string;
+      admin_router_route_name: string;
       /** route path */
-      route_path: string;
+      admin_router_route_path: string;
       /** component */
-      component?: string;
+      admin_router_component?: string;
       /** iconify icon name or local icon name */
-      icon: string;
+      admin_router_icon: string;
       /** icon type */
-      icon_type: IconType;
+      admin_router_icon_type: IconType;
       /** buttons */
       buttons?: MenuButton[] | null;
       /** children menu */

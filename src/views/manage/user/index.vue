@@ -1,17 +1,13 @@
 <script setup lang="tsx">
-import { Button, Popconfirm, Tag, message } from "ant-design-vue";
-import {deleteUser, editUser, fetchGetUserList} from "@/service/api";
-import {
-  useTable,
-  useTableOperate,
-  useTableScroll,
-} from "@/hooks/common/table";
-import { $t } from "@/locales";
-import { enableStatusRecord } from "@/constants/business";
-import { useAuth } from "@/hooks/business/auth";
-import UserOperateDrawer from "./modules/user-operate-drawer.vue";
-import UserSearch from "./modules/user-search.vue";
-import {ref} from "vue";
+import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
+import { ref } from 'vue';
+import { deleteUser, editUser, fetchGetUserList } from '@/service/api';
+import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
+import { $t } from '@/locales';
+import { enableStatusRecord } from '@/constants/business';
+import { useAuth } from '@/hooks/business/auth';
+import UserOperateDrawer from './modules/user-operate-drawer.vue';
+import UserSearch from './modules/user-search.vue';
 
 const { tableWrapperRef, scrollConfig } = useTableScroll();
 
@@ -24,25 +20,22 @@ const generateActionButtons = (record, editButtonCode, deleteButtonCode) => {
   if (hasEdit) {
     actions.push(
       <Button type="primary" ghost size="small" onClick={() => edit(record.id)}>
-        {$t("common.edit")}
-      </Button>,
+        {$t('common.edit')}
+      </Button>
     );
-    if(record.status === 1) {
+    if (record.status === 1) {
       actions.push(
-        <Popconfirm
-          title={'确认禁用吗？'}
-          onConfirm={() => handleClose(record)}
-        >
+        <Popconfirm title={'确认禁用吗？'} onConfirm={() => handleClose(record)}>
           <Button danger type="primary" ghost size="small">
-            { '禁用' }
+            {'禁用'}
           </Button>
-        </Popconfirm>,
+        </Popconfirm>
       );
     } else {
       actions.push(
-          <Button danger type="primary" dashed size="small" onClick={() => handleClose(record)}>
-            { '解禁' }
-          </Button>,
+        <Button danger type="primary" dashed size="small" onClick={() => handleClose(record)}>
+          {'解禁'}
+        </Button>
       );
     }
 
@@ -54,32 +47,18 @@ const generateActionButtons = (record, editButtonCode, deleteButtonCode) => {
   }
   if (hasDelete) {
     actions.push(
-      <Popconfirm
-        title={$t("common.confirmDelete")}
-        onConfirm={() => handleDelete(record.id)}
-      >
+      <Popconfirm title={$t('common.confirmDelete')} onConfirm={() => handleDelete(record.id)}>
         <Button danger size="small">
-          {$t("common.delete")}
+          {$t('common.delete')}
         </Button>
-      </Popconfirm>,
+      </Popconfirm>
     );
   }
 
-  return actions.length ? (
-    <div class="flex-center gap-8px">{...actions}</div>
-  ) : null;
+  return actions.length ? <div class="flex-center gap-8px">{...actions}</div> : null;
 };
 
-const {
-  columns,
-  columnChecks,
-  data,
-  getData,
-  loading,
-  mobilePagination,
-  searchParams,
-  resetSearchParams,
-} = useTable({
+const { columns, columnChecks, data, getData, loading, mobilePagination, searchParams, resetSearchParams } = useTable({
   apiFn: fetchGetUserList,
   apiParams: {
     current: 1,
@@ -87,82 +66,75 @@ const {
     // if you want to use the searchParams in Form, you need to define the following properties, and the value is null
     // the value can not be undefined, otherwise the property in Form will not be reactive
     status: null,
-    username: "",
-    buttonKey: "sys:user:list",
+    username: '',
+    buttonKey: 'sys:user:list'
   },
   columns: () => [
     {
-      key: "id",
-      title: $t("common.index"),
-      dataIndex: "index",
-      align: "center",
-      width: 64,
+      key: 'id',
+      title: $t('common.index'),
+      dataIndex: 'index',
+      align: 'center',
+      width: 64
     },
     {
-      key: "username",
-      dataIndex: "username",
-      title: $t("page.manage.user.userName"),
-      align: "center",
-      minWidth: 150,
+      key: 'admin_user_username',
+      dataIndex: 'admin_user_username',
+      title: $t('page.manage.user.userName'),
+      align: 'center',
+      minWidth: 150
     },
     {
-      key: "status",
-      dataIndex: "status",
-      title: $t("page.manage.user.userStatus"),
-      align: "center",
+      key: 'admin_user_status',
+      dataIndex: 'admin_user_status',
+      title: $t('page.manage.user.userStatus'),
+      align: 'center',
       minWidth: 150,
       customRender: ({ record }) => {
-        if (record.status === null) {
+        if (record.admin_user_status === null) {
           return null;
         }
 
         const tagMap: Record<Api.Common.EnableStatus, string> = {
-          1: "success",
-          2: "warning",
+          1: 'success',
+          2: 'warning'
         };
 
-        const label = $t(enableStatusRecord[record.status]);
+        const label = $t(enableStatusRecord[record.admin_user_status]);
 
         return (
-          <Tag
-            style="font-size: 16px; line-height: 28px"
-            color={tagMap[record.status]}
-          >
+          <Tag style="font-size: 16px; line-height: 28px" color={tagMap[record.admin_user_status]}>
             {label}
           </Tag>
         );
-      },
+      }
     },
     {
       // create_at
-      key: "create_at",
-      dataIndex: "create_at",
-      title: "创建时间",
-      align: "center",
-      width: 200,
+      key: 'create_at',
+      dataIndex: 'create_at',
+      title: '创建时间',
+      align: 'center',
+      width: 200
     },
     {
       // update_at
-      key: "update_at",
-      dataIndex: "update_at",
-      title: "更新时间",
-      align: "center",
-      width: 200,
+      key: 'update_at',
+      dataIndex: 'update_at',
+      title: '更新时间',
+      align: 'center',
+      width: 200
     },
     {
-      key: "operate",
-      title: $t("common.operate"),
-      align: "center",
+      key: 'operate',
+      title: $t('common.operate'),
+      align: 'center',
       minWidth: 130,
       customRender: ({ record }) => {
-        return generateActionButtons(
-          record,
-          "sys:user:edit",
-          "sys:user:delete",
-        );
-      },
-    },
-  ],
+        return generateActionButtons(record, 'sys:user:edit', 'sys:user:delete');
+      }
+    }
+  ]
 });
 
 const {
@@ -184,14 +156,14 @@ async function handleDelete(id: number) {
   // request
   const res = await deleteUser({
     // 按钮key，用于后端鉴权
-    buttonKey: "sys:user:delete",
-    id,
+    buttonKey: 'sys:user:delete',
+    id
   });
   if (res.response.data.code === 200) {
     // message.success('删除成功');
     onDeleted();
   } else {
-    message.error("删除失败");
+    message.error('删除失败');
   }
 }
 
@@ -199,43 +171,25 @@ async function handleDelete(id: number) {
 async function handleClose(record: Api.SystemManage.EditUser) {
   Object.assign(model.value, record);
   let msg = '';
-  if(record.status === 1) {
-    model.value.status = 2;
+  if (record.admin_user_status === 1) {
+    model.value.admin_user_status = 2;
     msg = '禁用';
   } else {
-    model.value.status = 1;
+    model.value.admin_user_status = 1;
     msg = '解禁';
   }
   const res = await editUser({
     ...model.value,
-    buttonKey: "sys:user:edit",
+    buttonKey: 'sys:user:edit',
     type: 'edit'
-  })
+  });
   // 提示信息
   if (res.response.data.code === 200) {
     // 刷新数据
     getData();
-    message.success(`${msg}成功`)
+    message.success(`${msg}成功`);
   } else {
-    message.error(`${msg}失败`)
-  }
-}
-
-// 重置密码
-async function resetPassword(record: Api.SystemManage.EditUser) {
-  Object.assign(model.value, record);
-  const res = await editUser({
-    ...model.value,
-    buttonKey: "sys:user:edit",
-    type: 'edit'
-  })
-  // 提示信息
-  if (res.response.data.code === 200) {
-    // 刷新数据
-    getData();
-    message.success(`重置成功`)
-  } else {
-    message.error(`重置失败`)
+    message.error(`${msg}失败`);
   }
 }
 
@@ -245,14 +199,8 @@ function edit(id: number) {
 </script>
 
 <template>
-  <div
-    class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto"
-  >
-    <UserSearch
-      v-model:model="searchParams"
-      @reset="resetSearchParams"
-      @search="getData"
-    />
+  <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
+    <UserSearch v-model:model="searchParams" @reset="resetSearchParams" @search="getData" />
     <ACard
       :title="$t('page.manage.user.title')"
       :bordered="false"

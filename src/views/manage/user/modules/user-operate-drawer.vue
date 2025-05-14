@@ -40,28 +40,28 @@ const title = computed(() => {
 
 type Model = Pick<
   Api.SystemManage.EditUser,
-  'username' | 'password' | 'status' | 'type' | 'role_ids'
+  'admin_user_username' | 'admin_user_password' | 'admin_user_status' | 'type' | 'admin_user_role_ids'
 >;
 
 const model = ref(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
-    password: '',
-    username: '',
-    status: null,
+    admin_user_password: '',
+    admin_user_username: '',
+    admin_user_status: null,
     type: 'add',
-    role_ids: [],
+    admin_user_role_ids: [],
     user_roles: []
   };
 }
 
-type RuleKey = Extract<keyof Model, 'username' | 'password' | 'status'>;
+type RuleKey = Extract<keyof Model, 'admin_user_username' | 'admin_user_password' | 'admin_user_status'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
-  username: defaultRequiredRule,
-  status: defaultRequiredRule,
-  password: defaultRequiredRule
+  admin_user_username: defaultRequiredRule,
+  admin_user_status: defaultRequiredRule,
+  admin_user_password: defaultRequiredRule
 };
 
 /** the enabled role options */
@@ -75,7 +75,7 @@ async function getRoleOptions() {
 
   if (!error) {
     const options = data.list.map(item => ({
-      label: item.role_desc,
+      label: item.admin_role_desc,
       value: item.id
     }));
     console.log('model', model.value)
@@ -128,21 +128,21 @@ watch(visible, () => {
 <template>
   <ADrawer v-model:open="visible" :title="title" :width="360">
     <AForm ref="formRef" layout="vertical" :model="model" :rules="rules">
-      <AFormItem :label="$t('page.manage.user.userName')" name="username">
-        <AInput v-model:value="model.username" :placeholder="$t('page.manage.user.form.userName')" />
+      <AFormItem :label="$t('page.manage.user.userName')" name="admin_user_username">
+        <AInput v-model:value="model.admin_user_username" :placeholder="$t('page.manage.user.form.userName')" />
       </AFormItem>
-      <AFormItem label="密码" name="password">
-        <AInput v-model:value="model.password" placeholder="请输入密码" />
+      <AFormItem label="密码" name="admin_user_password">
+        <AInput v-model:value="model.admin_user_password" placeholder="请输入密码" />
       </AFormItem>
-      <AFormItem :label="$t('page.manage.user.userStatus')" name="status">
-        <ARadioGroup v-model:value="model.status">
+      <AFormItem :label="$t('page.manage.user.userStatus')" name="admin_user_status">
+        <ARadioGroup v-model:value="model.admin_user_status">
           <a-radio :value="1">启用</a-radio>
           <a-radio :value="2">禁用</a-radio>
         </ARadioGroup>
       </AFormItem>
-      <AFormItem :label="$t('page.manage.user.userRole')" name="roles">
+      <AFormItem :label="$t('page.manage.user.userRole')" name="admin_user_roles">
         <ASelect
-          v-model:value="model.role_ids"
+          v-model:value="model.admin_user_role_ids"
           multiple
           mode="tags"
           :options="roleOptions"
