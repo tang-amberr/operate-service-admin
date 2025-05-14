@@ -17,10 +17,10 @@ const { toggleLoginModule } = useRouterPush();
 const { formRef, validate } = useAntdForm();
 
 interface FormModel {
-  username: string;
-  password: string;
-  code: string;
-  id: string;
+  account_login_username: string;
+  account_login_password: string;
+  account_login_code: string;
+  account_login_id: string;
 }
 
 // 新增验证码相关状态
@@ -34,9 +34,9 @@ const rules = computed<Record<keyof FormModel, App.Global.FormRule[]>>(() => {
   const { formRules } = useFormRules();
 
   return {
-    username: formRules.username,
-    password: formRules.password,
-    code: formRules.code
+    account_login_username: formRules.username,
+    account_login_password: formRules.password,
+    account_login_code: formRules.code
   };
 });
 
@@ -46,8 +46,8 @@ const getCaptcha = async () => {
     loading.value = true;
     const res = await fetchGetCaptcha();
     if(res.code === 200) {
-      captchaImage.value = res.data.image;
-      model.id = res.data.id;
+      captchaImage.value = res.data.login_captcha_image;
+      model.account_login_id = res.data.login_captcha_id;
     }
   } catch (err) {
     console.error('获取验证码失败', err);
@@ -87,26 +87,31 @@ async function handleSubmit() {
   setTimeout(async () => {
     debounceGetCaptcha();
   }, 600);
-  await authStore.login(model.username, model.password, model.code, model.id);
+  await authStore.login(
+    model.account_login_username,
+    model.account_login_password,
+    model.account_login_code,
+    model.account_login_id
+  );
 }
 </script>
 
 <template>
   <AForm ref="formRef" :model="model" :rules="rules" @keyup.enter="handleSubmit">
-    <AFormItem class="h-50px" name="userName">
-      <AInput v-model:value="model.username" class="h-50px"  size="large" :placeholder="$t('page.login.common.userNamePlaceholder')" />
+    <AFormItem class="h-50px" name="account_login_username">
+      <AInput v-model:value="model.account_login_username" class="h-50px"  size="large" :placeholder="$t('page.login.common.userNamePlaceholder')" />
     </AFormItem>
-    <AFormItem class="h-50px" name="password">
+    <AFormItem class="h-50px" name="account_login_password">
       <AInputPassword
         class="h-50px"
-        v-model:value="model.password"
+        v-model:value="model.account_login_password"
         size="large"
         :placeholder="$t('page.login.common.passwordPlaceholder')"
       />
     </AFormItem>
-    <AFormItem class="h-50px" name="code">
+    <AFormItem class="h-50px" name="account_login_code">
       <div class="w-full flex-y-center gap-16px w-50px">
-        <AInput class="h-50px"  v-model:value="model.code" size="large" :placeholder="$t('page.login.common.codePlaceholder')" />
+        <AInput class="h-50px"  v-model:value="model.account_login_code" size="large" :placeholder="$t('page.login.common.codePlaceholder')" />
         <!-- 替换为验证码图片展示 -->
         <div
           v-if="captchaImage"

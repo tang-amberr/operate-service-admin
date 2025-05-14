@@ -49,7 +49,7 @@ const {
   apiParams: {
     current: 1,
     page_size: 10,
-    role_name: '',
+    admin_role_name: '',
     buttonKey: 'sys:role:list'
   },
   columns: () => [
@@ -61,15 +61,15 @@ const {
       align: 'center'
     },
     {
-      key: 'role_name',
-      dataIndex: 'role_name',
+      key: 'admin_role_name',
+      dataIndex: 'admin_role_name',
       title: $t('page.manage.role.roleName'),
       align: 'center',
       minWidth: 120
     },
     {
-      key: 'role_desc',
-      dataIndex: 'role_desc',
+      key: 'admin_role_desc',
+      dataIndex: 'admin_role_desc',
       title: $t('page.manage.role.roleDesc'),
       minWidth: 120
     },

@@ -42,24 +42,24 @@ const title = computed(() => {
   return titles[props.operateType];
 });
 
-type Model = Pick<Api.SystemManage.Role, 'role_name' | 'type' | 'role_desc' | 'router_ids' | 'button_ids'>;
+type Model = Pick<Api.SystemManage.Role, 'admin_role_name' | 'type' | 'admin_role_desc' | 'admin_role_router_ids' | 'admin_role_button_ids'>;
 
 const model = ref(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
     type: 'add',
-    role_name: '',
-    role_desc: '',
-    router_ids: '',
-    button_ids: []
+    admin_role_name: '',
+    admin_role_desc: '',
+    admin_role_router_ids: '',
+    admin_role_button_ids: []
   };
 }
 
-type RuleKey = Exclude<keyof Model, 'role_name'>;
+type RuleKey = Exclude<keyof Model, 'admin_role_name'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
-  role_name: defaultRequiredRule
+  admin_role_name: defaultRequiredRule
 };
 
 const roleId = computed(() => props.rowData?.id || -1);
@@ -112,11 +112,11 @@ watch(visible, () => {
 <template>
   <ADrawer v-model:open="visible" :title="title" :width="360">
     <AForm ref="formRef" layout="vertical" :model="model" :rules="rules">
-      <AFormItem :label="$t('page.manage.role.roleName')" name="role_name">
-        <AInput v-model:value="model.role_name" :placeholder="$t('page.manage.role.form.roleName')" />
+      <AFormItem :label="$t('page.manage.role.roleName')" name="admin_role_name">
+        <AInput v-model:value="model.admin_role_name" :placeholder="$t('page.manage.role.form.roleName')" />
       </AFormItem>
-      <AFormItem :label="$t('page.manage.role.roleDesc')" name="role_desc">
-        <AInput v-model:value="model.role_desc" :placeholder="$t('page.manage.role.form.roleDesc')" />
+      <AFormItem :label="$t('page.manage.role.roleDesc')" name="admin_role_desc">
+        <AInput v-model:value="model.admin_role_desc" :placeholder="$t('page.manage.role.form.roleDesc')" />
       </AFormItem>
     </AForm>
     <ASpace v-if="isEdit" class="w-full">

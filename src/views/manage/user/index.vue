@@ -23,7 +23,7 @@ const generateActionButtons = (record, editButtonCode, deleteButtonCode) => {
         {$t('common.edit')}
       </Button>
     );
-    if (record.status === 1) {
+    if (record.admin_user_status === 1) {
       actions.push(
         <Popconfirm title={'确认禁用吗？'} onConfirm={() => handleClose(record)}>
           <Button danger type="primary" ghost size="small">

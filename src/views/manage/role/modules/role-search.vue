@@ -34,7 +34,7 @@ function search() {
       <ARow :gutter="[16, 16]" wrap>
         <ACol :span="24" :md="12" :lg="6">
           <AFormItem :label="$t('page.manage.role.roleName')" name="roleName" class="m-0">
-            <AInput v-model:value="model.role_name" :placeholder="$t('page.manage.role.form.roleName')" />
+            <AInput v-model:value="model.admin_role_name" :placeholder="$t('page.manage.role.form.roleName')" />
           </AFormItem>
         </ACol>
         <ACol :span="24" :md="12" :lg="18">

@@ -56,72 +56,70 @@ const title = computed(() => {
 
 type Model = Pick<
   Api.SystemManage.Menu,
-  | 'menu_type'
-  | 'menu_name'
-  | 'route_name'
-  | 'route_path'
-  | 'component'
-  | 'order'
-  | 'i18n_key'
-  | 'icon'
-  | 'icon_type'
-  | 'status'
-  | 'pid'
-  | 'keep_alive'
-  | 'constant'
-  | 'href'
-  | 'hide_in_menu'
-  | 'active_menu'
-  | 'multi_tab'
-  | 'fixed_index_in_tab'
+  | 'admin_router_menu_type'
+  | 'admin_router_menu_name'
+  | 'admin_router_route_name'
+  | 'admin_router_route_path'
+  | 'admin_router_component'
+  | 'admin_router_order'
+  | 'admin_router_i18n_key'
+  | 'admin_router_icon'
+  | 'admin_router_icon_type'
+  | 'admin_router_status'
+  | 'admin_router_pid'
+  | 'admin_router_keep_alive'
+  | 'admin_router_constant'
+  | 'admin_router_href'
+  | 'admin_router_hide_in_menu'
+  | 'admin_router_active_menu'
+  | 'admin_router_multi_tab'
+  | 'admin_router_fixed_index_in_tab'
 > & {
   query: NonNullable<Api.SystemManage.Menu['query']>;
-  buttons: NonNullable<Api.SystemManage.Menu['buttons']>;
-  layout: string;
-  page: string;
+  admin_router_layout: string;
+  admin_router_page: string;
   type: 'add' | 'edit';
-  pathParam: string;
+  admin_router_pathParam: string;
 };
 
 const model = ref(createDefaultModel());
 
 function createDefaultModel(): Model {
   return {
-    menu_type: 1,
-    menu_name: '',
-    route_name: '',
-    route_path: '',
-    pathParam: '',
-    component: '',
-    layout: '',
-    page: '',
-    i18n_key: null,
-    icon: '',
-    icon_type: 1,
-    pid: 0,
-    status: 1,
-    keep_alive: 1,
-    constant: 1,
-    order: 0,
-    href: null,
-    hide_in_menu: 1,
-    active_menu: null,
-    multi_tab: 1,
-    fixedIndexInTab: null,
-    query: [],
-    buttons: [],
+    admin_router_menu_type: 1,
+    admin_router_menu_name: '',
+    admin_router_route_name: '',
+    admin_router_route_path: '',
+    admin_router_pathParam: '',
+    admin_router_component: '',
+    admin_router_layout: '',
+    admin_router_page: '',
+    admin_router_i18n_key: null,
+    admin_router_icon: '',
+    admin_router_icon_type: 1,
+    admin_router_pid: 0,
+    admin_router_status: 1,
+    admin_router_keep_alive: 1,
+    admin_router_constant: 1,
+    admin_router_order: 0,
+    admin_router_href: null,
+    admin_router_hide_in_menu: 1,
+    admin_router_active_menu: null,
+    admin_router_multi_tab: 1,
+    admin_router_fixedIndexInTab: null,
+    admin_router_query: [],
     type: 'add'
   };
 }
 
-type RuleKey = Extract<keyof Model, 'menu_name' | 'status' | 'route_name' | 'route_path' | 'i18n_key'>;
+type RuleKey = Extract<keyof Model, 'admin_router_menu_name' | 'admin_router_status' | 'admin_router_route_name' | 'admin_router_route_path' | 'admin_router_i18n_key'>;
 
 const rules: Record<RuleKey, App.Global.FormRule> = {
-  menu_name: defaultRequiredRule,
-  status: defaultRequiredRule,
-  route_name: defaultRequiredRule,
-  route_path: defaultRequiredRule,
-  i18n_key: defaultRequiredRule
+  admin_router_menu_name: defaultRequiredRule,
+  admin_router_status: defaultRequiredRule,
+  admin_router_route_name: defaultRequiredRule,
+  admin_router_route_path: defaultRequiredRule,
+  admin_router_i18n_key: defaultRequiredRule
 };
 
 const disabledMenuType = computed(() => props.operateType === 'edit');
@@ -137,17 +135,17 @@ const localIconOptions = localIcons.map(item => ({
   value: item
 }));
 
-const showLayout = computed(() => model.value.pid === 0);
+const showLayout = computed(() => model.value.admin_router_pid === 0);
 
-const showPage = computed(() => model.value.menu_type === 2);
+const showPage = computed(() => model.value.admin_router_menu_type === 2);
 
-const showButtonInput = computed(() => model.value.menu_type === 3);
+const showButtonInput = computed(() => model.value.admin_router_menu_type === 3);
 
 const pageOptions = computed(() => {
   const allPages = [...props.allPages];
 
-  if (model.value.route_name && !allPages.includes(model.value.route_name)) {
-    allPages.unshift(model.value.route_name);
+  if (model.value.admin_router_route_name && !allPages.includes(model.value.admin_router_route_name)) {
+    allPages.unshift(model.value.admin_router_route_name);
   }
 
   const opts: CommonType.Option[] = allPages.map(page => ({
@@ -180,7 +178,7 @@ async function getRoleOptions() {
 
   if (!error) {
     const options = data.map(item => ({
-      label: item.role_name,
+      label: item.admin_role_name,
       value: item.id
     }));
 
@@ -198,19 +196,19 @@ async function handleInitModel() {
   // 添加子菜单
   if (props.operateType === 'addChild') {
     const { id } = props.rowData;
-    Object.assign(model.value, { pid: id });
+    Object.assign(model.value, { admin_router_pid: id });
   }
 
   if (props.operateType === 'edit') {
-    const { component, ...rest } = props.rowData;
-    const { layout, page } = getLayoutAndPage(component);
-    const { path, param } = getPathParamFromRoutePath(rest.route_path);
+    const { admin_router_component, ...rest } = props.rowData;
+    const { layout, page } = getLayoutAndPage(admin_router_component);
+    const { path, param } = getPathParamFromRoutePath(rest.admin_router_route_path);
 
     Object.assign(model.value, rest, {
       layout,
       page,
-      route_path: path,
-      pathParam: param
+      admin_router_route_path: path,
+      admin_router_pathParam: param
     });
     // 按钮key，用于后端鉴权
     Object.assign(model.value, { buttonKey: 'sys:menu:edit' });
@@ -219,9 +217,6 @@ async function handleInitModel() {
   if (!model.value.query) {
     model.value.query = [];
   }
-  if (!model.value.buttons) {
-    model.value.buttons = [];
-  }
 }
 
 function closeDrawer() {
@@ -229,32 +224,32 @@ function closeDrawer() {
 }
 
 function handleUpdateRoutePathByRouteName() {
-  if (model.value.route_name) {
-    model.value.route_path = getRoutePathByRouteName(model.value.route_name);
+  if (model.value.admin_router_route_name) {
+    model.value.admin_router_route_path = getRoutePathByRouteName(model.value.admin_router_route_name);
   } else {
-    model.value.route_path = '';
+    model.value.admin_router_route_path = '';
   }
 }
 
 function handleUpdateI18nKeyByRouteName() {
-  if (model.value.route_name) {
-    model.value.i18n_key = `route.${model.value.route_name}` as App.I18n.I18nKey;
+  if (model.value.admin_router_route_name) {
+    model.value.admin_router_i18n_key = `route.${model.value.admin_router_route_name}` as App.I18n.I18nKey;
   } else {
-    model.value.i18n_key = null;
+    model.value.admin_router_i18n_key = null;
   }
 }
 
 function getSubmitParams() {
-  const { layout, page, pathParam, ...params } = model.value;
+  const { admin_router_layout, admin_router_page, admin_router_pathParam, ...params } = model.value;
 
   let component: string;
 
-    component = transformLayoutAndPageToComponent(layout, page);
+    component = transformLayoutAndPageToComponent(admin_router_layout, admin_router_page);
 
-  const routePath = getRoutePathWithParam(model.value.route_path, pathParam);
+  const routePath = getRoutePathWithParam(model.value.admin_router_route_path, admin_router_pathParam);
 
-  params.component = component;
-  params.route_path = routePath;
+  params.admin_router_component = component;
+  params.admin_router_route_path = routePath;
 
   return params;
 }
@@ -267,10 +262,10 @@ async function handleSubmit() {
   if (props.operateType === 'edit') {
     params.type = 'edit';
   } else {
-    if (params.menu_type === 3) {
+    if (params.admin_router_menu_type === 3) {
       // 按钮key，用于后端鉴权
       Object.assign(model.value, { buttonKey: 'sys:menu:addButton' });
-    } else if(params.menu_type === 2){
+    } else if(params.admin_router_menu_type === 2){
       // 按钮key，用于后端鉴权
       Object.assign(model.value, { buttonKey: 'sys:menu:addChild' });
     } else {
@@ -295,7 +290,7 @@ watch(visible, () => {
 });
 
 watch(
-  () => model.value.route_name,
+  () => model.value.admin_router_route_name,
   () => {
     handleUpdateRoutePathByRouteName();
     handleUpdateI18nKeyByRouteName();
@@ -310,8 +305,8 @@ watch(
         <AForm ref="formRef" :model="model" :rules="rules" :label-col="{ lg: 8, xs: 4 }" label-wrap class="pr-20px">
           <ARow>
             <ACol :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.menuType')" name="menu_type">
-                <ARadioGroup v-model:value="model.menu_type" :disabled="disabledMenuType">
+              <AFormItem :label="$t('page.manage.menu.menuType')" name="admin_router_menu_type">
+                <ARadioGroup v-model:value="model.admin_router_menu_type" :disabled="disabledMenuType">
                   <ARadio v-for="item in menuTypeOptions" :key="Number(item.value)" :value="Number(item.value)">
                     {{ $t(item.label) }}
                   </ARadio>
@@ -319,25 +314,25 @@ watch(
               </AFormItem>
             </ACol>
             <ACol :lg="12" :xs="24">
-              <AFormItem v-if="!showButtonInput" :label="$t('page.manage.menu.menuName')" name="menu_name">
-                <AInput v-model:value="model.menu_name" :placeholder="$t('page.manage.menu.form.menuName')" />
+              <AFormItem v-if="!showButtonInput" :label="$t('page.manage.menu.menuName')" name="admin_router_menu_name">
+                <AInput v-model:value="model.admin_router_menu_name" :placeholder="$t('page.manage.menu.form.menuName')" />
               </AFormItem>
-              <AFormItem v-else label="按钮名称" name="menu_name">
-                <AInput v-model:value="model.menu_name" placeholder="请输入按钮名称" />
+              <AFormItem v-else label="按钮名称" name="admin_router_menu_name">
+                <AInput v-model:value="model.admin_router_menu_name" placeholder="请输入按钮名称" />
               </AFormItem>
             </ACol>
             <ACol :lg="12" :xs="24">
-              <AFormItem v-if="!showButtonInput" :label="$t('page.manage.menu.routeName')" name="route_name">
-                <AInput v-model:value="model.route_name" :placeholder="$t('page.manage.menu.form.routeName')" />
+              <AFormItem v-if="!showButtonInput" :label="$t('page.manage.menu.routeName')" name="admin_router_route_name">
+                <AInput v-model:value="model.admin_router_route_name" :placeholder="$t('page.manage.menu.form.routeName')" />
               </AFormItem>
-              <AFormItem v-else label="按钮码" name="route_name">
-                <AInput v-model:value="model.route_name" placeholder="请输入按钮编码" />
+              <AFormItem v-else label="按钮码" name="admin_router_route_name">
+                <AInput v-model:value="model.admin_router_route_name" placeholder="请输入按钮编码" />
               </AFormItem>
             </ACol>
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.routePath')" name="route_path">
+              <AFormItem :label="$t('page.manage.menu.routePath')" name="admin_router_route_path">
                 <AInput
-                  v-model:value="model.route_path"
+                  v-model:value="model.admin_router_route_path"
                   disabled
                   :placeholder="$t('page.manage.menu.form.routePath')"
                 />
@@ -349,40 +344,40 @@ watch(
             <!--              </AFormItem>-->
             <!--            </ACol>-->
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem v-if="showLayout" :label="$t('page.manage.menu.layout')" name="layout">
+              <AFormItem v-if="showLayout" :label="$t('page.manage.menu.layout')" name="admin_router_layout">
                 <ASelect
-                  v-model:value="model.layout"
+                  v-model:value="model.admin_router_layout"
                   :options="layoutOptions"
                   :placeholder="$t('page.manage.menu.form.layout')"
                 />
               </AFormItem>
             </ACol>
             <ACol v-if="showPage" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.page')" name="page">
+              <AFormItem :label="$t('page.manage.menu.page')" name="admin_router_page">
                 <ASelect
-                  v-model:value="model.page"
+                  v-model:value="model.admin_router_page"
                   :options="pageOptions"
                   :placeholder="$t('page.manage.menu.form.page')"
                 />
               </AFormItem>
             </ACol>
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem label="i18key/菜单名" name="i18n_key">
-                <AInput v-model:value="model.i18n_key as string" placeholder="请输入菜单名" />
+              <AFormItem label="i18key/菜单名" name="admin_router_i18n_key">
+                <AInput v-model:value="model.admin_router_i18n_key as string" placeholder="请输入菜单名" />
               </AFormItem>
             </ACol>
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.order')" name="order">
+              <AFormItem :label="$t('page.manage.menu.order')" name="admin_router_order">
                 <AInputNumber
-                  v-model:value="model.order as number"
+                  v-model:value="model.admin_router_order as number"
                   class="w-full"
                   :placeholder="$t('page.manage.menu.form.order')"
                 />
               </AFormItem>
             </ACol>
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.iconTypeTitle')" name="icon_type">
-                <ARadioGroup v-model:value="model.icon_type">
+              <AFormItem :label="$t('page.manage.menu.iconTypeTitle')" name="admin_router_icon_type">
+                <ARadioGroup v-model:value="model.admin_router_icon_type">
                   <ARadio v-for="item in menuIconTypeOptions" :key="Number(item.value)" :value="Number(item.value)">
                     {{ $t(item.label) }}
                   </ARadio>
@@ -391,17 +386,17 @@ watch(
             </ACol>
 
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.icon')" name="icon">
-                <template v-if="model.icon_type === 2">
-                  <AInput v-model:value="model.icon" :placeholder="$t('page.manage.menu.form.icon')" class="flex-1">
+              <AFormItem :label="$t('page.manage.menu.icon')" name="admin_router_icon">
+                <template v-if="model.admin_router_icon_type === 2">
+                  <AInput v-model:value="model.admin_router_icon" :placeholder="$t('page.manage.menu.form.icon')" class="flex-1">
                     <template #suffix>
-                      <SvgIcon v-if="model.icon" :icon="model.icon" class="text-icon" />
+                      <SvgIcon v-if="model.admin_router_icon" :icon="model.admin_router_icon" class="text-icon" />
                     </template>
                   </AInput>
                 </template>
-                <template v-if="model.icon_type === 1">
+                <template v-if="model.admin_router_icon_type === 1">
                   <ASelect
-                    v-model:value="model.icon"
+                    v-model:value="model.admin_router_icon"
                     :placeholder="$t('page.manage.menu.form.localIcon')"
                     :options="localIconOptions"
                   />
@@ -409,8 +404,8 @@ watch(
               </AFormItem>
             </ACol>
             <ACol :lg="12" :xs="24">
-              <AFormItem label="状态" name="status">
-                <ARadioGroup v-model:value="model.status">
+              <AFormItem label="状态" name="admin_router_status">
+                <ARadioGroup v-model:value="model.admin_router_status">
                   <ARadio v-for="item in enableStatusOptions" :key="Number(item.value)" :value="Number(item.value)">
                     {{ $t(item.label) }}
                   </ARadio>
@@ -418,16 +413,16 @@ watch(
               </AFormItem>
             </ACol>
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.keepAlive')" name="keep_alive">
-                <ARadioGroup v-model:value="model.keep_alive">
+              <AFormItem :label="$t('page.manage.menu.keepAlive')" name="admin_router_keep_alive">
+                <ARadioGroup v-model:value="model.admin_router_keep_alive">
                   <ARadio :value="2">{{ $t('common.yesOrNo.yes') }}</ARadio>
                   <ARadio :value="1">{{ $t('common.yesOrNo.no') }}</ARadio>
                 </ARadioGroup>
               </AFormItem>
             </ACol>
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.constant')" name="constant">
-                <ARadioGroup v-model:value="model.constant">
+              <AFormItem :label="$t('page.manage.menu.constant')" name="admin_router_constant">
+                <ARadioGroup v-model:value="model.admin_router_constant">
                   <ARadio :value="2">
                     {{ $t('common.yesOrNo.yes') }}
                   </ARadio>
@@ -438,13 +433,13 @@ watch(
               </AFormItem>
             </ACol>
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.href')" name="href">
-                <AInput v-model:value="model.href as string" :placeholder="$t('page.manage.menu.form.href')" />
+              <AFormItem :label="$t('page.manage.menu.href')" name="admin_router_href">
+                <AInput v-model:value="model.admin_router_href as string" :placeholder="$t('page.manage.menu.form.href')" />
               </AFormItem>
             </ACol>
             <ACol v-if="!showButtonInput" :lg="12" :xs="24">
-              <AFormItem :label="$t('page.manage.menu.hideInMenu')" name="hide_in_menu">
-                <ARadioGroup v-model:value="model.hide_in_menu">
+              <AFormItem :label="$t('page.manage.menu.hideInMenu')" name="admin_router_hide_in_menu">
+                <ARadioGroup v-model:value="model.admin_router_hide_in_menu">
                   <ARadio :value="2">{{ $t('common.yesOrNo.yes') }}</ARadio>
                   <ARadio :value="1">{{ $t('common.yesOrNo.no') }}</ARadio>
                 </ARadioGroup>

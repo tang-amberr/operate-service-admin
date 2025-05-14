@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import {computed, onMounted} from 'vue';
 import { $t } from '@/locales';
 import { useRouterPush } from '@/hooks/common/router';
+import {fetchGetUserRoutes} from "@/service/api";
 
 defineOptions({ name: 'ExceptionBase' });
 
@@ -29,6 +30,17 @@ const iconMap: Record<ExceptionType, string> = {
 };
 
 const icon = computed(() => iconMap[props.type]);
+
+async function getRoutes() {
+  const res = await fetchGetUserRoutes();
+  if(res.data?.routes.length) {
+    await routerPushByKey(res.data?.routes[0].name);
+  }
+}
+
+onMounted(() => {
+  getRoutes();
+});
 </script>
 
 <template>

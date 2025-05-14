@@ -6,15 +6,15 @@ import {demoRequest, request} from '../request';
  * @param userName User name
  * @param password Password
  */
-export function fetchLogin(username: string, password: string, code: string, id:string) {
+export function fetchLogin(account_login_username: string, account_login_password: string, account_login_code: string, account_login_id:string) {
   return demoRequest({
     url: '/auth/login',
     method: 'post',
     data: {
-      username,
-      password,
-      code,
-      id
+      account_login_username,
+      account_login_password,
+      account_login_code,
+      account_login_id
     }
   });
 }

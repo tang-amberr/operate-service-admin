@@ -17,8 +17,8 @@ const { formRef, validate, resetFields } = useAntdForm();
 
 const model = defineModel<Api.SystemManage.UserSearchParams>('model', {
   default: () => ({
-    username: '',
-    status: null
+    admin_user_username: '',
+    admin_user_status: null
   })
 });
 
@@ -45,14 +45,14 @@ async function search() {
     >
       <ARow :gutter="[16, 16]" wrap>
         <ACol :span="24" :md="12" :lg="6">
-          <AFormItem :label="$t('page.manage.user.userName')" name="userName" class="m-0">
-            <AInput v-model:value="model.username" :placeholder="$t('page.manage.user.form.userName')" />
+          <AFormItem :label="$t('page.manage.user.userName')" name="admin_user_username" class="m-0">
+            <AInput v-model:value="model.admin_user_username" :placeholder="$t('page.manage.user.form.userName')" />
           </AFormItem>
         </ACol>
         <ACol :span="24" :md="12" :lg="6">
-          <AFormItem :label="$t('page.manage.user.userStatus')" name="userStatus" class="m-0">
+          <AFormItem :label="$t('page.manage.user.userStatus')" name="admin_user_status" class="m-0">
             <ASelect
-              v-model:value="model.status"
+              v-model:value="model.admin_user_status"
               :placeholder="$t('page.manage.user.form.userStatus')"
               clearable
             >

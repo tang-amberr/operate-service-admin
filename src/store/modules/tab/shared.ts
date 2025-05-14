@@ -124,12 +124,13 @@ export function getDefaultHomeTab(router: Router, homeRouteName: LastLevelRouteK
     fullPath: homeRoutePath
   };
 
+  console.log('router', router)
   const routes = router.getRoutes();
   const homeRoute = routes.find(route => route.name === homeRouteName);
   if (homeRoute) {
     homeTab = getTabByRoute(homeRoute);
   }
-
+  console.log('homeTab', homeTab)
   return homeTab;
 }
 

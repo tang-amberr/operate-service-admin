@@ -23,14 +23,14 @@ const generateActionButtons = (record, codeMap) => {
   const hasAddButton = originAuth.hasAuth(codeMap.addButton);
 
   const actions = [];
-  if (hasAddChild && record.menu_type === 1) {
+  if (hasAddChild && record.admin_router_menu_type === 1) {
     actions.push(
       <Button type="primary" ghost size="small" onClick={() => handleAddChildMenu(record)}>
         {$t('page.manage.menu.addChildMenu')}
       </Button>
     );
   }
-  if (hasAddButton && record.menu_type === 2) {
+  if (hasAddButton && record.admin_router_menu_type === 2) {
     actions.push(
       <Button type="primary" ghost size="small" onClick={() => handleAddChildMenu(record)}>
         新增按钮
@@ -73,7 +73,7 @@ const { columns, columnChecks, data, loading, pagination, getData } = useTable({
       dataIndex: 'id'
     },
     {
-      key: 'menu_type',
+      key: 'admin_router_menu_type',
       title: $t('page.manage.menu.menuType'),
       align: 'center',
       width: 80,
@@ -84,37 +84,37 @@ const { columns, columnChecks, data, loading, pagination, getData } = useTable({
           3: 'warning'
         };
 
-        const label = $t(menuTypeRecord[record.menu_type]);
+        const label = $t(menuTypeRecord[record.admin_router_menu_type]);
 
-        return <Tag style="font-size: 14px; line-height: 26px" color={tagMap[record.menu_type]}>{label}</Tag>;
+        return <Tag style="font-size: 14px; line-height: 26px" color={tagMap[record.admin_router_menu_type]}>{label}</Tag>;
       }
     },
     {
-      key: 'menu_name',
+      key: 'admin_router_menu_name',
       title: $t('page.manage.menu.menuName'),
       align: 'center',
       width: 110,
       customRender: ({ record }) => {
-        const { i18n_key, menu_name } = record;
+        const { admin_router_i18n_key, admin_router_menu_name } = record;
 
-        if (record.menu_type === 3) {
-          return <span>{menu_name}</span>;
+        if (record.admin_router_menu_type === 3) {
+          return <span>{admin_router_menu_name}</span>;
         }
-        const label = i18n_key ? $t(i18n_key) : menu_name;
+        const label = admin_router_i18n_key ? $t(admin_router_i18n_key) : admin_router_menu_name;
 
         return <span>{label}</span>;
       }
     },
     {
-      key: 'icon',
+      key: 'admin_router_icon',
       title: $t('page.manage.menu.icon'),
       align: 'center',
       width: 60,
       customRender: ({ record }) => {
-        if (record.menu_type === 3) return;
-        const icon = record.icon_type === 2 ? record.icon : undefined;
+        if (record.admin_router_menu_type === 3) return;
+        const icon = record.admin_router_icon_type === 2 ? record.admin_router_icon : undefined;
 
-        const localIcon = record.icon_type === 1 ? record.icon : undefined;
+        const localIcon = record.admin_router_icon_type === 1 ? record.admin_router_icon : undefined;
 
         return (
           <div class="flex-center">
@@ -124,30 +124,30 @@ const { columns, columnChecks, data, loading, pagination, getData } = useTable({
       }
     },
     {
-      key: 'route_name',
+      key: 'admin_router_route_name',
       title: $t('page.manage.menu.routeName'),
       align: 'center',
-      dataIndex: 'route_name',
+      dataIndex: 'admin_router_route_name',
       width: 150
     },
     {
-      key: 'route_path',
+      key: 'admin_router_route_path',
       title: $t('page.manage.menu.routePath'),
       align: 'center',
-      dataIndex: 'route_path',
+      dataIndex: 'admin_router_route_path',
       width: 150,
       customRender: ({ record }) => {
-        if (record.menu_type === 3) return;
-        return <span>{record.route_path}</span>;
+        if (record.admin_router_menu_type === 3) return;
+        return <span>{record.admin_router_route_path}</span>;
       }
     },
     {
-      key: 'status',
+      key: 'admin_router_status',
       title: $t('page.manage.menu.menuStatus'),
       align: 'center',
       width: 80,
       customRender: ({ record }) => {
-        if (record.status === null) {
+        if (record.admin_router_status === null) {
           return null;
         }
 
@@ -156,21 +156,21 @@ const { columns, columnChecks, data, loading, pagination, getData } = useTable({
           2: 'warning'
         };
 
-        const label = $t(enableStatusRecord[record.status]);
+        const label = $t(enableStatusRecord[record.admin_router_status]);
 
-        return <Tag style="font-size: 14px; line-height: 26px" color={tagMap[record.status]}>{label}</Tag>;
+        return <Tag style="font-size: 14px; line-height: 26px" color={tagMap[record.admin_router_status]}>{label}</Tag>;
       }
     },
     {
-      key: 'hide_in_menu',
+      key: 'admin_router_hide_in_menu',
       title: $t('page.manage.menu.hideInMenu'),
-      dataIndex: 'hide_in_menu',
+      dataIndex: 'admin_router_hide_in_menu',
       align: 'center',
       width: 80,
       customRender: ({ record }) => {
-        if (record.menu_type === 3) return;
+        if (record.admin_router_menu_type === 3) return;
 
-        const hide: CommonType.YesOrNo = record.hide_in_menu === 2 ? 'Y' : 'N';
+        const hide: CommonType.YesOrNo = record.admin_router_hide_in_menu === 2 ? 'Y' : 'N';
 
         const tagMap: Record<CommonType.YesOrNo, string> = {
           Y: 'error',
@@ -183,21 +183,21 @@ const { columns, columnChecks, data, loading, pagination, getData } = useTable({
       }
     },
     {
-      key: 'pid',
-      dataIndex: 'pid',
+      key: 'admin_router_pid',
+      dataIndex: 'admin_router_pid',
       title: $t('page.manage.menu.parentId'),
       width: 90,
       align: 'center'
     },
     {
-      key: 'order',
-      dataIndex: 'order',
+      key: 'admin_router_order',
+      dataIndex: 'admin_router_order',
       title: $t('page.manage.menu.order'),
       align: 'center',
       width: 60,
       customRender: ({ record }) => {
-        if (record.menu_type === 3) return;
-        return <span>{record.order}</span>;
+        if (record.admin_router_menu_type === 3) return;
+        return <span>{record.admin_router_order}</span>;
       }
     },
     {
@@ -262,7 +262,7 @@ function handleAddChildMenu(item: Api.SystemManage.Menu) {
 const allPages = computed(() => {
   const nameList: string[] = [];
   function mapFunc(item: Api.SystemManage.Menu) {
-    nameList.push(item.routeName);
+    nameList.push(item.admin_router_routeName);
     if (item.children) {
       item.children.forEach(mapFunc);
     }
