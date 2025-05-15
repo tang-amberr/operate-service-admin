@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { Badge, Button } from 'ant-design-vue';
 import { ref } from 'vue';
-import { useAuth } from "@/hooks/business/auth";
+import { useAuth } from '@/hooks/business/auth';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { enterpriseList } from '@/service/api/wechatfans';
 import WechatEnterpriseChildDrawer from '@/views/wechatfans/wechatmanage/modules/wechat-enterprise-child-drawer.vue';
@@ -89,32 +89,32 @@ const { columns, columnChecks, data, loading, getData, mobilePagination } = useT
       align: 'center',
       width: 150,
       customRender: ({ record }) => {
-        const originAuth = useAuth();
-        if (!originAuth.hasAuth("originAuth.hasAuth")) {
-          return <a-tooltip placement="topLeft" title="无权限">
+        // const originAuth = useAuth();
+        // if (!originAuth.hasAuth("originAuth.hasAuth")) {
+        //   return <a-tooltip placement="topLeft" title="无权限">
+        //   <div class="flex-center gap-8px">
+        //     <Button
+        //       style="padding: 0"
+        //     >
+        //       成员设置
+        //     </Button>
+        //   </div></a-tooltip>
+        // }
+        return (
           <div class="flex-center gap-8px">
             <Button
               style="padding: 0"
+              type="link"
+              onClick={() => {
+                company.value = record;
+                edit(record.id);
+              }}
             >
               成员设置
             </Button>
-          </div></a-tooltip>
-        }
-        return <div class="flex-center gap-8px">
-          <Button
-            style="padding: 0"
-            type="link"
-            onClick={() => {
-              company.value = record;
-              edit(record.id);
-            }}
-          >
-            成员设置
-          </Button>
-        </div>
+          </div>
+        );
       }
-
-
     }
   ]
 });

@@ -261,7 +261,7 @@ function editMember(record: any) {
 const fans_tags_info = ref<any>([]);
 const selectTags = ref<any>([]);
 const getcompanyTags = () => {
-  companyTags({ company_id: `${searchParams.company_id}` }).then(res => {
+  companyTags({ company_id: Number(searchParams.company_id) }).then(res => {
     fans_tags_info.value = res.data.fans_tags_info;
   });
 };
@@ -357,7 +357,7 @@ const showChildrenDrawerAddSuper = () => {
 };
 
 const filterOption = (value: any, option: any) => {
-  return option.fans_tags_name.includes(value);
+  return option.tags_name.includes(value);
 };
 </script>
 
@@ -457,7 +457,7 @@ const filterOption = (value: any, option: any) => {
             mode="multiple"
             placeholder="请选择标签"
             class="w-full"
-            :field-names="{ label: 'fans_tags_name', value: 'fans_tags_id' }"
+            :field-names="{ label: 'tags_name', value: 'fans_tags_id' }"
           ></ASelect>
         </AFormItem>
         <AFormItem label="用户名称 (选填)">

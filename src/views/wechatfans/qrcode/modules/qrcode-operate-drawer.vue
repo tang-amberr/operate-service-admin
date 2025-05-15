@@ -11,6 +11,7 @@ import {
   addCompanyAttachment,
   companyEmployeeList,
   companyQrcodeAdd,
+  companyQrcodeEdit,
   companyTagTree,
   enterpriseList,
   uploadCompanyAttachment,
@@ -79,7 +80,7 @@ function createDefaultModel(): Model {
     tag_ids: '',
     employee_skip_verify: 1,
     remark: '',
-    employee_list: '0',
+    employee_list: '',
     employee_limit_type: 0,
     employee_limit_value: 0,
     employee_limit: [],
@@ -94,10 +95,7 @@ const rules: Record<RuleKey, App.Global.FormRule> = {
   company_id: defaultRequiredRule,
   channel_name: defaultRequiredRule,
   employee_skip_verify: defaultRequiredRule,
-  employee_list: defaultRequiredRule,
-  employee_limit: defaultRequiredRule
 };
-
 
 // 企业id
 const companyId = ref<number>(null);
@@ -474,10 +472,11 @@ const beforeUpload: UploadProps['beforeUpload'] = file => {
     return false;
   }
   if (uploadedAttachmentIds.value.length >= 9) {
-    message.error('最多上传9个附件');
+    message.error('最多上传9个附件,无法再上传了');
     return Upload.LIST_IGNORE;
   }
 
+  console.log('messagetype', messageType.value)
   // 图片类型
   if (messageType.value !== 'video') {
     // 支持JPG,PNG
@@ -496,7 +495,6 @@ const beforeUpload: UploadProps['beforeUpload'] = file => {
 
     return true;
   }
-
   const isVideo = file.type.startsWith('video/');
   if (!isVideo) {
     message.error(`${file.name} is not a video file`);
@@ -513,6 +511,7 @@ const beforeUpload: UploadProps['beforeUpload'] = file => {
   return true;
 };
 
+// 上传文件
 const customUpload = async e => {
   const formdata = new FormData();
   formdata.append('file', e.file);
@@ -532,6 +531,25 @@ const customUpload = async e => {
   }
 };
 
+// 点击视频
+function clickVideo() {
+  if(uploadedAttachmentIds.value.length >= 9) {
+    message.error('最多上传9个附件,再上传无法生效！');
+    return;
+  }
+  messageType.value = 'video';
+}
+
+// 点击图片
+function clickImage() {
+  if(uploadedAttachmentIds.value.length >= 9) {
+    message.error('最多上传9个附件,再上传无法生效！');
+    return;
+  }
+  messageType.value = 'image';
+}
+
+
 // 第一级抽屉
 const open = ref<boolean>(false);
 // 二级链接抽屉
@@ -542,6 +560,13 @@ const showLinkChildrenDrawer = () => {
     message.error('请先选择企微');
     return;
   }
+
+  if(uploadedAttachmentIds.value.length >= 9) {
+    message.error('最多上传9个附件,再上传无法生效！');
+    return;
+  }
+
+  messageType.value = 'link';
   imageUrl.value = '';
   // 初始化附件model
   handleInitAttachmentModel();
@@ -555,6 +580,10 @@ function closeLinkChildDrawer() {
 }
 // 提交二级链接抽屉
 function handleLinkChildSubmit() {
+  if(attachmentModel.link_url === '' || attachmentModel.title === '') {
+    message.error('请填写必填字段');
+    return;
+  }
   closeLinkChildDrawer();
   // todo
   handleAddMessage();
@@ -568,6 +597,14 @@ const showMiniProgramModal = () => {
     message.error('请先选择企微');
     return;
   }
+
+  if(uploadedAttachmentIds.value.length >= 9) {
+    message.error('最多上传9个附件,再上传无法生效！');
+    return;
+  }
+
+  messageType.value = 'miniprogram';
+
   imageUrl.value = '';
   // 初始化附件model
   handleInitAttachmentModel();
@@ -581,8 +618,11 @@ function closeMiniProgramChildDrawer() {
 }
 // 提交二级小程序抽屉
 function handleMiniprogramChildSubmit() {
+  if(attachmentModel.mini_program_app_id === '' || attachmentModel.mini_program_child_title === '') {
+    message.error('请填写必填字段');
+    return;
+  }
   closeMiniProgramChildDrawer();
-  // todo
   handleAddMessage();
 }
 
@@ -601,6 +641,9 @@ function closeDrawer() {
   handleInitModel();
 }
 
+// 是否开启标签
+const activeTagKey = ref(1);
+
 // 设置model数据
 function setModelData() {
   const tagIds = tagValue.value.filter(item => {
@@ -613,19 +656,38 @@ function setModelData() {
 
   // 处理bool
   model.employee_skip_verify = model.employee_skip_verify ? 1 : 2;
+
+  // 关闭欢迎语时，欢迎语为空
+  if (greetActiveKey.value === 1) {
+    model.greeting = '';
+  }
+
+  // 限制方式
+  model.employee_limit_type = activeKey.value;
+
+  // 标签
+  if (activeTagKey.value === 1) {
+    model.tag_ids = '';
+  }
 }
 
 async function handleSubmit() {
   await validate();
+  // 检查变量
+  if(model.employee_list === '') {
+    message.error('请选择员工');
+    return;
+  }
+
   setModelData();
   // request
-  if(props.operateType === 'add') {
+  if (props.operateType === 'add') {
     const res = await companyQrcodeAdd(model);
     if (res.response.data.code === 200) {
       message.success('添加成功');
     }
   } else {
-    const res = await companyQrcodeAdd(model);
+    const res = await companyQrcodeEdit(model);
     if (res.response.data.code === 200) {
       message.success('更新成功');
     }
@@ -636,7 +698,6 @@ async function handleSubmit() {
 }
 
 const loading = ref<boolean>(false);
-const activeTagKey = ref(1);
 const limitNumMap = ref<Map<number, number>>(new Map());
 
 async function handleInitModel() {
@@ -645,9 +706,19 @@ async function handleInitModel() {
     const data = props.rowData;
     await getTree(data.company_id);
 
-    console.log('data: ', data)
+    const strArr = data.attachment_ids.split(',');
+    uploadedAttachmentIds.value = strArr.map(str => {
+      const num = Number.parseInt(str, 10);
+      if (Number.isNaN(num)) {
+        message.error('attachment_ids转换失败');
+      }
+      return num;
+    });
+
+    console.log('uploadedAttachmentIds: ', uploadedAttachmentIds)
+    console.log('data: ', data);
     Object.assign(model, data);
-    console.log('model: ', model)
+    console.log('model: ', model);
     // 公司
     companyId.value = model.company_id;
     // 是否自动跳过
@@ -665,14 +736,14 @@ async function handleInitModel() {
     employeeList.value = numberEmployeeIds;
 
     // 解析json
-    if(data.employee_limit.length) {
-      const limitInfo = JSON.parse(data.employee_limit)
+    if (data.employee_limit.length) {
+      const limitInfo = JSON.parse(data.employee_limit);
       model.employee_limit = limitInfo.employee_limits;
-      employeeLimitValue.value  = limitInfo.employee_limit_value;
+      employeeLimitValue.value = limitInfo.employee_limit_value;
     }
 
     if (model.employee_limit_type === 3) {
-      console.log('asdfasdfaasdfasfd',data.associated_employee)
+      console.log('asdfasdfaasdfasfd', data.associated_employee);
       employeeMap.value = new Map(data.associated_employee.map(item => [item.employee_id, item.employee_name]));
       // 回显选中的自定义员工\
       const options = data.associated_employee.map(item => ({
@@ -692,7 +763,7 @@ async function handleInitModel() {
         return map;
       }, new Map<number, number>());
       await nextTick();
-      console.log('limitNumMap.value', limitNumMap.value)
+      console.log('limitNumMap.value', limitNumMap.value);
     }
 
     // 招呼语
@@ -740,7 +811,7 @@ watch(companyId, () => {
 
 // 监听员工
 watch(employeeList, () => {
-  console.log('employeeList', employeeList)
+  console.log('employeeList', employeeList);
   model.employee_list = employeeList.value.join(',');
   getLimitEmployeeOptions();
   // 删除的员工
@@ -753,7 +824,7 @@ watch(employeeList, () => {
     return false;
   });
   // 删除取消选中的
-  if(model.employee_limit.length > 0 ) {
+  if (model.employee_limit.length > 0) {
     model.employee_limit = model.employee_limit.filter(item => item.employee_id !== val);
   }
   console.log('model.employee_limit: ', typeof model.employee_limit);
@@ -796,6 +867,7 @@ watch(employeeList, () => {
             <ATabPane :key="1" tab="不打标签"></ATabPane>
             <ATabPane :key="2" tab="自动打标签">
               <ATreeSelect
+                :key="reloadKey"
                 v-model:value="tagValue"
                 show-search
                 style="width: 100%"
@@ -803,7 +875,6 @@ watch(employeeList, () => {
                 placeholder="选择标签"
                 allow-clear
                 multiple
-                :key="reloadKey"
                 :tree-data="treeData"
                 :filter-tree-node="filterTreeNode"
                 tree-node-filter-prop="label"
@@ -813,7 +884,7 @@ watch(employeeList, () => {
           </ATabs>
         </ACard>
       </AFormItem>
-      <AFormItem label="选择员工" name="employee_list">
+      <AFormItem label="选择员工">
         <ASelect
           v-model:value="employeeList"
           multiple
@@ -824,7 +895,7 @@ watch(employeeList, () => {
           placeholder="请选择员工"
         />
       </AFormItem>
-      <AFormItem label="好友限制" name="employee_limit">
+      <AFormItem label="好友限制">
         <ACard class="limit-card">
           <ATabs v-model:active-key="activeKey" @change="handleTabChange">
             <ATabPane :key="1" tab="不限制"></ATabPane>
@@ -901,6 +972,7 @@ watch(employeeList, () => {
                   :before-upload="beforeUpload"
                   :custom-request="customUpload"
                   @change="info => handleChange(info, 'image')"
+                  @click="clickImage"
                 >
                   <AButton>图片</AButton>
                 </AUpload>
@@ -914,6 +986,7 @@ watch(employeeList, () => {
                   :before-upload="beforeUpload"
                   :custom-request="customUpload"
                   @change="info => handleChange(info, 'video')"
+                  @click="clickVideo"
                 >
                   <AButton>视频</AButton>
                 </AUpload>
@@ -929,7 +1002,7 @@ watch(employeeList, () => {
                   <AFormItem label="标题" name="title">
                     <AInput v-model:value="attachmentModel.title" placeholder="请输入标题" />
                   </AFormItem>
-                  <AFormItem label="封面图片" name="title">
+                  <AFormItem label="封面图片" name="pic">
                     <ATooltip placement="top" class="w-full" title="大小不超过10M">
                       <AUpload
                         v-model:file="file"
@@ -974,7 +1047,7 @@ watch(employeeList, () => {
                   <AFormItem label="小程序子标题" name="mini_program_child_title">
                     <AInput v-model:value="attachmentModel.mini_program_child_title" placeholder="请输入小程序子标题" />
                   </AFormItem>
-                  <AFormItem label="封面图片" name="mini_program_app_id">
+                  <AFormItem label="封面图片" name="pic">
                     <ATooltip placement="top" class="w-full" title="大小不超过10M">
                       <AUpload
                         v-model:file="file"
@@ -1020,5 +1093,4 @@ watch(employeeList, () => {
 }
 </style>
 
-// todo 选择关闭，提交时要是空
-// 修改添加附件，要往attachment_ids添加
+// todo 选择关闭，提交时要是空 // 修改添加附件，要往attachment_ids添加
