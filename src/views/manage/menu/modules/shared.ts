@@ -8,6 +8,8 @@ export function getLayoutAndPage(component?: string | null) {
 
   const [layoutOrPage = '', pageItem = ''] = component?.split(FIRST_LEVEL_ROUTE_COMPONENT_SPLIT) || [];
 
+  console.log('layoutOrPage',layoutOrPage)
+  console.log('pageItem',pageItem)
   layout = getLayout(layoutOrPage);
   page = getPage(pageItem || layoutOrPage);
 

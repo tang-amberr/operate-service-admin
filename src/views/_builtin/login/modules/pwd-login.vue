@@ -140,15 +140,15 @@ async function handleSubmit() {
       <AButton type="primary" block size="large" shape="round" :loading="authStore.loginLoading" @click="handleSubmit">
         {{ $t('common.confirm') }}
       </AButton>
-      <div class="flex-y-center justify-between">
-<!--        <AButton class="h-34px flex-1" block @click="toggleLoginModule('code-login')">-->
-<!--          {{ $t(loginModuleRecord['code-login']) }}-->
+<!--      <div class="flex-y-center justify-between">-->
+<!--&lt;!&ndash;        <AButton class="h-34px flex-1" block @click="toggleLoginModule('code-login')">&ndash;&gt;-->
+<!--&lt;!&ndash;          {{ $t(loginModuleRecord['code-login']) }}&ndash;&gt;-->
+<!--&lt;!&ndash;        </AButton>&ndash;&gt;-->
+<!--        <div class="w-12px"></div>-->
+<!--        <AButton class="h-34px flex-1" block @click="toggleLoginModule('register')">-->
+<!--          {{ $t(loginModuleRecord.register) }}-->
 <!--        </AButton>-->
-        <div class="w-12px"></div>
-        <AButton class="h-34px flex-1" block @click="toggleLoginModule('register')">
-          {{ $t(loginModuleRecord.register) }}
-        </AButton>
-      </div>
+<!--      </div>-->
     </ASpace>
   </AForm>
 </template>

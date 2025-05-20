@@ -205,11 +205,12 @@ async function handleInitModel() {
     const { path, param } = getPathParamFromRoutePath(rest.admin_router_route_path);
 
     Object.assign(model.value, rest, {
-      layout,
-      page,
+      admin_router_layout: layout,
+      admin_router_page: page,
       admin_router_route_path: path,
       admin_router_pathParam: param
     });
+
     // 按钮key，用于后端鉴权
     Object.assign(model.value, { buttonKey: 'sys:menu:edit' });
   }
@@ -244,7 +245,7 @@ function getSubmitParams() {
 
   let component: string;
 
-    component = transformLayoutAndPageToComponent(admin_router_layout, admin_router_page);
+  component = transformLayoutAndPageToComponent(admin_router_layout, admin_router_page);
 
   const routePath = getRoutePathWithParam(model.value.admin_router_route_path, admin_router_pathParam);
 

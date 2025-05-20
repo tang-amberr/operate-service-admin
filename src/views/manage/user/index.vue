@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import { Button, Popconfirm, Tag, message } from 'ant-design-vue';
-import { ref } from 'vue';
-import { deleteUser, editUser, fetchGetUserList } from '@/service/api';
+import {Ref, onMounted, ref} from 'vue';
+import {deleteUser, editUser, fetchGetRoleList, fetchGetUserList} from '@/service/api';
 import { useTable, useTableOperate, useTableScroll } from '@/hooks/common/table';
 import { $t } from '@/locales';
 import { enableStatusRecord } from '@/constants/business';
@@ -58,6 +58,22 @@ const generateActionButtons = (record, editButtonCode, deleteButtonCode) => {
   return actions.length ? <div class="flex-center gap-8px">{...actions}</div> : null;
 };
 
+/** 角色选项 */
+const roleMap: Ref<Map<number, string>> = ref(new Map());
+
+async function getRoleOptions() {
+  const { error, data } = await fetchGetRoleList({
+    current: 1,
+    page_size: 1000,
+  });
+
+  if (!error) {
+    data.list.forEach((item) => {
+      roleMap.value.set(item.id, item.admin_role_desc);
+    });
+  }
+}
+
 const { columns, columnChecks, data, getData, loading, mobilePagination, searchParams, resetSearchParams } = useTable({
   apiFn: fetchGetUserList,
   apiParams: {
@@ -83,6 +99,35 @@ const { columns, columnChecks, data, getData, loading, mobilePagination, searchP
       title: $t('page.manage.user.userName'),
       align: 'center',
       minWidth: 150
+    },
+    {
+      key: 'admin_user_role',
+      dataIndex: 'admin_user_role',
+      title: $t('page.manage.user.userRole'),
+      align: 'center',
+      minWidth: 150,
+      customRender: ({ record }) => {
+        const roles = [];
+        const colorMap = {
+          1: 'cyan',
+          2: 'blue',
+          3: 'purple',
+          4: 'magenta',
+          5: 'red',
+          6: 'orange',
+          7: 'green',
+          8: 'lime'
+        };
+
+        record.admin_user_role_ids.forEach(item => {
+            roles.push(
+              <Tag style="font-size: 16px; line-height: 28px" color={colorMap[item % 8 + 1]}>
+                {roleMap.value.get(item)}
+              </Tag>
+            )
+        });
+        return <div class="flex-center gap-4px">{...roles}</div>;
+      }
     },
     {
       key: 'admin_user_status',
@@ -196,6 +241,10 @@ async function handleClose(record: Api.SystemManage.EditUser) {
 function edit(id: number) {
   handleEdit(id);
 }
+
+onMounted(()=> {
+  getRoleOptions();
+})
 </script>
 
 <template>

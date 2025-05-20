@@ -27,7 +27,7 @@ interface LoginModule {
 
 const moduleMap: Record<UnionKey.LoginModule, LoginModule> = {
   'pwd-login': { label: loginModuleRecord['pwd-login'], component: PwdLogin },
-  'register': { label: loginModuleRecord[register], component: Register },
+  // 'register': { label: loginModuleRecord[register], component: Register },
 };
 
 const activeModule = computed(() => moduleMap[props.module || 'pwd-login']);
@@ -68,9 +68,9 @@ const bgColor = computed(() => {
             />
           </div>
         </header>
-        <main class="pt-24px">
+        <main class="pt-12px">
 <!--          <h3 class="text-18px text-primary font-medium">{{ $t(activeModule.label) }}</h3>-->
-          <div class="animation-slide-in-left pt-24px">
+          <div class="animation-slide-in-left pt-12px">
             <Transition :name="themeStore.page.animateMode" mode="out-in" appear>
               <component :is="activeModule.component" />
             </Transition>

@@ -40,7 +40,7 @@ const title = computed(() => {
 
 type Model = Pick<
   Api.SystemManage.EditUser,
-  'admin_user_username' | 'admin_user_password' | 'admin_user_status' | 'type' | 'admin_user_role_ids'
+  'admin_user_username' | 'admin_user_password' | 'admin_user_status' | 'type' | 'admin_user_role_id'
 >;
 
 const model = ref(createDefaultModel());
@@ -51,7 +51,7 @@ function createDefaultModel(): Model {
     admin_user_username: '',
     admin_user_status: null,
     type: 'add',
-    admin_user_role_ids: [],
+    admin_user_role_id: null,
     user_roles: []
   };
 }
@@ -142,9 +142,7 @@ watch(visible, () => {
       </AFormItem>
       <AFormItem :label="$t('page.manage.user.userRole')" name="admin_user_roles">
         <ASelect
-          v-model:value="model.admin_user_role_ids"
-          multiple
-          mode="tags"
+          v-model:value="model.admin_user_role_id"
           :options="roleOptions"
           :placeholder="$t('page.manage.user.form.userRole')"
         />
