@@ -386,8 +386,17 @@ const linkRules: Record<AttachmentRuleKey, App.Global.FormRule> = {
   title: defaultRequiredRule
 };
 
+// appid验证
+const checkAppId = async (_rule: Rule, value: string) => {
+  const regex = /^wx[0-9a-z]{16}$/;
+  const isValid = regex.test(value);
+  if (!isValid) {
+    return Promise.reject('请输入合法的appid');
+  }
+};
+
 const miniProgramRules: Record<AttachmentRuleKey, App.Global.FormRule> = {
-  mini_program_app_id: defaultRequiredRule,
+  mini_program_app_id: [{ validator: checkAppId, trigger: 'change' }],
   mini_program_child_title: defaultRequiredRule,
   media_id: [{ validator: checkPicture, trigger: 'change' }]
 };
@@ -425,19 +434,19 @@ const handleChange = async (info: UploadChangeParam, type: string) => {
 
       attachmentModel.company_id = model.company_id;
       // 上传企业微信为永久图片
-      if (messageType.value === 'image') {
-        const result = await uploadCompanyImage(formdata);
-        console.log('res', result);
-        url.value = result.response.data.data?.url;
-        if (result.response?.data.code !== 200) {
-          message.error(result.response?.data.message);
-        } else {
-          message.success('上传成功!');
-        }
-        // 本地构建消息
-        attachmentModel.bucket_file_name = bucket_file_name.value;
-        attachmentModel.url = url.value;
-      }
+      // if (messageType.value === 'image') {
+      //   const result = await uploadCompanyImage(formdata);
+      //   console.log('res', result);
+      //   url.value = result.response.data.data?.url;
+      //   if (result.response?.data.code !== 200) {
+      //     message.error(result.response?.data.message);
+      //   } else {
+      //     message.success('上传成功!');
+      //   }
+      //   // 本地构建消息
+      //   attachmentModel.bucket_file_name = bucket_file_name.value;
+      //   attachmentModel.url = url.value;
+      // }
 
       // 上传企业微信附件
       const res = await uploadCompanyAttachment(formdata);
