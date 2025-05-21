@@ -456,11 +456,13 @@ const handleChange = async (info: UploadChangeParam, type: string) => {
       attachmentModel.create_at = res.response.data.data?.create_at;
 
       // 上传消息s
-      const ress = await addCompanyAttachment(attachmentModel);
-      console.log('res: ', ress);
-      console.log('res.data', ress.data);
-      uploadedAttachmentIds.value.push(ress.data?.attachment_id);
-      console.log('uploadids', uploadedAttachmentIds);
+      if(messageType.value === 'image' || messageType.value === 'video') {
+        const ress = await addCompanyAttachment(attachmentModel);
+        console.log('res: ', ress);
+        console.log('res.data', ress.data);
+        uploadedAttachmentIds.value.push(ress.data?.attachment_id);
+        console.log('uploadids', uploadedAttachmentIds);
+      }
     } catch (err) {
       console.error('上传过程出错:', err);
       message.error(err.message || '上传过程出错');
@@ -491,14 +493,14 @@ const beforeUpload: UploadProps['beforeUpload'] = file => {
     // 支持JPG,PNG
     const isImage = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isImage) {
-      message.error(`${file.name} is not an image file`);
+      message.error(`${file.name}不是jpeg,png图片文件`);
       return Upload.LIST_IGNORE;
     }
 
     // 图片不超过10m，支持JPG,PNG
     const isLt2M = file.size / 1024 / 1024 < 9;
     if (!isLt2M) {
-      message.error(`${file.name} must smaller than 2MB`);
+      message.error(`${file.name} 必须小于 9MB`);
       return Upload.LIST_IGNORE;
     }
 
@@ -506,14 +508,14 @@ const beforeUpload: UploadProps['beforeUpload'] = file => {
   }
   const isVideo = file.type.startsWith('video/');
   if (!isVideo) {
-    message.error(`${file.name} is not a video file`);
+    message.error(`${file.name} 不是视频文件`);
     return Upload.LIST_IGNORE;
   }
 
   // 视频不超过10m
   const isLt2M = file.size / 1024 / 1024 < 10;
   if (!isLt2M) {
-    message.error(`${file.name} must smaller than 20MB`);
+    message.error(`${file.name} 必须小于 20MB`);
     return Upload.LIST_IGNORE;
   }
 
@@ -532,6 +534,7 @@ const customUpload = async e => {
     message.error(result.response?.data.message);
   } else {
     bucket_file_name.value = result.response.data.data?.url;
+    message.success('上传成功!')
     e.onSuccess(result.response.data.data?.url, e.file);
   }
   // 回显路径
@@ -731,7 +734,7 @@ async function handleInitModel() {
     // 公司
     companyId.value = model.company_id;
     // 是否自动跳过
-    model.employee_skip_verify = model.employee_skip_verify === 1;
+    model.employee_skip_verify = data.employee_skip_verify === 1;
 
     // 好友限制
     activeKey.value = model.employee_limit_type;

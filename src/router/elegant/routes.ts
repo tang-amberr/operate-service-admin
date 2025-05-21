@@ -46,7 +46,8 @@ export const generatedRoutes: GeneratedRoute[] = [
     meta: {
       title: 'cpsorder',
       i18nKey: 'route.cpsorder',
-      icon: 'material-symbols:draft-orders'
+      icon: 'material-symbols:draft-orders',
+      order: 1
     }
   },
   {
@@ -57,7 +58,7 @@ export const generatedRoutes: GeneratedRoute[] = [
       title: 'home',
       i18nKey: 'route.home',
       icon: 'mdi:monitor-dashboard',
-      order: 1
+      order: 0
     }
   },
   {
@@ -131,7 +132,8 @@ export const generatedRoutes: GeneratedRoute[] = [
         meta: {
           title: 'wechatfans_employees',
           i18nKey: 'route.wechatfans_employees',
-          icon: 'clarity:employee-group-solid'
+          icon: 'clarity:employee-group-solid',
+          order: 2
         }
       },
       {
@@ -141,7 +143,8 @@ export const generatedRoutes: GeneratedRoute[] = [
         meta: {
           title: 'wechatfans_fans',
           i18nKey: 'route.wechatfans_fans',
-          icon: 'fluent:people-audience-32-filled'
+          icon: 'fluent:people-audience-32-filled',
+          order: 1
         }
       },
       {
@@ -161,7 +164,8 @@ export const generatedRoutes: GeneratedRoute[] = [
         meta: {
           title: 'wechatfans_tags',
           i18nKey: 'route.wechatfans_tags',
-          icon: 'material-symbols:label'
+          icon: 'material-symbols:label',
+          order: 1
         }
       },
       {
@@ -171,7 +175,8 @@ export const generatedRoutes: GeneratedRoute[] = [
         meta: {
           title: 'wechatfans_wechatmanage',
           i18nKey: 'route.wechatfans_wechatmanage',
-          icon: 'material-symbols:enterprise'
+          icon: 'material-symbols:enterprise',
+          order: 2
         }
       }
     ]

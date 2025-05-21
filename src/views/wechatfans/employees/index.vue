@@ -89,7 +89,21 @@ const { columns, columnChecks, data, mobilePagination, getData, loading, searchP
       title: '员工头像',
       align: 'center',
       width: 150
-    }
+    },
+    {
+      key: "created_at",
+      dataIndex: "created_at",
+      title: "创建时间",
+      align: "center",
+      width: 150,
+    },
+    {
+      key: "updated_at",
+      dataIndex: "updated_at",
+      title: "拉取时间",
+      align: "center",
+      width: 150,
+    },
   ]
 });
 

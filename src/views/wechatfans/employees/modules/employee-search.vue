@@ -3,6 +3,7 @@ import { $t } from '@/locales';
 import { useAntdForm, useFormRules } from '@/hooks/common/form';
 import {companyEmployeePull, companyTagPull, enterpriseList} from '@/service/api/wechatfans';
 import {onMounted, ref} from "vue";
+import {message} from "ant-design-vue";
 
 defineOptions({
   name: 'EmployeeSearch'
@@ -89,9 +90,13 @@ const companyId = ref(null);
 
 // 拉取标签
 async function pullTags() {
-  await companyEmployeePull({
+  const res = await companyEmployeePull({
     company_id: companyId.value
   });
+
+  if (res.response.data.code === 200) {
+    message.success('拉取成功');
+  }
 
   emit('search');
 }

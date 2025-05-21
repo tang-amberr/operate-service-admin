@@ -144,6 +144,8 @@ function edit(id: number) {
           button-perfix="wechatfans:wechat"
           :loading="loading"
           :delete-show="true"
+          :show-add="true"
+          :disabled-add="false"
           @add="handleAdd"
           @refresh="getData"
         />
