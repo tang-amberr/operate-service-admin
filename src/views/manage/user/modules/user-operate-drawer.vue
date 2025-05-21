@@ -78,8 +78,6 @@ async function getRoleOptions() {
       label: item.admin_role_desc,
       value: item.id
     }));
-    console.log('model', model.value)
-
     // the mock data does not have the roleCode, so fill it
     // if the real request, remove the following code
 
@@ -92,6 +90,7 @@ function handleInitModel() {
 
   if (props.operateType === 'edit' && props.rowData) {
     Object.assign(model.value, props.rowData);
+    model.value.admin_user_role_id = model.value.admin_user_role_ids
   }
   model.value.type = props.operateType;
   // 按钮key，用于后端鉴权
@@ -132,7 +131,7 @@ watch(visible, () => {
         <AInput v-model:value="model.admin_user_username" :placeholder="$t('page.manage.user.form.userName')" />
       </AFormItem>
       <AFormItem label="密码" name="admin_user_password">
-        <AInput v-model:value="model.admin_user_password" placeholder="请输入密码" />
+        <AInput :allow-clear="true" v-model:value="model.admin_user_password" placeholder="请输入密码" />
       </AFormItem>
       <AFormItem :label="$t('page.manage.user.userStatus')" name="admin_user_status">
         <ARadioGroup v-model:value="model.admin_user_status">

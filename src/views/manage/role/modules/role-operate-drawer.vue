@@ -116,7 +116,7 @@ watch(visible, () => {
         <AInput v-model:value="model.admin_role_name" :placeholder="$t('page.manage.role.form.roleName')" />
       </AFormItem>
       <AFormItem :label="$t('page.manage.role.roleDesc')" name="admin_role_desc">
-        <AInput v-model:value="model.admin_role_desc" :placeholder="$t('page.manage.role.form.roleDesc')" />
+        <AInput :allow-clear="true" v-model:value="model.admin_role_desc" :placeholder="$t('page.manage.role.form.roleDesc')" />
       </AFormItem>
     </AForm>
     <ASpace v-if="isEdit" class="w-full">
